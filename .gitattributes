@@ -1,0 +1,10 @@
+*.psd filter=lfs diff=lfs merge=lfs -text
+\# filter=lfs diff=lfs merge=lfs -text
+.psd filter=lfs diff=lfs merge=lfs -text
+lourds filter=lfs diff=lfs merge=lfs -text
+» filter=lfs diff=lfs merge=lfs -text
+dis filter=lfs diff=lfs merge=lfs -text
+« filter=lfs diff=lfs merge=lfs -text
+tous filter=lfs diff=lfs merge=lfs -text
+les filter=lfs diff=lfs merge=lfs -text
+sont filter=lfs diff=lfs merge=lfs -text
