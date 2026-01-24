@@ -37,3 +37,13 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+
+# local artifacts
+*.zip
+.next/
+out/
+dist/
+node_modules/
+
