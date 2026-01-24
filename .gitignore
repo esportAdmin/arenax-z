@@ -9,7 +9,7 @@ dist-ssr/
 .turbo/
 .vercel/
 
-# env
+# env (jamais committer)
 .env
 .env.*
 !.env.example
