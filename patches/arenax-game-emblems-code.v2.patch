@@ -1,0 +1,212 @@
+diff --git a/src/components/ui/game-emblem.tsx b/src/components/ui/game-emblem.tsx
+new file mode 100644
+index 0000000..b3a1b2c
+--- /dev/null
++++ b/src/components/ui/game-emblem.tsx
+@@ -0,0 +1,149 @@
++import * as React from "react";
++
++type GameEmblemProps = {
++  /** Raw game label from API/UI (e.g. "CS2", "Valorant", "Dota 2") */
++  game: string;
++  /** Pixel size (width/height). */
++  size?: number;
++  /** Optional extra classes for the <img>. */
++  className?: string;
++  /** Optional alt override. */
++  alt?: string;
++};
++
++type GameKey =
++  | "cs2"
++  | "valorant"
++  | "dota2"
++  | "lol"
++  | "wildrift"
++  | "overwatch"
++  | "rainbowsix"
++  | "rocketleague"
++  | "callofduty"
++  | "pubg"
++  | "fifa"
++  | "halo"
++  | "hearthstone"
++  | "heroesofthestorm"
++  | "pokemon"
++  | "artifact";
++
++const GAME_EMBLEM_SRC: Record<GameKey, string> = {
++  cs2: "/images/game-emblems/cs2.svg",
++  valorant: "/images/game-emblems/valorant.svg",
++  dota2: "/images/game-emblems/dota2.svg",
++  lol: "/images/game-emblems/lol.svg",
++  wildrift: "/images/game-emblems/wildrift.svg",
++  overwatch: "/images/game-emblems/overwatch.svg",
++  rainbowsix: "/images/game-emblems/rainbowsix.svg",
++  rocketleague: "/images/game-emblems/rocketleague.svg",
++  callofduty: "/images/game-emblems/callofduty.svg",
++  pubg: "/images/game-emblems/pubg.svg",
++  fifa: "/images/game-emblems/fifa.svg",
++  halo: "/images/game-emblems/halo.svg",
++  hearthstone: "/images/game-emblems/hearthstone.svg",
++  heroesofthestorm: "/images/game-emblems/heroesofthestorm.svg",
++  pokemon: "/images/game-emblems/pokemon.svg",
++  artifact: "/images/game-emblems/artifact.svg",
++};
++
++/**
++ * normalizeGameKey
++ *
++ * Maps various incoming strings (API/UI) to a stable local emblem key.
++ *
++ * @example
++ * normalizeGameKey("CS:GO") // "cs2"
++ * normalizeGameKey("Dota 2") // "dota2"
++ */
++function normalizeGameKey(game: string): GameKey {
++  const s = (game || "")
++    .toLowerCase()
++    .replace(/[\s:_-]+/g, "")
++    .trim();
++
++  if (!s) return "artifact";
++
++  // Counter-Strike
++  if (s === "cs2" || s === "csgo" || s === "csg o" || s === "counterstrike2" || s === "counterstrike") {
++    return "cs2";
++  }
++
++  // Riot titles
++  if (s === "valorant") return "valorant";
++  if (s === "lol" || s === "leagueoflegends") return "lol";
++  if (s === "wildrift" || s === "leagueoflegendswildrift") return "wildrift";
++
++  // Valve / others
++  if (s === "dota2" || s === "dota") return "dota2";
++  if (s === "overwatch" || s === "overwatch2") return "overwatch";
++  if (s === "rainbowsix" || s === "r6" || s === "r6siege" || s === "rainbowsixsiege") return "rainbowsix";
++  if (s === "rocketleague") return "rocketleague";
++  if (s === "callofduty" || s === "cod") return "callofduty";
++  if (s === "pubg") return "pubg";
++  if (s === "fifa" || s === "fc" || s === "eafc" || s === "easportsfc") return "fifa";
++  if (s === "halo") return "halo";
++  if (s === "hearthstone") return "hearthstone";
++  if (s === "heroesofthestorm" || s === "hots") return "heroesofthestorm";
++  if (s === "pokemon" || s === "pokemonunite") return "pokemon";
++
++  return "artifact";
++}
++
++/**
++ * GameEmblem
++ *
++ * Local SVG emblem for a given game string.
++ * Uses a plain <img> to avoid Next/Image remote and SVG constraints.
++ *
++ * @example
++ * <GameEmblem game="CS2" size={16} />
++ */
++export function GameEmblem({ game, size = 16, className, alt }: GameEmblemProps) {
++  const key = normalizeGameKey(game);
++  const src = GAME_EMBLEM_SRC[key] ?? GAME_EMBLEM_SRC.artifact;
++  const finalAlt = alt ?? `${game || "Game"} emblem`;
++
++  return (
++    <img
++      src={src}
++      width={size}
++      height={size}
++      alt={finalAlt}
++      loading="lazy"
++      decoding="async"
++      className={className}
++      style={{ width: size, height: size }}
++    />
++  );
++}
+diff --git a/src/components/predictions/MatchCardCompact.tsx b/src/components/predictions/MatchCardCompact.tsx
+index 2e7a3ab..0d3d79a 100644
+--- a/src/components/predictions/MatchCardCompact.tsx
++++ b/src/components/predictions/MatchCardCompact.tsx
+@@ -1,10 +1,11 @@
+ import { motion } from "framer-motion";
+ import { Clock, Flame, Lock, Trophy } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+
+ interface MatchCardCompactProps {
+@@ -53,7 +54,16 @@ export function MatchCardCompact({
+
+             <div className="text-center">
+               <div className="text-sm font-semibold text-white">VS</div>
+-              <div className="text-xs text-white/60">{match.game}</div>
++              <div className="mt-1 flex items-center justify-center gap-1 text-xs text-white/60">
++                <GameEmblem
++                  game={match.game}
++                  size={14}
++                  className="opacity-80"
++                />
++                <span>{match.game}</span>
++              </div>
+             </div>
+
+             <motion.div
+diff --git a/src/components/predictions/MatchOfTheDay.tsx b/src/components/predictions/MatchOfTheDay.tsx
+index 1f6ef22..fb4b6b8 100644
+--- a/src/components/predictions/MatchOfTheDay.tsx
++++ b/src/components/predictions/MatchOfTheDay.tsx
+@@ -1,6 +1,7 @@
+ import { motion } from "framer-motion";
+ import { Calendar, Trophy, Users } from "lucide-react";
+
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+
+ interface MatchOfTheDayProps {
+@@ -56,7 +57,12 @@ export function MatchOfTheDay({ match }: MatchOfTheDayProps) {
+               <div className="flex items-center justify-center gap-2">
+                 <Users className="w-4 h-4" />
+                 {match.totalLocked.toLocaleString()} locked
+               </div>
+               <div className="text-sm">{match.tournament}</div>
+-              <div className="text-xs opacity-70">{match.game}</div>
++              <div className="flex items-center justify-center gap-2 text-xs opacity-70">
++                <GameEmblem game={match.game} size={14} className="opacity-80" />
++                <span>{match.game}</span>
++              </div>
+             </div>
+           </div>
+
+           {/* Team B */}
+diff --git a/src/components/predictions/BettingOddsSidebar.tsx b/src/components/predictions/BettingOddsSidebar.tsx
+index 4f3e2aa..e7b6d2c 100644
+--- a/src/components/predictions/BettingOddsSidebar.tsx
++++ b/src/components/predictions/BettingOddsSidebar.tsx
+@@ -1,6 +1,7 @@
+ import { motion } from "framer-motion";
+ import { TrendingUp } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+
+ interface BettingOddsSidebarProps {
+@@ -68,9 +69,10 @@ export function BettingOddsSidebar({ matches }: BettingOddsSidebarProps) {
+
+               <div className="mt-3 flex items-center justify-between">
+-                <Badge variant="outline" className="text-xs">
+-                  {match.game}
++                <Badge variant="outline" className="flex items-center gap-2 text-xs">
++                  <GameEmblem game={match.game} size={14} className="opacity-80" />
++                  <span>{match.game}</span>
+                 </Badge>
+                 <span className="text-white/50 text-xs">
+                   {match.time}
+                 </span>
+               </div>

@@ -1,8 +1,6 @@
-"use client";
-
-import Dashboard from "@/legacy-pages/Dashboard";
+import PremiumDashboard from "@/components/dashboard/PremiumDashboard";
 
 export default function Page() {
-  return <Dashboard />;
+  return <PremiumDashboard />;
 }
 

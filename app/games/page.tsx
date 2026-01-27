@@ -1,8 +1,6 @@
-"use client";
-
-import Games from "@/legacy-pages/Games";
+import PremiumGameHub from "@/components/games/PremiumGameHub";
 
 export default function Page() {
-  return <Games />;
+  return <PremiumGameHub />;
 }
 

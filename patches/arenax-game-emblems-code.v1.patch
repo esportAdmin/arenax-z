@@ -1,0 +1,199 @@
+diff --git a/src/components/ui/game-emblem.tsx b/src/components/ui/game-emblem.tsx
+new file mode 100644
+index 0000000..d6ad3f2
+--- /dev/null
++++ b/src/components/ui/game-emblem.tsx
+@@ -0,0 +1,118 @@
++import * as React from "react";
++
++const DEFAULT_GAME_KEY = "artifact";
++
++const GAME_KEY_TO_ASSET: Record<string, string> = {
++  // FPS
++  cs2: "cs2",
++  csgo: "cs2",
++  "cs-go": "cs2",
++  counterstrike: "cs2",
++  "counter-strike": "cs2",
++  valorant: "valorant",
++  overwatch: "overwatch",
++  "overwatch 2": "overwatch",
++  halo: "halo",
++  rainbow6: "rainbowsix",
++  "rainbow six": "rainbowsix",
++  r6: "rainbowsix",
++  r6siege: "rainbowsix",
++
++  // MOBA
++  lol: "lol",
++  "league of legends": "lol",
++  wildrift: "wildrift",
++  "wild rift": "wildrift",
++  dota2: "dota2",
++  "dota 2": "dota2",
++
++  // Sports / BR / Others
++  fifa: "fifa",
++  pubg: "pubg",
++  "rocket league": "rocketleague",
++  rocketleague: "rocketleague",
++  "call of duty": "callofduty",
++  cod: "callofduty",
++  hearthstone: "hearthstone",
++  "heroes of the storm": "heroesofthestorm",
++  heroesofthestorm: "heroesofthestorm",
++  pokemon: "pokemon",
++};
++
++/**
++ * normalizeGameKey
++ *
++ * @example
++ * normalizeGameKey("CS:GO"); // "cs-go"
++ */
++function normalizeGameKey(input: string) {
++  return input
++    .trim()
++    .toLowerCase()
++    .replace(/_/g, " ")
++    .replace(/\s+/g, " ")
++    .replace(/[^\w\s:-]/g, "");
++}
++
++/**
++ * getGameEmblemSrc
++ *
++ * Resolves a match.game string to a local emblem in /public/images/game-emblems.
++ *
++ * @example
++ * getGameEmblemSrc("CS2"); // "/images/game-emblems/cs2.svg"
++ */
++export function getGameEmblemSrc(game: string | null | undefined) {
++  const raw = (game ?? "").trim();
++  if (!raw) return `/images/game-emblems/${DEFAULT_GAME_KEY}.svg`;
++
++  const key = normalizeGameKey(raw);
++
++  // Fast-path exact matches
++  const asset =
++    GAME_KEY_TO_ASSET[key] ??
++    // common variants
++    GAME_KEY_TO_ASSET[key.replace(/\s+/g, "")] ??
++    GAME_KEY_TO_ASSET[key.replace(/:/g, "")] ??
++    DEFAULT_GAME_KEY;
++
++  return `/images/game-emblems/${asset}.svg`;
++}
++
++export type GameEmblemProps = {
++  game: string;
++  size?: number;
++  className?: string;
++};
++
++/**
++ * GameEmblem
++ *
++ * Uses a plain <img> to avoid Next/Image SVG edge-cases.
++ *
++ * @example
++ * <GameEmblem game="CS2" />
++ */
++export function GameEmblem({ game, size = 14, className }: GameEmblemProps) {
++  const src = getGameEmblemSrc(game);
++
++  return (
++    <img
++      src={src}
++      alt={game}
++      width={size}
++      height={size}
++      loading="lazy"
++      className={className ?? "inline-block opacity-90"}
++      style={{ width: size, height: size }}
++    />
++  );
++}
+diff --git a/src/components/predictions/MatchCardCompact.tsx b/src/components/predictions/MatchCardCompact.tsx
+index 5f9f9c1..6f3e65c 100644
+--- a/src/components/predictions/MatchCardCompact.tsx
++++ b/src/components/predictions/MatchCardCompact.tsx
+@@ -1,9 +1,10 @@
+ import { motion } from "framer-motion";
+ import { Clock, Flame, Lock, Trophy } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+
+@@ -44,12 +45,18 @@ export function MatchCardCompact({
+               />
+             </motion.div>
+
+-            <div className="text-center">
+-              <div className="text-sm font-semibold text-white">VS</div>
+-              <div className="text-xs text-white/60">{match.game}</div>
++            <div className="text-center">
++              <div className="text-sm font-semibold text-white">VS</div>
++              <div className="mt-1 flex items-center justify-center gap-1 text-xs text-white/60">
++                <GameEmblem game={match.game} size={14} className="opacity-80" />
++                <span>{match.game}</span>
++              </div>
+             </div>
+
+             <motion.div
+               whileHover={{ scale: 1.05 }}
+               className="flex items-center justify-center"
+diff --git a/src/components/predictions/MatchOfTheDay.tsx b/src/components/predictions/MatchOfTheDay.tsx
+index 1f3d6d1..9c868d7 100644
+--- a/src/components/predictions/MatchOfTheDay.tsx
++++ b/src/components/predictions/MatchOfTheDay.tsx
+@@ -1,8 +1,9 @@
+ import { motion } from "framer-motion";
+ import { Calendar, Trophy, Users } from "lucide-react";
+
+ import { TeamLogo } from "@/components/ui/team-logo";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import type { Match } from "@/hooks/useMatches";
+
+ interface MatchOfTheDayProps {
+@@ -64,7 +65,10 @@ export function MatchOfTheDay({ match }: MatchOfTheDayProps) {
+               <div className="text-sm">{match.tournament}</div>
+-              <div className="text-xs opacity-70">{match.game}</div>
++              <div className="flex items-center justify-center gap-1 text-xs opacity-70">
++                <GameEmblem game={match.game} size={14} className="opacity-80" />
++                <span>{match.game}</span>
++              </div>
+             </div>
+           </div>
+
+diff --git a/src/components/predictions/BettingOddsSidebar.tsx b/src/components/predictions/BettingOddsSidebar.tsx
+index 2e8f2cc..71d0f63 100644
+--- a/src/components/predictions/BettingOddsSidebar.tsx
++++ b/src/components/predictions/BettingOddsSidebar.tsx
+@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
+ import { TrendingUp } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+
+@@ -78,9 +79,12 @@ export function BettingOddsSidebar({ matches }: BettingOddsSidebarProps) {
+
+               <div className="mt-3 flex items-center justify-between">
+-                <Badge variant="outline" className="text-xs">
+-                  {match.game}
++                <Badge
++                  variant="outline"
++                  className="flex items-center gap-1 text-xs"
++                >
++                  <GameEmblem game={match.game} size={14} className="opacity-80" />
++                  <span>{match.game}</span>
+                 </Badge>
+                 <span className="text-white/50 text-xs">
+                   {match.time}
+                 </span>
+               </div>

@@ -1,0 +1,301 @@
+diff --git a/app/games/page.tsx b/app/games/page.tsx
+index a7962f6..87da675 100644
+--- a/app/games/page.tsx
++++ b/app/games/page.tsx
+@@ -1,7 +1,5 @@
+-"use client";
+-
+-import Games from "@/legacy-pages/Games";
++import PremiumGameHub from "@/components/games/PremiumGameHub";
+ 
+ export default function Page() {
+-  return <Games />;
++  return <PremiumGameHub />;
+ }
+diff --git a/src/components/games/PremiumGameHub.tsx b/src/components/games/PremiumGameHub.tsx
+new file mode 100644
+index 0000000..fb8280a
+--- /dev/null
++++ b/src/components/games/PremiumGameHub.tsx
+@@ -0,0 +1,281 @@
++"use client";
++
++import { ChevronRight, Plus } from "lucide-react";
++import Link from "next/link";
++
++import { Navbar } from "@/components/layout/Navbar";
++
++const accents = {
++  cyan: {
++    ring: "border-primary/25",
++    glow: "shadow-[0_0_40px_rgba(0,255,255,0.10)]",
++    icon: "text-primary",
++  },
++  blue: {
++    ring: "border-blue-400/25",
++    glow: "shadow-[0_0_40px_rgba(59,130,246,0.10)]",
++    icon: "text-blue-300",
++  },
++  red: {
++    ring: "border-red-400/25",
++    glow: "shadow-[0_0_40px_rgba(248,113,113,0.10)]",
++    icon: "text-red-300",
++  },
++  purple: {
++    ring: "border-purple-400/25",
++    glow: "shadow-[0_0_40px_rgba(168,85,247,0.10)]",
++    icon: "text-purple-300",
++  },
++  orange: {
++    ring: "border-orange-400/25",
++    glow: "shadow-[0_0_40px_rgba(251,146,60,0.10)]",
++    icon: "text-orange-300",
++  },
++  yellow: {
++    ring: "border-yellow-400/25",
++    glow: "shadow-[0_0_40px_rgba(250,204,21,0.10)]",
++    icon: "text-yellow-300",
++  },
++  pink: {
++    ring: "border-pink-400/25",
++    glow: "shadow-[0_0_40px_rgba(244,114,182,0.10)]",
++    icon: "text-pink-300",
++  },
++  slate: {
++    ring: "border-white/12",
++    glow: "shadow-[0_0_40px_rgba(255,255,255,0.06)]",
++    icon: "text-white/70",
++  },
++} as const;
++
++type Accent = keyof typeof accents;
++
++type GameCard = {
++  id: string;
++  name: string;
++  players: string;
++  live?: boolean;
++  accent: Accent;
++  size: "featured" | "compact";
++};
++
++type UpcomingItem = {
++  id: string;
++  title: string;
++  time: string;
++  href: string;
++};
++
++/**
++ * getAccentTokens
++ *
++ * @example
++ * const t = getAccentTokens("cyan");
++ * console.log(t.ring);
++ */
++function getAccentTokens(accent: Accent) {
++  return accents[accent] ?? accents.slate;
++}
++
++/**
++ * gameHref
++ *
++ * @example
++ * const url = gameHref("csgo");
++ * console.log(url);
++ */
++function gameHref(id: string) {
++  return `/predictions?game=${encodeURIComponent(id)}`;
++}
++
++function LivePill() {
++  return (
++    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
++      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
++      Live
++    </span>
++  );
++}
++
++function GameLogo({ name, accent }: { name: string; accent: Accent }) {
++  const t = getAccentTokens(accent);
++  const initials = name
++    .split(" ")
++    .filter(Boolean)
++    .slice(0, 2)
++    .map((s) => s[0] ?? "")
++    .join("")
++    .toUpperCase();
++
++  return (
++    <div
++      className={`grid h-14 w-14 place-items-center rounded-full border bg-gradient-to-br from-white/10 to-white/0 ${t.ring} ${t.glow}`}
++    >
++      <span className={`font-display text-sm font-black tracking-wide ${t.icon}`}
++        aria-hidden="true"
++      >
++        {initials}
++      </span>
++    </div>
++  );
++}
++
++function GameCardView({ game }: { game: GameCard }) {
++  const href = gameHref(game.id);
++  const t = getAccentTokens(game.accent);
++
++  const base =
++    "group relative block rounded-2xl border bg-white/[0.03] backdrop-blur-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
++
++  const sizeClass =
++    game.size === "featured"
++      ? "h-[92px] sm:h-[96px] px-6"
++      : "h-[86px] px-6";
++
++  return (
++    <Link
++      href={href}
++      className={`${base} ${sizeClass} border-white/10 hover:border-white/16 hover:bg-white/[0.05]`}
++    >
++      <div className="flex h-full items-center justify-between gap-6">
++        <div className="flex min-w-0 items-center gap-4">
++          <GameLogo name={game.name} accent={game.accent} />
++          <div className="min-w-0">
++            <div className="font-display text-lg font-bold text-white">
++              {game.name}
++            </div>
++            <div className="mt-1 text-sm text-white/45">{game.players}</div>
++          </div>
++        </div>
++
++        <div className="flex shrink-0 items-center gap-3">
++          {game.live ? <LivePill /> : null}
++
++          {game.size === "compact" ? (
++            <span
++              className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${t.ring} bg-primary/15 text-white/90 shadow-[0_0_25px_rgba(0,255,255,0.12)]`}
++            >
++              Prédire
++            </span>
++          ) : null}
++
++          <ChevronRight className="h-5 w-5 text-white/35 transition-transform group-hover:translate-x-0.5" />
++        </div>
++      </div>
++    </Link>
++  );
++}
++
++export default function PremiumGameHub() {
++  const featured: GameCard[] = [
++    { id: "dota2", name: "DOTA 2", players: "1.2M Players", live: true, accent: "blue", size: "featured" },
++    { id: "csgo", name: "CS:GO", players: "850K Players", live: true, accent: "yellow", size: "featured" },
++    { id: "valorant", name: "Valorant", players: "600K Players", live: true, accent: "red", size: "featured" },
++  ];
++
++  const competitive: GameCard[] = [
++    { id: "csgo", name: "CS:GO", players: "1.2M Players", live: true, accent: "blue", size: "compact" },
++    { id: "valorant", name: "Valorant", players: "850K Players", live: true, accent: "purple", size: "compact" },
++    { id: "overwatch", name: "Overwatch", players: "1.2M Players", live: true, accent: "orange", size: "compact" },
++    { id: "lol", name: "League of Legends", players: "1.2M Players", live: true, accent: "red", size: "compact" },
++    { id: "fortnite", name: "Fortnite", players: "850K Players", live: true, accent: "yellow", size: "compact" },
++    { id: "apex", name: "Apex Legends", players: "400K Players", live: true, accent: "pink", size: "compact" },
++    { id: "fifa", name: "FIFA", players: "1.2M Players", live: true, accent: "blue", size: "compact" },
++    { id: "cod", name: "Call of Duty", players: "850K Players", live: true, accent: "slate", size: "compact" },
++    { id: "minecraft", name: "Minecraft", players: "112M Players", live: true, accent: "orange", size: "compact" },
++  ];
++
++  const upcoming: UpcomingItem[] = [
++    { id: "u1", title: "Team A vs Team B", time: "03:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b" },
++    { id: "u2", title: "Team A vs Team B", time: "05:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-2" },
++    { id: "u3", title: "Team A vs Team B", time: "05:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-3" },
++  ];
++
++  return (
++    <div className="relative min-h-screen overflow-hidden bg-background">
++      <Navbar />
++
++      {/* Background */}
++      <div className="pointer-events-none absolute inset-0 cyber-grid opacity-[0.06]" />
++      <div className="pointer-events-none absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px]" />
++      <div className="pointer-events-none absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-secondary/10 blur-[140px]" />
++      <div className="pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-screen bg-[url('/images/hero-arena-background.png')] bg-cover bg-center" />
++
++      <main className="relative mx-auto w-full max-w-[1400px] px-6 pb-16 pt-28">
++        {/* Hero */}
++        <header className="relative">
++          <h1 className="text-center font-display text-5xl font-black tracking-tight text-white sm:text-6xl">
++            Game Hub
++          </h1>
++          <p className="mt-2 text-center text-base text-white/55 sm:text-lg">
++            Explore Competitive Titles
++          </p>
++          <div className="mx-auto mt-6 h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
++
++          <div className="mt-5 flex items-center justify-end">
++            <Link
++              href="/clubs?action=create"
++              className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/15 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_30px_rgba(0,255,255,0.12)] transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
++            >
++              <Plus className="h-4 w-4" />
++              Create Club
++            </Link>
++          </div>
++        </header>
++
++        {/* Featured */}
++        <section className="mt-10">
++          <h2 className="font-display text-xl font-bold text-white">Featured</h2>
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {featured.map((g) => (
++              <GameCardView key={`featured-${g.id}`} game={g} />
++            ))}
++          </div>
++        </section>
++
++        {/* Competitive Titles */}
++        <section className="mt-10">
++          <h2 className="font-display text-xl font-bold text-white">Competitive Titles</h2>
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {competitive.map((g) => (
++              <GameCardView key={`comp-${g.id}-${g.name}`} game={g} />
++            ))}
++          </div>
++        </section>
++
++        {/* Upcoming */}
++        <section className="mt-10">
++          <div className="flex items-center justify-between">
++            <h2 className="font-display text-xl font-bold text-white">Upcoming</h2>
++            <Link
++              href="/predictions?from=games_view_all"
++              className="text-sm font-semibold text-primary/80 hover:text-primary"
++            >
++              View All
++            </Link>
++          </div>
++
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {upcoming.map((u) => (
++              <Link
++                key={u.id}
++                href={u.href}
++                className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-4 backdrop-blur-xl transition-colors hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
++              >
++                <div className="min-w-0">
++                  <div className="truncate text-sm font-semibold text-white/80">
++                    {u.title}
++                  </div>
++                </div>
++                <div className="flex shrink-0 items-center gap-3">
++                  <div className="text-sm font-semibold text-white/45">{u.time}</div>
++                  <ChevronRight className="h-5 w-5 text-white/30 transition-transform group-hover:translate-x-0.5" />
++                </div>
++              </Link>
++            ))}
++          </div>
++        </section>
++      </main>
++    </div>
++  );
++}

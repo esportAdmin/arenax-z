@@ -1,0 +1,32 @@
+diff --git a/src/components/dashboard/PremiumDashboard.tsx b/src/components/dashboard/PremiumDashboard.tsx
+index 0000000..1111111 100644
+--- a/src/components/dashboard/PremiumDashboard.tsx
++++ b/src/components/dashboard/PremiumDashboard.tsx
+@@ -1,6 +1,7 @@
+ import PremiumDailyChallengeCard from "@/components/dashboard/premium/PremiumDailyChallengeCard";
+ import PremiumLeaderboardCard from "@/components/dashboard/premium/PremiumLeaderboardCard";
+ import PremiumPlayerCard from "@/components/dashboard/premium/PremiumPlayerCard";
++import { Navbar } from "@/components/layout/Navbar";
+@@
+ export default function PremiumDashboard() {
+   return (
+     <div className="min-h-screen bg-background relative overflow-hidden">
++      <Navbar />
+       {/* Background (dark + subtle grid + glows) */}
+       <div className="absolute inset-0 cyber-grid opacity-[0.06] pointer-events-none" />
+       <div className="absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+       <div className="absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-accent/10 blur-[140px] pointer-events-none" />
+       <div className="absolute inset-0 pointer-events-none opacity-[0.14] bg-[url('/images/hero-arena-background.png')] bg-cover bg-center mix-blend-screen" />
+ 
+       {/* Content */}
+-      <div className="relative mx-auto w-full max-w-[1920px] px-8 py-10">
++      <div className="relative mx-auto w-full max-w-[1920px] px-6 sm:px-8 pt-20 lg:pt-24 pb-10">
+         <div className="grid grid-cols-1 gap-8 xl:gap-[100px] xl:grid-cols-[500px_minmax(0,720px)_500px]">
+           <PremiumPlayerCard />
+           <PremiumLeaderboardCard />
+           <PremiumDailyChallengeCard />
+         </div>
+       </div>
+     </div>
+   );
+ }

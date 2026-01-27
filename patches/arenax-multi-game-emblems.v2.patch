@@ -1,0 +1,280 @@
+diff --git a/src/components/ui/game-emblem.tsx b/src/components/ui/game-emblem.tsx
+new file mode 100644
+index 0000000..5a3c8f0
+--- /dev/null
++++ b/src/components/ui/game-emblem.tsx
+@@ -0,0 +1,188 @@
++"use client";
++
++import * as React from "react";
++
++type GameKey =
++  | "artifact"
++  | "callofduty"
++  | "cs2"
++  | "dota2"
++  | "fifa"
++  | "halo"
++  | "hearthstone"
++  | "heroesofthestorm"
++  | "lol"
++  | "overwatch"
++  | "pokemon"
++  | "pubg"
++  | "rainbowsix"
++  | "rocketleague"
++  | "valorant"
++  | "wildrift";
++
++const GAME_EMBLEM_SRC: Record<GameKey, string> = {
++  artifact: "/images/game-emblems/artifact.svg",
++  callofduty: "/images/game-emblems/callofduty.svg",
++  cs2: "/images/game-emblems/cs2.svg",
++  dota2: "/images/game-emblems/dota2.svg",
++  fifa: "/images/game-emblems/fifa.svg",
++  halo: "/images/game-emblems/halo.svg",
++  hearthstone: "/images/game-emblems/hearthstone.svg",
++  heroesofthestorm: "/images/game-emblems/heroesofthestorm.svg",
++  lol: "/images/game-emblems/lol.svg",
++  overwatch: "/images/game-emblems/overwatch.svg",
++  pokemon: "/images/game-emblems/pokemon.svg",
++  pubg: "/images/game-emblems/pubg.svg",
++  rainbowsix: "/images/game-emblems/rainbowsix.svg",
++  rocketleague: "/images/game-emblems/rocketleague.svg",
++  valorant: "/images/game-emblems/valorant.svg",
++  wildrift: "/images/game-emblems/wildrift.svg",
++};
++
++const ALIASES: Record<string, GameKey> = {
++  // CS / Counter-Strike
++  "cs2": "cs2",
++  "cs:go": "cs2",
++  "csgo": "cs2",
++  "cs-go": "cs2",
++  "counter strike": "cs2",
++  "counter-strike": "cs2",
++  "counter-strike 2": "cs2",
++
++  // League
++  "lol": "lol",
++  "league of legends": "lol",
++  "league-of-legends": "lol",
++
++  // Dota
++  "dota2": "dota2",
++  "dota 2": "dota2",
++
++  // Valorant
++  "valorant": "valorant",
++
++  // Overwatch
++  "overwatch": "overwatch",
++  "ow": "overwatch",
++
++  // Rocket League
++  "rocketleague": "rocketleague",
++  "rocket league": "rocketleague",
++
++  // PUBG
++  "pubg": "pubg",
++  "pubg battlegrounds": "pubg",
++  "playerunknown's battlegrounds": "pubg",
++
++  // Rainbow Six
++  "rainbowsix": "rainbowsix",
++  "rainbow six": "rainbowsix",
++  "r6": "rainbowsix",
++  "r6s": "rainbowsix",
++  "rainbow six siege": "rainbowsix",
++
++  // Wild Rift
++  "wildrift": "wildrift",
++  "wild rift": "wildrift",
++  "lol wild rift": "wildrift",
++
++  // Others
++  "call of duty": "callofduty",
++  "callofduty": "callofduty",
++  "cod": "callofduty",
++  "halo": "halo",
++  "fifa": "fifa",
++  "hearthstone": "hearthstone",
++  "heroes of the storm": "heroesofthestorm",
++  "heroesofthestorm": "heroesofthestorm",
++  "hots": "heroesofthestorm",
++  "pokemon": "pokemon",
++  "pokémon": "pokemon",
++  "artifact": "artifact",
++};
++
++function normalizeGameKey(input: string | null | undefined): GameKey | null {
++  if (!input) return null;
++  const cleaned = input
++    .toLowerCase()
++    .replaceAll("_", " ")
++    .replaceAll("-", " ")
++    .replaceAll(":", "")
++    .replace(/\s+/g, " ")
++    .trim();
++
++  // direct hit
++  if (cleaned in ALIASES) return ALIASES[cleaned];
++
++  // heuristic contains checks (handles strings like "CCT Europe (CS2)")
++  for (const [k, v] of Object.entries(ALIASES)) {
++    if (cleaned.includes(k)) return v;
++  }
++  return null;
++}
++
++export interface GameEmblemProps {
++  game: string;
++  size?: number;
++  className?: string;
++  title?: string;
++}
++
++/**
++ * GameEmblem
++ *
++ * Renders a local SVG emblem for a given game string. Falls back to initials if missing.
++ *
++ * @example
++ * <GameEmblem game="CS2" size={18} />
++ */
++export function GameEmblem({ game, size = 18, className, title }: GameEmblemProps) {
++  const [errored, setErrored] = React.useState(false);
++  const key = React.useMemo(() => normalizeGameKey(game), [game]);
++  const src = key ? GAME_EMBLEM_SRC[key] : null;
++
++  if (!src || errored) {
++    const initials =
++      (game || "??")
++        .split(/\s+/g)
++        .filter(Boolean)
++        .slice(0, 2)
++        .map((s) => s.slice(0, 1).toUpperCase())
++        .join("") || "??";
++
++    return (
++      <div
++        className={
++          "inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 text-[10px] font-semibold text-white/70 " +
++          (className ?? "")
++        }
++        style={{ width: size, height: size }}
++        aria-label={title ?? game}
++        title={title ?? game}
++      >
++        {initials}
++      </div>
++    );
++  }
++
++  return (
++    <img
++      src={src}
++      width={size}
++      height={size}
++      className={"inline-block select-none " + (className ?? "")}
++      alt={title ?? game}
++      title={title ?? game}
++      loading="lazy"
++      onError={() => setErrored(true)}
++    />
++  );
++}
+diff --git a/src/components/predictions/MatchCardCompact.tsx b/src/components/predictions/MatchCardCompact.tsx
+index 3b9e3f1..f6b2a8a 100644
+--- a/src/components/predictions/MatchCardCompact.tsx
++++ b/src/components/predictions/MatchCardCompact.tsx
+@@ -1,7 +1,8 @@
+ import { motion } from "framer-motion";
+ import { Clock, Flame, Lock, Trophy } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+@@ -46,11 +47,16 @@ export function MatchCardCompact({
+             </motion.div>
+
+             <div className="text-center">
+               <div className="text-sm font-semibold text-white">VS</div>
+-              <div className="text-xs text-white/60">{match.game}</div>
++              <div className="mt-1 flex items-center justify-center gap-1.5 text-xs text-white/60">
++                <GameEmblem
++                  game={match.game}
++                  size={14}
++                  className="opacity-90"
++                />
++                <span className="truncate">{match.game}</span>
++              </div>
+             </div>
+
+             <motion.div
+diff --git a/src/components/predictions/MatchOfTheDay.tsx b/src/components/predictions/MatchOfTheDay.tsx
+index 31d6d54..0fb6b6e 100644
+--- a/src/components/predictions/MatchOfTheDay.tsx
++++ b/src/components/predictions/MatchOfTheDay.tsx
+@@ -1,6 +1,7 @@
+ import { motion } from "framer-motion";
+ import { Calendar, Trophy, Users } from "lucide-react";
+
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+@@ -57,7 +58,12 @@ export function MatchOfTheDay({ match }: MatchOfTheDayProps) {
+               <div className="flex items-center justify-center gap-2">
+                 <Users className="w-4 h-4" />
+                 {match.totalLocked.toLocaleString()} locked
+               </div>
+               <div className="text-sm">{match.tournament}</div>
+-              <div className="text-xs opacity-70">{match.game}</div>
++              <div className="flex items-center justify-center gap-2 text-xs opacity-70">
++                <GameEmblem game={match.game} size={16} className="opacity-90" />
++                <span>{match.game}</span>
++              </div>
+             </div>
+           </div>
+diff --git a/src/components/predictions/BettingOddsSidebar.tsx b/src/components/predictions/BettingOddsSidebar.tsx
+index 6ed9c8c..2df7dd7 100644
+--- a/src/components/predictions/BettingOddsSidebar.tsx
++++ b/src/components/predictions/BettingOddsSidebar.tsx
+@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
+ import { TrendingUp } from "lucide-react";
+
+ import { Badge } from "@/components/ui/badge";
++import { GameEmblem } from "@/components/ui/game-emblem";
+ import { TeamLogo } from "@/components/ui/team-logo";
+ import type { Match } from "@/hooks/useMatches";
+@@ -79,9 +80,18 @@ export function BettingOddsSidebar({ matches }: BettingOddsSidebarProps) {
+
+               <div className="mt-3 flex items-center justify-between">
+-                <Badge variant="outline" className="text-xs">
+-                  {match.game}
+-                </Badge>
++                <Badge
++                  variant="outline"
++                  className="flex items-center gap-1.5 text-xs"
++                  title={match.game}
++                >
++                  <GameEmblem
++                    game={match.game}
++                    size={14}
++                    className="opacity-90"
++                  />
++                  <span className="max-w-[110px] truncate">{match.game}</span>
++                </Badge>
+                 <span className="text-white/50 text-xs">
+                   {match.time}
+                 </span>
+               </div>
+             </div>
+           ))}
+         </div>
+       </div>
+     </motion.div>
+   );
+ }

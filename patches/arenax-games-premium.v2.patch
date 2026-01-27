@@ -1,0 +1,433 @@
+--- /tmp/tmp.im3OgBljRY	2026-01-25 09:50:19.834068688 +0000
++++ app/games/page.tsx	2026-01-25 09:33:19.230637762 +0000
+@@ -1,7 +1,6 @@
+-"use client";
+-
+-import Games from "@/legacy-pages/Games";
++import PremiumGameHub from "@/components/games/PremiumGameHub";
+ 
+ export default function Page() {
+-  return <Games />;
++  return <PremiumGameHub />;
+ }
++
+--- /dev/null	2026-01-25 08:57:11.224103419 +0000
++++ src/components/games/PremiumGameHub.tsx	2026-01-25 09:45:37.940794289 +0000
+@@ -0,0 +1,417 @@
++"use client";
++
++import { useMemo } from "react";
++import Link from "next/link";
++import {
++  Bomb,
++  ChevronRight,
++  Crosshair,
++  Flame,
++  Gamepad2,
++  Plus,
++  Shield,
++  Target,
++} from "lucide-react";
++import { SiDota2, SiLeagueoflegends, SiValorant } from "react-icons/si";
++
++import { Navbar } from "@/components/layout/Navbar";
++
++type Accent =
++  | "blue"
++  | "yellow"
++  | "red"
++  | "purple"
++  | "orange"
++  | "pink"
++  | "neutral";
++
++type GameCard = {
++  id: string;
++  name: string;
++  players: string;
++  accent: Accent;
++  live?: boolean;
++  showPredict?: boolean;
++};
++
++type UpcomingItem = {
++  id: string;
++  title: string;
++  time: string;
++  href: string;
++};
++
++const accentTokens: Record<Accent, { ring: string; icon: string; glow: string }> = {
++  blue: {
++    ring: "border-blue-400/25",
++    icon: "text-blue-300",
++    glow: "shadow-[0_0_36px_rgba(59,130,246,0.10)]",
++  },
++  yellow: {
++    ring: "border-yellow-400/25",
++    icon: "text-yellow-300",
++    glow: "shadow-[0_0_36px_rgba(250,204,21,0.10)]",
++  },
++  red: {
++    ring: "border-red-400/25",
++    icon: "text-red-300",
++    glow: "shadow-[0_0_36px_rgba(248,113,113,0.10)]",
++  },
++  purple: {
++    ring: "border-purple-400/25",
++    icon: "text-purple-300",
++    glow: "shadow-[0_0_36px_rgba(168,85,247,0.10)]",
++  },
++  orange: {
++    ring: "border-orange-400/25",
++    icon: "text-orange-300",
++    glow: "shadow-[0_0_36px_rgba(251,146,60,0.10)]",
++  },
++  pink: {
++    ring: "border-pink-400/25",
++    icon: "text-pink-300",
++    glow: "shadow-[0_0_36px_rgba(244,114,182,0.10)]",
++  },
++  neutral: {
++    ring: "border-white/12",
++    icon: "text-white/70",
++    glow: "shadow-[0_0_36px_rgba(255,255,255,0.06)]",
++  },
++};
++
++/**
++ * getAccentTokens
++ *
++ * @example
++ * const t = getAccentTokens("blue");
++ * console.log(t.ring);
++ */
++function getAccentTokens(accent: Accent) {
++  return accentTokens[accent] ?? accentTokens.neutral;
++}
++
++/**
++ * gameHref
++ *
++ * @example
++ * const url = gameHref("csgo");
++ * console.log(url);
++ */
++function gameHref(id: string) {
++  return `/predictions?game=${encodeURIComponent(id)}`;
++}
++
++function LivePill() {
++  return (
++    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
++      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
++      Live
++    </span>
++  );
++}
++
++function PredictPill() {
++  return (
++    <span className="inline-flex items-center justify-center rounded-full border border-primary/25 bg-primary/15 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_28px_rgba(0,255,255,0.12)]">
++      Prédire
++    </span>
++  );
++}
++
++function GameCrestIcon({ id }: { id: string }) {
++  switch (id) {
++    case "dota2":
++      return <SiDota2 className="h-7 w-7" />;
++    case "valorant":
++      return <SiValorant className="h-7 w-7" />;
++    case "lol":
++      return <SiLeagueoflegends className="h-7 w-7" />;
++    case "csgo":
++      return <Crosshair className="h-7 w-7" />;
++    case "overwatch":
++      return <Shield className="h-7 w-7" />;
++    case "fortnite":
++      return <Flame className="h-7 w-7" />;
++    case "apex":
++      return <Target className="h-7 w-7" />;
++    case "cod":
++      return <Bomb className="h-7 w-7" />;
++    default:
++      return <Gamepad2 className="h-7 w-7" />;
++  }
++}
++
++function GameCrest({ id, accent }: { id: string; accent: Accent }) {
++  const t = getAccentTokens(accent);
++  return (
++    <div
++      className={`relative grid h-14 w-14 place-items-center rounded-full border bg-gradient-to-br from-white/10 to-white/0 ${t.ring} ${t.glow}`}
++      aria-hidden="true"
++    >
++      <div className="absolute inset-[3px] rounded-full bg-black/35" />
++      <div className={`relative z-10 ${t.icon}`}
++      >
++        <GameCrestIcon id={id} />
++      </div>
++    </div>
++  );
++}
++
++function GameCardView({ game }: { game: GameCard }) {
++  const href = gameHref(game.id);
++
++  return (
++    <Link
++      href={href}
++      className="group relative flex h-[92px] items-center justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.03] px-6 backdrop-blur-xl transition-colors hover:border-white/16 hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
++    >
++      <div className="flex min-w-0 items-center gap-4">
++        <GameCrest id={game.id} accent={game.accent} />
++        <div className="min-w-0">
++          <div className="truncate font-display text-lg font-bold text-white">
++            {game.name}
++          </div>
++          <div className="mt-1 text-sm text-white/45">{game.players}</div>
++        </div>
++      </div>
++
++      <div className="flex shrink-0 items-center gap-3">
++        {game.live ? <LivePill /> : null}
++        {game.showPredict ? <PredictPill /> : null}
++        <ChevronRight className="h-5 w-5 text-white/35 transition-transform group-hover:translate-x-0.5" />
++      </div>
++    </Link>
++  );
++}
++
++function UpcomingCard({ item }: { item: UpcomingItem }) {
++  return (
++    <Link
++      href={item.href}
++      className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-4 backdrop-blur-xl transition-colors hover:border-white/16 hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
++    >
++      <div className="flex min-w-0 items-center gap-3">
++        <div className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-bold text-white/70">
++          TA
++        </div>
++        <div className="min-w-0">
++          <div className="truncate text-sm font-semibold text-white/80">
++            {item.title}
++          </div>
++        </div>
++      </div>
++
++      <div className="flex shrink-0 items-center gap-3">
++        <div className="text-sm font-semibold text-white/45">{item.time}</div>
++        <ChevronRight className="h-5 w-5 text-white/30 transition-transform group-hover:translate-x-0.5" />
++      </div>
++    </Link>
++  );
++}
++
++export default function PremiumGameHub() {
++  const featured = useMemo<GameCard[]>(
++    () => [
++      {
++        id: "dota2",
++        name: "DOTA 2",
++        players: "1.2M Players",
++        accent: "blue",
++        live: true,
++      },
++      {
++        id: "csgo",
++        name: "CS:GO",
++        players: "850K Players",
++        accent: "yellow",
++        live: true,
++      },
++      {
++        id: "valorant",
++        name: "Valorant",
++        players: "600K Players",
++        accent: "red",
++        live: true,
++      },
++    ],
++    [],
++  );
++
++  const competitive = useMemo<GameCard[]>(
++    () => [
++      {
++        id: "csgo",
++        name: "CS:GO",
++        players: "1.2M Players",
++        accent: "blue",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "valorant",
++        name: "Valorant",
++        players: "850K Players",
++        accent: "purple",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "overwatch",
++        name: "Overwatch",
++        players: "1.2M Players",
++        accent: "orange",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "lol",
++        name: "League of Legends",
++        players: "1.2M Players",
++        accent: "red",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "fortnite",
++        name: "Fortnite",
++        players: "850K Players",
++        accent: "yellow",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "apex",
++        name: "Apex Legends",
++        players: "400K Players",
++        accent: "pink",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "fifa",
++        name: "FIFA",
++        players: "1.2M Players",
++        accent: "blue",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "cod",
++        name: "Call of Duty",
++        players: "850K Players",
++        accent: "neutral",
++        live: true,
++        showPredict: true,
++      },
++      {
++        id: "minecraft",
++        name: "Minecraft",
++        players: "112M Players",
++        accent: "orange",
++        live: true,
++        showPredict: true,
++      },
++    ],
++    [],
++  );
++
++  const upcoming = useMemo<UpcomingItem[]>(
++    () => [
++      {
++        id: "u1",
++        title: "Team A vs Team B",
++        time: "03:45 PM",
++        href: "/predictions?from=games_upcoming&match=team-a-vs-team-b",
++      },
++      {
++        id: "u2",
++        title: "Team A vs Team B",
++        time: "03:45 PM",
++        href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-2",
++      },
++      {
++        id: "u3",
++        title: "Team A vs Team B",
++        time: "03:45 PM",
++        href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-3",
++      },
++    ],
++    [],
++  );
++
++  return (
++    <div className="relative min-h-screen overflow-hidden bg-background">
++      <Navbar />
++
++      {/* Background */}
++      <div className="pointer-events-none absolute inset-0 cyber-grid opacity-[0.06]" />
++      <div className="pointer-events-none absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px]" />
++      <div className="pointer-events-none absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-secondary/10 blur-[140px]" />
++      <div className="pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-screen bg-[url('/images/hero-arena-background.png')] bg-cover bg-center" />
++
++      <main className="relative mx-auto w-full max-w-[1400px] px-6 pb-16 pt-28">
++        {/* Hero */}
++        <header>
++          <h1 className="text-center font-display text-5xl font-black tracking-tight text-white sm:text-6xl">
++            Game Hub
++          </h1>
++          <p className="mt-2 text-center text-base text-white/55 sm:text-lg">
++            Explore Competitive Titles
++          </p>
++          <div className="mx-auto mt-6 h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
++
++          <div className="mt-5 flex items-center justify-end">
++            <Link
++              href="/clubs?action=create"
++              className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/15 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_30px_rgba(0,255,255,0.12)] transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
++            >
++              <Plus className="h-4 w-4" />
++              Create Club
++            </Link>
++          </div>
++        </header>
++
++        {/* Featured */}
++        <section className="mt-10">
++          <h2 className="font-display text-xl font-bold text-white">Featured</h2>
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {featured.map((g) => (
++              <GameCardView key={`featured-${g.id}`} game={g} />
++            ))}
++          </div>
++        </section>
++
++        {/* Competitive Titles */}
++        <section className="mt-10">
++          <h2 className="font-display text-xl font-bold text-white">
++            Competitive Titles
++          </h2>
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {competitive.map((g) => (
++              <GameCardView key={`comp-${g.id}-${g.name}`} game={g} />
++            ))}
++          </div>
++        </section>
++
++        {/* Upcoming */}
++        <section className="mt-10">
++          <div className="flex items-center justify-between">
++            <h2 className="font-display text-xl font-bold text-white">Upcoming</h2>
++            <Link
++              href="/predictions?from=games_view_all"
++              className="text-sm font-semibold text-primary/80 hover:text-primary"
++            >
++              View All
++            </Link>
++          </div>
++
++          <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
++            {upcoming.map((u) => (
++              <UpcomingCard key={u.id} item={u} />
++            ))}
++          </div>
++        </section>
++      </main>
++    </div>
++  );
++}

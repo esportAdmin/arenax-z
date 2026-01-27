@@ -42,11 +42,11 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           <div className="col-span-2 md:col-span-1">
             <AppLink href="/" className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-lg">
-                F
+                AX
               </div>
               <span className="font-display font-bold text-xl">
-                <span className="text-foreground">FanArena</span>
-                <span className="gradient-text-primary"> Pro</span>
+                <span className="text-foreground">ArenaX</span>
+                <span className="gradient-text-primary">-Z</span>
               </span>
             </AppLink>
 
@@ -146,13 +146,13 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
         <div className="mt-12 pt-8 border-t border-border/50">
           <p className="text-xs text-muted-foreground/60 text-center mb-6 max-w-3xl mx-auto">
             Arena Points are virtual gaming units with no monetary value.
-            FanArena Pro is an entertainment and gamification platform. No real
+            ArenaX-Z is an entertainment and gamification platform. No real
             financial gains can be obtained.
           </p>
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2026 FanArena Pro. All rights reserved.
+              © 2026 ArenaX-Z. All rights reserved.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" />

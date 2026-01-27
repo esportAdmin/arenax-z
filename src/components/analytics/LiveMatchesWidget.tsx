@@ -1,4 +1,5 @@
 import { RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { TeamLogo } from "@/components/ui/team-logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useMatches, Match } from "@/hooks/useMatches";
@@ -43,7 +44,7 @@ function MatchCard({ status, teamA, teamB, prediction, time }: MatchCardProps) {
       {/* Teams & Score */}
       <div className="flex items-center justify-center gap-4 mb-3">
         <div className="flex items-center gap-2">
-          <img src={teamA.logo} alt={teamA.name} className="w-10 h-10 rounded-lg bg-white/5 p-1 object-contain" />
+          <TeamLogo name={teamA.name} logo={teamA.logo} size={40} shape="lg" fit="contain" className="bg-white/5 p-1 ring-0" />
         </div>
         <div className="text-center">
           <span className="text-2xl font-display font-bold text-foreground">
@@ -51,7 +52,7 @@ function MatchCard({ status, teamA, teamB, prediction, time }: MatchCardProps) {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <img src={teamB.logo} alt={teamB.name} className="w-10 h-10 rounded-lg bg-white/5 p-1 object-contain" />
+          <TeamLogo name={teamB.name} logo={teamB.logo} size={40} shape="lg" fit="contain" className="bg-white/5 p-1 ring-0" />
         </div>
       </div>
 

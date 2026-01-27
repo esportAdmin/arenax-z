@@ -1,101 +1,93 @@
-"use client";
-
+// src/components/predictions/BettingOddsSidebar.tsx
 import { motion } from "framer-motion";
-import { Timer, Zap } from "lucide-react";
+import { TrendingUp } from "lucide-react";
+
+import { TeamLogo } from "@/components/ui/team-logo";
+import { GameBadge } from "@/components/ui/game-logo";
 import type { Match } from "@/hooks/useMatches";
 
 interface BettingOddsSidebarProps {
   matches: Match[];
 }
 
-export const BettingOddsSidebar = ({ matches }: BettingOddsSidebarProps) => {
-  const topMatches = matches.filter((m) => !m.isFinished).slice(0, 6);
-
-  const getCountdown = (match: Match) => {
-    if (match.isLive) return "LIVE";
-    return `${Math.floor(Math.random() * 8)}h:${Math.floor(Math.random() * 60)
-      .toString()
-      .padStart(2, "0")}m`;
-  };
-
+/**
+ * BettingOddsSidebar
+ *
+ * @example
+ * <BettingOddsSidebar matches={matches} />
+ */
+export function BettingOddsSidebar({ matches }: BettingOddsSidebarProps) {
   return (
-    <div className="glass-card rounded-xl overflow-hidden">
-      <div className="px-4 py-3 bg-gradient-to-r from-primary/20 to-transparent border-b border-border/50">
-        <h3 className="font-display font-bold text-sm flex items-center gap-2">
-          <Zap className="w-4 h-4 text-primary" />
-          ESPORTS BETTING ODDS
-        </h3>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="space-y-6"
+    >
+      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+        <div className="mb-6 flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-green-400" />
+          <h3 className="text-lg font-bold text-white">Cotes en Temps Réel</h3>
+        </div>
 
-      <div className="divide-y divide-border/30">
-        {topMatches.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground text-sm">
-            Aucun match disponible
-          </div>
-        ) : (
-          topMatches.map((match, index) => (
-            <motion.div
+        <div className="space-y-4">
+          {matches.slice(0, 5).map((match) => (
+            <div
               key={match.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="p-3 hover:bg-muted/20 transition-colors"
+              className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
             >
-              <div className="flex items-center gap-2">
-                <div className="flex items-center -space-x-1">
-                  <div className="text-lg">{match.teamA.logo}</div>
-                  <div className="text-lg">{match.teamB.logo}</div>
-                </div>
-
-                <div
-                  className={`flex-1 px-2 py-1 rounded text-center font-bold text-sm ${
-                    match.teamA.odds < match.teamB.odds
-                      ? "bg-accent/20 text-accent"
-                      : "bg-muted/30 text-muted-foreground"
-                  }`}
-                >
-                  {match.teamA.odds.toFixed(2)}
-                </div>
-
-                <div className="flex flex-col items-center min-w-[60px]">
-                  <div
-                    className={`flex items-center gap-1 text-xs ${
-                      match.isLive
-                        ? "text-destructive"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    <Timer className="w-3 h-3" />
-                    {getCountdown(match)}
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <TeamLogo
+                    name={match.teamA.name}
+                    logo={match.teamA.logo}
+                    size={40}
+                    className="bg-white/10"
+                  />
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-semibold text-white">
+                      {match.teamA.name}
+                    </div>
+                    <div className="text-xs text-white/50">vs</div>
+                    <div className="truncate text-sm font-semibold text-white">
+                      {match.teamB.name}
+                    </div>
                   </div>
                 </div>
-
-                <div
-                  className={`flex-1 px-2 py-1 rounded text-center font-bold text-sm ${
-                    match.teamB.odds < match.teamA.odds
-                      ? "bg-accent/20 text-accent"
-                      : "bg-muted/30 text-muted-foreground"
-                  }`}
-                >
-                  {match.teamB.odds.toFixed(2)}
-                </div>
-
-                <div className="text-lg">{match.teamB.logo}</div>
+                <TeamLogo
+                  name={match.teamB.name}
+                  logo={match.teamB.logo}
+                  size={40}
+                  className="bg-white/10"
+                />
               </div>
-            </motion.div>
-          ))
-        )}
-      </div>
 
-      <div className="p-3 border-t border-border/50">
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="block w-full py-2 px-4 bg-gradient-to-r from-primary to-secondary text-white font-bold text-center rounded-lg hover:opacity-90 transition-opacity text-sm"
-        >
-          MAKE A BET
-        </button>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2 text-center">
+                  <div className="text-sm font-bold text-cyan-400">
+                    {match.teamA.odds.toFixed(2)}
+                  </div>
+                  <div className="truncate text-xs text-white/50">
+                    {match.teamA.name}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-purple-500/20 bg-purple-500/10 p-2 text-center">
+                  <div className="text-sm font-bold text-purple-400">
+                    {match.teamB.odds.toFixed(2)}
+                  </div>
+                  <div className="truncate text-xs text-white/50">
+                    {match.teamB.name}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between">
+                <GameBadge game={match.game} />
+                <span className="text-xs text-white/50">{match.time}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
-};
+}

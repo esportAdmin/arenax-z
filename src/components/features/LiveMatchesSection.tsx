@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { TeamLogo } from "@/components/ui/team-logo";
 import { Clock, TrendingUp, ChevronRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLink } from "@/components/AppLink";
@@ -65,7 +66,7 @@ export function LiveMatchesSection() {
                     {/* Team A */}
                     <div className="flex items-center gap-3 flex-1">
                       <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-2xl">
-                        {match.teamA.logo}
+                        <TeamLogo name={match.teamA.name} logo={match.teamA.logo} size={48} className="bg-white/10" />
                       </div>
                       <div>
                         <div className="font-display font-bold">
@@ -119,7 +120,7 @@ export function LiveMatchesSection() {
                         </div>
                       </div>
                       <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-2xl">
-                        {match.teamB.logo}
+                        <TeamLogo name={match.teamB.name} logo={match.teamB.logo} size={48} className="bg-white/10" />
                       </div>
                     </div>
                   </div>

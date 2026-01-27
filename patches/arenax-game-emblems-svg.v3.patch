@@ -1,0 +1,71 @@
+diff --git a/src/components/ui/game-logo.tsx b/src/components/ui/game-logo.tsx
+index b3b41f1..9b3a9c1 100644
+--- a/src/components/ui/game-logo.tsx
++++ b/src/components/ui/game-logo.tsx
+@@ -1,4 +1,3 @@
+-import Image from "next/image";
+ import { Badge } from "@/components/ui/badge";
+
+ export interface GameLogo {
+@@ -14,28 +13,28 @@ export interface GameLogo {
+ }
+
+ export const GAME_LOGOS: Record<string, GameLogo> = {
+   lol: {
+     id: "1",
+     name: "League of Legends",
+-    logoUrl: "https://cdn.pandascore.co/images/league-of-legends.png",
++    logoUrl: "/images/game-emblems/lol.svg",
+     slug: "league-of-legends",
+   },
+   dota2: {
+     id: "3",
+     name: "Dota 2",
+-    logoUrl: "https://cdn.pandascore.co/images/dota-2.png",
++    logoUrl: "/images/game-emblems/dota2.svg",
+     slug: "dota-2",
+   },
+   cs2: {
+     id: "4",
+     name: "CS2",
+-    logoUrl: "https://cdn.pandascore.co/images/cs-go.png",
++    logoUrl: "/images/game-emblems/cs2.svg",
+     slug: "cs-go",
+   },
+   valorant: {
+     id: "23",
+     name: "Valorant",
+-    logoUrl: "https://cdn.pandascore.co/images/valorant.png",
++    logoUrl: "/images/game-emblems/valorant.svg",
+     slug: "valorant",
+   },
+ };
+@@ -83,16 +82,23 @@ export function GameIcon({
+ }) {
+   const logo = getGameLogo(game);
+   if (!logo) return null;
+
+   return (
+-    <Image
+-      src={logo.logoUrl}
+-      alt={`${logo.name} logo`}
+-      width={size}
+-      height={size}
+-      className={className ?? "h-auto w-auto"}
+-    />
++    // Use <img> for local SVGs (avoids Next/Image SVG + optimizer edge-cases).
++    <img
++      src={logo.logoUrl}
++      alt={`${logo.name} logo`}
++      width={size}
++      height={size}
++      loading="lazy"
++      decoding="async"
++      className={className ?? "h-auto w-auto"}
++      onError={(e) => {
++        (e.currentTarget as HTMLImageElement).style.display = "none";
++      }}
++    />
+   );
+ }
+

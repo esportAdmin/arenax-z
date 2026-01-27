@@ -1,0 +1,764 @@
+diff -ruN app/dashboard/page.tsx app/dashboard/page.tsx
+--- app/dashboard/page.tsx	2026-01-21 01:09:18.000000000 +0000
++++ app/dashboard/page.tsx	2026-01-24 15:52:25.649105505 +0000
+@@ -1,8 +1,6 @@
+-"use client";
+-
+-import Dashboard from "@/legacy-pages/Dashboard";
+-
+-export default function Page() {
+-  return <Dashboard />;
+-}
+-
++import PremiumDashboard from "@/components/dashboard/PremiumDashboard";
++
++export default function Page() {
++  return <PremiumDashboard />;
++}
++
+diff -ruN src/components/dashboard/PremiumDashboard.tsx src/components/dashboard/PremiumDashboard.tsx
+--- src/components/dashboard/PremiumDashboard.tsx	1970-01-01 00:00:00.000000000 +0000
++++ src/components/dashboard/PremiumDashboard.tsx	2026-01-24 16:06:02.472742376 +0000
+@@ -0,0 +1,37 @@
++import PremiumDailyChallengeCard from "@/components/dashboard/premium/PremiumDailyChallengeCard";
++import PremiumLeaderboardCard from "@/components/dashboard/premium/PremiumLeaderboardCard";
++import PremiumPlayerCard from "@/components/dashboard/premium/PremiumPlayerCard";
++
++/**
++ * PremiumDashboard
++ *
++ * Pixel-style dashboard layout (3 panels) matching the provided reference screenshot.
++ * Pure UI (no data fetching). Wire Supabase/Stripe hooks later if needed.
++ *
++ * @example
++ * import PremiumDashboard from "@/components/dashboard/PremiumDashboard";
++ *
++ * export default function Page() {
++ *   return <PremiumDashboard />;
++ * }
++ */
++export default function PremiumDashboard() {
++  return (
++    <div className="min-h-screen bg-background relative overflow-hidden">
++      {/* Background (dark + subtle grid + glows) */}
++      <div className="absolute inset-0 cyber-grid opacity-[0.06] pointer-events-none" />
++      <div className="absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
++      <div className="absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-accent/10 blur-[140px] pointer-events-none" />
++      <div className="absolute inset-0 pointer-events-none opacity-[0.14] bg-[url('/images/hero-arena-background.png')] bg-cover bg-center mix-blend-screen" />
++
++      {/* Content */}
++      <div className="relative mx-auto w-full max-w-[1920px] px-8 py-10">
++        <div className="grid grid-cols-1 gap-8 xl:gap-[100px] xl:grid-cols-[500px_minmax(0,720px)_500px]">
++          <PremiumPlayerCard />
++          <PremiumLeaderboardCard />
++          <PremiumDailyChallengeCard />
++        </div>
++      </div>
++    </div>
++  );
++}
+diff -ruN src/components/dashboard/premium/PremiumDailyChallengeCard.tsx src/components/dashboard/premium/PremiumDailyChallengeCard.tsx
+--- src/components/dashboard/premium/PremiumDailyChallengeCard.tsx	1970-01-01 00:00:00.000000000 +0000
++++ src/components/dashboard/premium/PremiumDailyChallengeCard.tsx	2026-01-24 16:00:15.048598895 +0000
+@@ -0,0 +1,122 @@
++import { Trophy, Sparkles } from "lucide-react";
++
++import { Button } from "@/components/ui/button";
++import {
++  PremiumCardShell,
++  PremiumBluePillButton,
++  PremiumMiniAvatar,
++  premiumColors,
++} from "@/components/dashboard/premium/PremiumPrimitives";
++
++type ChallengeMatch = {
++  matchup: string;
++  game: string;
++  initials: string;
++  done?: boolean;
++};
++
++/**
++ * PremiumDailyChallengeCard
++ *
++ * Right panel — daily challenge.
++ *
++ * @example
++ * <PremiumDailyChallengeCard />
++ */
++export default function PremiumDailyChallengeCard() {
++  const matches: ChallengeMatch[] = [
++    { matchup: "Team A vs Team B", game: "CS:GO", initials: "TA" },
++    { matchup: "Team C vs Team D", game: "Valorant", initials: "TC" },
++    { matchup: "Team E vs Team F", game: "Overwatch", initials: "TE" },
++  ];
++
++  return (
++    <PremiumCardShell className="h-[766px]">
++      <div className="h-full px-8 pt-8 pb-7">
++        {/* Header */}
++        <div>
++          <div className="text-3xl font-display font-bold text-white">Défi du Jour</div>
++          <div className="mt-1 text-sm text-white/45">Gagne 500 Points + 10 XP</div>
++        </div>
++
++        {/* Matches */}
++        <div className="mt-6 space-y-4">
++          {matches.map((m, idx) => (
++            <div
++              key={m.matchup}
++              className="rounded-3xl border border-[rgba(231,200,118,0.25)] bg-[linear-gradient(180deg,rgba(231,200,118,0.10)_0%,rgba(0,0,0,0.0)_80%)] px-5 py-4"
++              style={idx === 1 ? { opacity: 0.86 } : undefined}
++            >
++              <div className="flex items-center justify-between gap-4">
++                <div className="flex items-center gap-4">
++                  <div className="rounded-full border border-[rgba(231,200,118,0.25)] p-[3px]">
++                    <PremiumMiniAvatar initials={m.initials} className="h-11 w-11" />
++                  </div>
++                  <div>
++                    <div className="text-lg font-semibold text-white/85">{m.matchup}</div>
++                    <div
++                      className="mt-1 inline-flex items-center rounded-full border border-[rgba(231,200,118,0.25)] px-3 py-1 text-sm font-semibold"
++                      style={{ color: premiumColors.gold, background: "rgba(231,200,118,0.06)" }}
++                    >
++                      {m.game}
++                    </div>
++                  </div>
++                </div>
++
++                <PremiumBluePillButton>Prédire</PremiumBluePillButton>
++              </div>
++            </div>
++          ))}
++        </div>
++
++        {/* Progress line */}
++        <div className="mt-8">
++          <div className="h-[8px] w-full rounded-full bg-white/10 overflow-hidden">
++            <div
++              className="h-full rounded-full shadow-[0_0_22px_rgba(74,169,255,0.40)]"
++              style={{
++                width: "100%",
++                background: `linear-gradient(90deg, ${premiumColors.blueDeep} 0%, ${premiumColors.blue} 100%)`,
++              }}
++            />
++          </div>
++
++          <div className="mt-4 flex items-center justify-between text-base font-semibold text-white/55">
++            <div>3/3 <span className="font-medium">Terminés</span></div>
++            <div>Début: 03:45:22</div>
++          </div>
++        </div>
++
++        {/* Footer CTA */}
++        <div className="mt-8 rounded-3xl border border-[rgba(231,200,118,0.25)] bg-[rgba(231,200,118,0.06)] px-6 py-5">
++          <div className="flex items-center justify-between gap-6">
++            <Button
++              type="button"
++              className="h-12 rounded-full px-8 font-semibold"
++              style={{
++                background: `linear-gradient(180deg, rgba(231,200,118,0.35) 0%, rgba(184,138,34,0.18) 100%)`,
++                border: "1px solid rgba(231,200,118,0.35)",
++                color: "#1a1405",
++              }}
++            >
++              Tout Terminer
++            </Button>
++
++            <div className="flex-1">
++              <div className="flex items-center gap-2 text-base font-semibold" style={{ color: premiumColors.gold }}>
++                <Trophy className="h-5 w-5" color={premiumColors.gold} />
++                Gagne 500 Points
++              </div>
++              <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-white/70">
++                <Sparkles className="h-4 w-4" color={premiumColors.gold} />
++                +10 XP
++              </div>
++            </div>
++
++            <div className="text-3xl">🏆</div>
++          </div>
++        </div>
++      </div>
++    </PremiumCardShell>
++  );
++}
+diff -ruN src/components/dashboard/premium/PremiumLeaderboardCard.tsx src/components/dashboard/premium/PremiumLeaderboardCard.tsx
+--- src/components/dashboard/premium/PremiumLeaderboardCard.tsx	1970-01-01 00:00:00.000000000 +0000
++++ src/components/dashboard/premium/PremiumLeaderboardCard.tsx	2026-01-24 16:03:17.554240030 +0000
+@@ -0,0 +1,179 @@
++import { Globe, Medal, Sparkles } from "lucide-react";
++import {
++  PremiumCardShell,
++  PremiumMiniAvatar,
++  premiumColors,
++} from "@/components/dashboard/premium/PremiumPrimitives";
++
++type LeaderboardEntry = {
++  rank: number;
++  name: string;
++  score: number;
++  accuracy: number;
++  challenges: number;
++  highlight?: boolean;
++};
++
++/**
++ * getRankBadgeStyle
++ *
++ * @example
++ * const s = getRankBadgeStyle(1);
++ */
++function getRankBadgeStyle(rank: number) {
++  if (rank === 1) {
++    return {
++      className: "",
++      style: {
++        background: `linear-gradient(180deg, rgba(231,200,118,0.35) 0%, rgba(184,138,34,0.18) 100%)`,
++        border: "1px solid rgba(231,200,118,0.35)",
++        color: premiumColors.gold,
++      },
++    };
++  }
++  if (rank === 2) {
++    return {
++      className: "",
++      style: {
++        background: `linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%)`,
++        border: "1px solid rgba(255,255,255,0.18)",
++        color: "rgba(255,255,255,0.88)",
++      },
++    };
++  }
++  if (rank === 3) {
++    return {
++      className: "",
++      style: {
++        background: `linear-gradient(180deg, rgba(255,146,64,0.22) 0%, rgba(255,146,64,0.10) 100%)`,
++        border: "1px solid rgba(255,146,64,0.22)",
++        color: "rgba(255,255,255,0.86)",
++      },
++    };
++  }
++  return {
++    className: "bg-white/10",
++    style: { color: "rgba(255,255,255,0.75)" },
++  };
++}
++
++/**
++ * PremiumLeaderboardCard
++ *
++ * Center panel — global leaderboard table.
++ *
++ * @example
++ * <PremiumLeaderboardCard />
++ */
++export default function PremiumLeaderboardCard() {
++  const entries: LeaderboardEntry[] = [
++    { rank: 1, name: "EsportsPro123", score: 8450, accuracy: 72, challenges: 128, highlight: true },
++    { rank: 2, name: "Duastatarianic", score: 8000, accuracy: 82, challenges: 128 },
++    { rank: 3, name: "Kaviamamyj", score: 7800, accuracy: 80, challenges: 130 },
++    { rank: 4, name: "Ropôrunt86", score: 7500, accuracy: 73, challenges: 120 },
++    { rank: 5, name: "Narlovajfanew", score: 7400, accuracy: 68, challenges: 98 },
++    { rank: 6, name: "GreatReouk_", score: 7300, accuracy: 52, challenges: 96 },
++    { rank: 8, name: "Rowhteos", score: 7200, accuracy: 34, challenges: 64 },
++    { rank: 9, name: "NsbeTeam", score: 7000, accuracy: 39, challenges: 48 },
++    { rank: 10, name: "EsportsPro123", score: 7000, accuracy: 24, challenges: 18 },
++  ];
++
++  return (
++    <PremiumCardShell className="h-[766px]">
++      <div className="h-full px-8 pt-8 pb-7">
++        {/* Header */}
++        <div>
++          <div className="text-3xl font-display font-bold text-white">
++            Classement Global
++          </div>
++          <div className="mt-1 text-sm text-white/45">Top 100 Joueurs</div>
++        </div>
++
++        {/* Table */}
++        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
++          <div className="grid grid-cols-[92px_1fr_140px_140px_110px] items-center gap-2 px-5 py-3 text-sm font-semibold text-white/55">
++            <div>Rang</div>
++            <div>Joueur</div>
++            <div className="text-center">Score</div>
++            <div className="text-center">Précision</div>
++            <div className="text-center">Défis</div>
++          </div>
++          <div className="h-px w-full bg-white/10" />
++
++          <div className="max-h-[520px] overflow-auto">
++            {entries.map((e, idx) => {
++              const badge = getRankBadgeStyle(e.rank);
++              return (
++                <div
++                  key={`${e.rank}-${e.name}`}
++                  className={
++                    `${idx < entries.length - 1 ? "border-b border-white/10 " : ""}` +
++                    (e.highlight
++                      ? "px-5 py-3 ring-1 ring-[rgba(231,200,118,0.35)] bg-[linear-gradient(90deg,rgba(231,200,118,0.14)_0%,rgba(0,0,0,0)_65%)]"
++                      : "px-5 py-3")
++                  }
++                >
++                  <div className="grid grid-cols-[92px_1fr_140px_140px_110px] items-center gap-2">
++                    <div className="flex items-center">
++                      <div
++                        className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${badge.className}`}
++                        style={badge.style}
++                      >
++                        <span className="text-sm font-bold">{e.rank}</span>
++                      </div>
++                    </div>
++
++                    <div className="flex items-center gap-3">
++                      <PremiumMiniAvatar initials={e.name.slice(0, 2).toUpperCase()} />
++                      <div
++                        className={
++                          e.highlight
++                            ? "font-semibold"
++                            : "font-medium text-white/80"
++                        }
++                        style={e.highlight ? { color: premiumColors.gold } : undefined}
++                      >
++                        {e.name}
++                      </div>
++                    </div>
++
++                    <div className="text-center text-lg font-semibold text-white/80">
++                      {e.score.toLocaleString("fr-FR")}
++                    </div>
++                    <div
++                      className="text-center text-lg font-semibold"
++                      style={e.highlight ? { color: premiumColors.gold } : { color: "rgba(255,255,255,0.70)" }}
++                    >
++                      {e.accuracy}%
++                    </div>
++                    <div className="text-center text-lg font-semibold text-white/70">
++                      {e.challenges}
++                    </div>
++                  </div>
++                </div>
++              );
++            })}
++          </div>
++        </div>
++
++        {/* Bottom chips */}
++        <div className="mt-6 flex items-center justify-between gap-4">
++          <div className="flex flex-1 items-center gap-4">
++            <div className="flex items-center gap-2 rounded-2xl border border-blue-400/25 bg-blue-500/10 px-4 py-3 text-sm font-semibold text-white/80">
++              <Medal className="h-4 w-4" color={premiumColors.blue} />
++              #1 en France <span className="ml-1">🇫🇷</span>
++            </div>
++            <div className="flex items-center gap-2 rounded-2xl border border-[rgba(231,200,118,0.25)] bg-[rgba(231,200,118,0.10)] px-4 py-3 text-sm font-semibold text-white/80">
++              <Globe className="h-4 w-4" color={premiumColors.gold} />
++              #42 Global
++            </div>
++          </div>
++          <div className="flex items-center gap-2 rounded-2xl border border-purple-400/25 bg-purple-500/10 px-4 py-3 text-sm font-semibold text-white/80">
++            <Sparkles className="h-4 w-4" color={premiumColors.purple} />
++            Top 0.42%
++          </div>
++        </div>
++      </div>
++    </PremiumCardShell>
++  );
++}
+diff -ruN src/components/dashboard/premium/PremiumPlayerCard.tsx src/components/dashboard/premium/PremiumPlayerCard.tsx
+--- src/components/dashboard/premium/PremiumPlayerCard.tsx	1970-01-01 00:00:00.000000000 +0000
++++ src/components/dashboard/premium/PremiumPlayerCard.tsx	2026-01-24 16:01:49.562445972 +0000
+@@ -0,0 +1,139 @@
++import { Award, Crown, TrendingUp, Check } from "lucide-react";
++import {
++  PremiumAvatarRing,
++  PremiumCardShell,
++  PremiumGoldPill,
++  PremiumMetricTile,
++  PremiumRingProgress,
++  PremiumRibbonBadge,
++  premiumColors,
++} from "@/components/dashboard/premium/PremiumPrimitives";
++
++type PlayerSummary = {
++  rankGlobal: number;
++  population: number;
++  name: string;
++  tierLabel: string;
++  totalScore: number;
++  accuracy: number;
++  challenges: number;
++  levelLabel: string;
++  levelProgress: number;
++  badges: Array<{ label: string; icon: "crown" | "award" }>;
++};
++
++/**
++ * PremiumPlayerCard
++ *
++ * Left panel — player summary card.
++ *
++ * @example
++ * import PremiumPlayerCard from "@/components/dashboard/premium/PremiumPlayerCard";
++ *
++ * export default function Page() {
++ *   return <PremiumPlayerCard />;
++ * }
++ */
++export default function PremiumPlayerCard() {
++  const data: PlayerSummary = {
++    rankGlobal: 42,
++    population: 10_000,
++    name: "EsportsPro123",
++    tierLabel: "Professional",
++    totalScore: 8450,
++    accuracy: 72,
++    challenges: 128,
++    levelLabel: "Niveau 2",
++    levelProgress: 25,
++    badges: [
++      { label: "Top 100", icon: "crown" },
++      { label: "Consistant", icon: "award" },
++    ],
++  };
++
++  return (
++    <PremiumCardShell className="h-[766px]">
++      <div className="relative h-full px-8 pt-8 pb-7">
++        <PremiumRibbonBadge />
++
++        {/* Rank */}
++        <div className="flex items-end gap-2 font-display">
++          <div className="text-[44px] font-black tracking-tight text-white">
++            #{data.rankGlobal}
++          </div>
++          <div className="pb-[10px] text-2xl font-bold text-white/35">
++            / {data.population.toLocaleString("fr-FR")}
++          </div>
++        </div>
++
++        {/* Avatar + name */}
++        <div className="mt-6 text-center">
++          <PremiumAvatarRing initials="EP" />
++          <div className="mt-6 text-3xl font-display font-bold text-white">
++            {data.name}
++          </div>
++          <div className="mt-3">
++            <PremiumGoldPill>{data.tierLabel}</PremiumGoldPill>
++          </div>
++        </div>
++
++        {/* Metrics */}
++        <div className="mt-7 grid grid-cols-3 gap-4">
++          <PremiumMetricTile
++            label="Total Score:"
++            value={data.totalScore.toLocaleString("fr-FR")}
++            icon={<TrendingUp className="h-5 w-5" />}
++          />
++          <PremiumRingProgress
++            label="Précision"
++            value={data.accuracy}
++            color="#7ED8A5"
++          />
++          <PremiumMetricTile
++            label="Défis:"
++            value={data.challenges.toLocaleString("fr-FR")}
++            icon={<Check className="h-5 w-5" />}
++          />
++        </div>
++
++        {/* Level */}
++        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4">
++          <div className="flex items-center justify-between">
++            <div className="text-lg font-semibold text-white/85">
++              {data.levelLabel}
++            </div>
++            <div className="text-lg font-semibold" style={{ color: premiumColors.blue }}>
++              {data.levelProgress}%
++            </div>
++          </div>
++          <div className="mt-3 h-[10px] w-full overflow-hidden rounded-full bg-white/10">
++            <div
++              className="h-full rounded-full shadow-[0_0_18px_rgba(74,169,255,0.35)]"
++              style={{
++                width: `${data.levelProgress}%`,
++                background: `linear-gradient(90deg, ${premiumColors.blue} 0%, ${premiumColors.blueDeep} 100%)`,
++              }}
++            />
++          </div>
++        </div>
++
++        {/* Badges */}
++        <div className="mt-6 flex items-center justify-center gap-4">
++          {data.badges.map((b) => (
++            <div
++              key={b.label}
++              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-5 py-2 text-sm font-semibold text-white/80"
++            >
++              {b.icon === "crown" ? (
++                <Crown className="h-4 w-4" color={premiumColors.gold} />
++              ) : (
++                <Award className="h-4 w-4" color={premiumColors.gold} />
++              )}
++              {b.label}
++            </div>
++          ))}
++        </div>
++      </div>
++    </PremiumCardShell>
++  );
++}
+diff -ruN src/components/dashboard/premium/PremiumPrimitives.tsx src/components/dashboard/premium/PremiumPrimitives.tsx
+--- src/components/dashboard/premium/PremiumPrimitives.tsx	1970-01-01 00:00:00.000000000 +0000
++++ src/components/dashboard/premium/PremiumPrimitives.tsx	2026-01-24 16:04:34.073388126 +0000
+@@ -0,0 +1,249 @@
++import { Crown, TrendingUp, Check, Globe, Medal, Percent } from "lucide-react";
++import type { ReactNode } from "react";
++
++import { Avatar, AvatarFallback } from "@/components/ui/avatar";
++import { Button } from "@/components/ui/button";
++import { cn } from "@/lib/utils";
++
++export const premiumColors = {
++  gold: "#E7C876",
++  goldDeep: "#B88A22",
++  blue: "#4AA9FF",
++  blueDeep: "#2F6BFF",
++  purple: "#B86BFF",
++} as const;
++
++/**
++ * PremiumCardShell
++ *
++ * @example
++ * <PremiumCardShell title="Title">...</PremiumCardShell>
++ */
++export function PremiumCardShell({
++  className,
++  children,
++}: {
++  className?: string;
++  children: ReactNode;
++}) {
++  return (
++    <div
++      className={cn(
++        "relative rounded-[28px] border border-white/10 bg-gradient-to-b from-white/7 to-white/[0.02] backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.55)]",
++        className,
++      )}
++    >
++      <div className="absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/[0.06] to-transparent pointer-events-none" />
++      <div className="relative h-full w-full">{children}</div>
++    </div>
++  );
++}
++
++/**
++ * PremiumRibbonBadge
++ *
++ * @example
++ * <PremiumRibbonBadge />
++ */
++export function PremiumRibbonBadge() {
++  return (
++    <div
++      className="absolute -top-1 right-10 h-[86px] w-[56px] rounded-b-xl shadow-[0_12px_30px_rgba(231,200,118,0.25)]"
++      style={{
++        background: `linear-gradient(180deg, ${premiumColors.gold} 0%, ${premiumColors.goldDeep} 100%)`,
++        clipPath: "polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%)",
++      }}
++    >
++      <div className="flex h-[70px] w-full items-center justify-center">
++        <Crown className="h-6 w-6" color="#1a1405" />
++      </div>
++    </div>
++  );
++}
++
++/**
++ * PremiumAvatarRing
++ *
++ * @example
++ * <PremiumAvatarRing initials="EP" />
++ */
++export function PremiumAvatarRing({
++  initials,
++  className,
++}: {
++  initials: string;
++  className?: string;
++}) {
++  return (
++    <div
++      className={cn(
++        "relative mx-auto flex h-[120px] w-[120px] items-center justify-center rounded-full",
++        className,
++      )}
++    >
++      <div className="absolute inset-0 rounded-full bg-primary/30 blur-[10px]" />
++      <div className="absolute inset-[6px] rounded-full bg-background" />
++      <div className="absolute inset-[8px] rounded-full border border-primary/40" />
++      <Avatar className="relative h-[96px] w-[96px]">
++        <AvatarFallback className="bg-gradient-to-b from-white/10 to-white/5 text-2xl font-display">
++          {initials}
++        </AvatarFallback>
++      </Avatar>
++    </div>
++  );
++}
++
++/**
++ * PremiumMiniAvatar
++ *
++ * @example
++ * <PremiumMiniAvatar initials="EP" />
++ */
++export function PremiumMiniAvatar({
++  initials,
++  className,
++}: {
++  initials: string;
++  className?: string;
++}) {
++  return (
++    <div
++      className={cn(
++        "relative h-9 w-9 rounded-full",
++        "shadow-[0_0_18px_rgba(74,169,255,0.12)]",
++        className,
++      )}
++    >
++      <div className="absolute inset-0 rounded-full bg-primary/15 blur-[6px]" />
++      <div className="absolute inset-[1px] rounded-full border border-white/10 bg-white/5" />
++      <div className="absolute inset-[3px] rounded-full border border-primary/25" />
++      <Avatar className="relative h-full w-full">
++        <AvatarFallback className="bg-transparent text-[11px] font-bold text-white/75">
++          {initials}
++        </AvatarFallback>
++      </Avatar>
++    </div>
++  );
++}
++
++/**
++ * PremiumGoldPill
++ *
++ * @example
++ * <PremiumGoldPill>Professional</PremiumGoldPill>
++ */
++export function PremiumGoldPill({ children }: { children: ReactNode }) {
++  return (
++    <div
++      className="inline-flex items-center rounded-full px-4 py-1 text-sm font-semibold"
++      style={{
++        background: `linear-gradient(180deg, rgba(231,200,118,0.20) 0%, rgba(184,138,34,0.12) 100%)`,
++        border: "1px solid rgba(231,200,118,0.25)",
++        color: premiumColors.gold,
++      }}
++    >
++      {children}
++    </div>
++  );
++}
++
++/**
++ * PremiumBluePillButton
++ *
++ * @example
++ * <PremiumBluePillButton>Prédire</PremiumBluePillButton>
++ */
++export function PremiumBluePillButton({
++  children,
++  className,
++}: {
++  children: ReactNode;
++  className?: string;
++}) {
++  return (
++    <Button
++      type="button"
++      className={cn(
++        "h-10 rounded-full px-6 font-semibold",
++        "shadow-[0_0_22px_rgba(74,169,255,0.35)]",
++        className,
++      )}
++      style={{
++        background: `linear-gradient(90deg, ${premiumColors.blue} 0%, ${premiumColors.blueDeep} 100%)`,
++      }}
++    >
++      {children}
++    </Button>
++  );
++}
++
++/**
++ * PremiumMetricTile
++ *
++ * @example
++ * <PremiumMetricTile label="Total Score" value="8,450" icon={<TrendingUp />} />
++ */
++export function PremiumMetricTile({
++  label,
++  value,
++  icon,
++}: {
++  label: string;
++  value: string;
++  icon: ReactNode;
++}) {
++  return (
++    <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
++      <div className="text-sm text-white/60">{label}</div>
++      <div className="mt-1 flex items-end justify-between gap-3">
++        <div className="text-2xl font-display font-bold text-white">{value}</div>
++        <div className="text-white/40">{icon}</div>
++      </div>
++    </div>
++  );
++}
++
++/**
++ * PremiumRingProgress
++ *
++ * @example
++ * <PremiumRingProgress value={72} label="Précision" />
++ */
++export function PremiumRingProgress({
++  value,
++  label,
++  color,
++}: {
++  value: number;
++  label: string;
++  color?: string;
++}) {
++  const clamped = Math.max(0, Math.min(100, value));
++  const ringColor = color ?? premiumColors.gold;
++  return (
++    <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
++      <div className="text-sm text-white/60">{label}:</div>
++      <div className="mt-3 grid place-items-center">
++        <div
++          className="relative h-[46px] w-[46px] rounded-full"
++          style={{
++            background: `conic-gradient(${ringColor} ${clamped}%, rgba(255,255,255,0.12) 0)`,
++          }}
++        >
++          <div className="absolute inset-[5px] rounded-full bg-[#0b1018]" />
++          <div className="absolute inset-0 grid place-items-center text-sm font-bold text-white">
++            {clamped}%
++          </div>
++        </div>
++      </div>
++    </div>
++  );
++}
++
++export const premiumIcons = {
++  TrendingUp,
++  Check,
++  Globe,
++  Medal,
++  Percent,
++} as const;

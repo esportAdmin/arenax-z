@@ -154,12 +154,12 @@ function formatMatch(match: PandaScoreMatch): FormattedMatch | null {
     id: `pandascore-${match.id}`,
     teamA: {
       name: teamA.acronym || teamA.name,
-      logo: getTeamEmoji(teamA.name),
+      logo: teamA.image_url ?? getTeamEmoji(teamA.name),
       odds: oddsA,
     },
     teamB: {
       name: teamB.acronym || teamB.name,
-      logo: getTeamEmoji(teamB.name),
+      logo: teamB.image_url ?? getTeamEmoji(teamB.name),
       odds: oddsB,
     },
     tournament: `${match.league.name}${match.serie.name ? ` - ${match.serie.name}` : ''}`,

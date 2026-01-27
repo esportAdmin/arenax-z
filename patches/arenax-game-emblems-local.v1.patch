@@ -1,0 +1,46 @@
+diff --git a/public/images/game-emblems/.gitkeep b/public/images/game-emblems/.gitkeep
+new file mode 100644
+index 0000000..e69de29
+diff --git a/src/components/ui/game-logo.tsx b/src/components/ui/game-logo.tsx
+index b3b41f1..d6c7f9a 100644
+--- a/src/components/ui/game-logo.tsx
++++ b/src/components/ui/game-logo.tsx
+@@ -1,4 +1,4 @@
+-import Image from "next/image";
++import Image from "next/image";
+ import { Badge } from "@/components/ui/badge";
+
+ export interface GameLogo {
+@@ -11,28 +11,28 @@ export interface GameLogo {
+ }
+
+ export const GAME_LOGOS: Record<string, GameLogo> = {
+   lol: {
+     id: "1",
+     name: "League of Legends",
+-    logoUrl: "https://cdn.pandascore.co/images/league-of-legends.png",
++    logoUrl: "/images/game-emblems/lol.png",
+     slug: "league-of-legends",
+   },
+   dota2: {
+     id: "3",
+     name: "Dota 2",
+-    logoUrl: "https://cdn.pandascore.co/images/dota-2.png",
++    logoUrl: "/images/game-emblems/dota2.png",
+     slug: "dota-2",
+   },
+   cs2: {
+     id: "4",
+     name: "CS2",
+-    logoUrl: "https://cdn.pandascore.co/images/cs-go.png",
++    logoUrl: "/images/game-emblems/cs2.png",
+     slug: "cs-go",
+   },
+   valorant: {
+     id: "23",
+     name: "Valorant",
+-    logoUrl: "https://cdn.pandascore.co/images/valorant.png",
++    logoUrl: "/images/game-emblems/valorant.png",
+     slug: "valorant",
+   },
+ };

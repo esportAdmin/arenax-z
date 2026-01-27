@@ -1,0 +1,79 @@
+diff --git a/src/components/ui/game-logo.tsx b/src/components/ui/game-logo.tsx
+index d6c7f9a..8b35e3b 100644
+--- a/src/components/ui/game-logo.tsx
++++ b/src/components/ui/game-logo.tsx
+@@ -1,4 +1,3 @@
+-import Image from "next/image";
+ import { Badge } from "@/components/ui/badge";
+
+ export interface GameLogo {
+@@ -16,25 +15,25 @@ export const GAME_LOGOS: Record<string, GameLogo> = {
+   lol: {
+     id: "1",
+     name: "League of Legends",
+-    logoUrl: "/images/game-emblems/lol.png",
++    logoUrl: "/images/game-emblems/lol.svg",
+     slug: "league-of-legends",
+   },
+   dota2: {
+     id: "3",
+     name: "Dota 2",
+-    logoUrl: "/images/game-emblems/dota2.png",
++    logoUrl: "/images/game-emblems/dota2.svg",
+     slug: "dota-2",
+   },
+   cs2: {
+     id: "4",
+     name: "CS2",
+-    logoUrl: "/images/game-emblems/cs2.png",
++    logoUrl: "/images/game-emblems/cs2.svg",
+     slug: "cs-go",
+   },
+   valorant: {
+     id: "23",
+     name: "Valorant",
+-    logoUrl: "/images/game-emblems/valorant.png",
++    logoUrl: "/images/game-emblems/valorant.svg",
+     slug: "valorant",
+   },
+ };
+@@ -75,16 +74,23 @@ export function getGameLogo(game: string): GameLogo | null {
+   return GAME_LOGOS[key] ?? null;
+ }
+
+ export function GameIcon({
+   game,
+   size = 14,
+   className,
+ }: {
+   game: string;
+   size?: number;
+   className?: string;
+ }) {
+   const logo = getGameLogo(game);
+   if (!logo) return null;
+
+   return (
+-    <Image
+-      src={logo.logoUrl}
+-      alt={`${logo.name} logo`}
+-      width={size}
+-      height={size}
+-      className={className ?? "h-auto w-auto"}
+-    />
++    // Use <img> to avoid Next/Image SVG restrictions and upstream errors.
++    <img
++      src={logo.logoUrl}
++      alt={`${logo.name} logo`}
++      width={size}
++      height={size}
++      loading="lazy"
++      decoding="async"
++      className={className ?? "h-auto w-auto"}
++      onError={(e) => {
++        // Hide broken icon silently.
++        (e.currentTarget as HTMLImageElement).style.display = "none";
++      }}
++    />
+   );
+ }

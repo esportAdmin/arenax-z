@@ -1,0 +1,84 @@
+From 5e9f3aada2c412fe37f0c04b870c9e22bb618d09 Mon Sep 17 00:00:00 2001
+From: bot <bot@example.com>
+Date: Sun, 25 Jan 2026 06:45:02 +0000
+Subject: [PATCH] fix dashboard layout + leaderboard overflow
+
+---
+ src/components/dashboard/PremiumDashboard.tsx | 26 ++++++++++++-------
+ .../premium/PremiumLeaderboardCard.tsx        |  6 +++--
+ 2 files changed, 20 insertions(+), 12 deletions(-)
+
+diff --git a/src/components/dashboard/PremiumDashboard.tsx b/src/components/dashboard/PremiumDashboard.tsx
+index eb49851..e447266 100644
+--- a/src/components/dashboard/PremiumDashboard.tsx
++++ b/src/components/dashboard/PremiumDashboard.tsx
+@@ -17,19 +17,25 @@ import PremiumPlayerCard from "@/components/dashboard/premium/PremiumPlayerCard"
+  */
+ export default function PremiumDashboard() {
+   return (
+-    <div className="min-h-screen bg-background relative overflow-hidden">
++    <div className="relative min-h-screen overflow-hidden bg-background">
+       {/* Background (dark + subtle grid + glows) */}
+-      <div className="absolute inset-0 cyber-grid opacity-[0.06] pointer-events-none" />
+-      <div className="absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+-      <div className="absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-accent/10 blur-[140px] pointer-events-none" />
+-      <div className="absolute inset-0 pointer-events-none opacity-[0.14] bg-[url('/images/hero-arena-background.png')] bg-cover bg-center mix-blend-screen" />
++      <div className="pointer-events-none absolute inset-0 cyber-grid opacity-[0.06]" />
++      <div className="pointer-events-none absolute -top-24 left-[-140px] h-[520px] w-[520px] rounded-full bg-primary/10 blur-[120px]" />
++      <div className="pointer-events-none absolute -bottom-28 right-[-140px] h-[520px] w-[520px] rounded-full bg-accent/10 blur-[140px]" />
++      <div className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen bg-[url('/images/hero-arena-background.png')] bg-cover bg-center" />
+ 
+       {/* Content */}
+-      <div className="relative mx-auto w-full max-w-[1920px] px-8 py-10">
+-        <div className="grid grid-cols-1 gap-8 xl:gap-[100px] xl:grid-cols-[500px_minmax(0,720px)_500px]">
+-          <PremiumPlayerCard />
+-          <PremiumLeaderboardCard />
+-          <PremiumDailyChallengeCard />
++      <div className="relative mx-auto w-full max-w-[1920px] px-6 py-10 xl:px-8">
++        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(420px,1fr)_minmax(640px,1.35fr)_minmax(420px,1fr)] xl:gap-10 2xl:gap-12">
++          <div className="min-w-0">
++            <PremiumPlayerCard />
++          </div>
++          <div className="min-w-0">
++            <PremiumLeaderboardCard />
++          </div>
++          <div className="min-w-0">
++            <PremiumDailyChallengeCard />
++          </div>
+         </div>
+       </div>
+     </div>
+diff --git a/src/components/dashboard/premium/PremiumLeaderboardCard.tsx b/src/components/dashboard/premium/PremiumLeaderboardCard.tsx
+index 39a2666..41fc494 100644
+--- a/src/components/dashboard/premium/PremiumLeaderboardCard.tsx
++++ b/src/components/dashboard/premium/PremiumLeaderboardCard.tsx
+@@ -90,7 +90,8 @@ export default function PremiumLeaderboardCard() {
+         </div>
+ 
+         {/* Table */}
+-        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
++        <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03]">
++          <div className="min-w-[680px]">
+           <div className="grid grid-cols-[92px_1fr_140px_140px_110px] items-center gap-2 px-5 py-3 text-sm font-semibold text-white/55">
+             <div>Rang</div>
+             <div>Joueur</div>
+@@ -100,7 +101,7 @@ export default function PremiumLeaderboardCard() {
+           </div>
+           <div className="h-px w-full bg-white/10" />
+ 
+-          <div className="max-h-[520px] overflow-auto">
++          <div className="max-h-[520px] overflow-y-auto">
+             {entries.map((e, idx) => {
+               const badge = getRankBadgeStyle(e.rank);
+               return (
+@@ -154,6 +155,7 @@ export default function PremiumLeaderboardCard() {
+               );
+             })}
+           </div>
++          </div>
+         </div>
+ 
+         {/* Bottom chips */}
+-- 
+2.39.5
+
