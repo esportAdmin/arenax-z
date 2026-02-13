@@ -91,10 +91,8 @@ serve(async (req) => {
     }
 
     // Validate origin header for redirect URLs
-    const origin = req.headers.get("origin");
-    if (!origin) {
-      throw new Error("Origin header is required");
-    }
+    const origin = req.headers.get("origin") ?? Deno.env.get("SITE_URL");
+    if (!origin) throw new Error("Origin header (or SITE_URL) is required");
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -106,10 +104,15 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${origin}/subscription?success=true`,
-      cancel_url: `${origin}/subscription?canceled=true`,
+      success_url: `${origin}/subscription?status=success`,
+      cancel_url: `${origin}/subscription?status=canceled`,
+      subscription_data: {
+        metadata: {
+          supabase_user_id: user.id,
+        },
+      },
       metadata: {
-        user_id: user.id,
+        supabase_user_id: user.id,
       },
     });
 

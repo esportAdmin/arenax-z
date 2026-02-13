@@ -13,11 +13,24 @@ const priceIdSchema = z.string()
   .regex(/^price_[a-zA-Z0-9_]+$/, "Invalid Stripe price ID format")
   .max(100, "Price ID too long");
 
-// Tier configuration - must match the tiers in subscriptionTiers.ts
-const TIER_ARENA_POINTS: Record<string, number> = {
-  'price_STARTER_ID': 500,
-  'price_PRO_ID': 1500,
-  'price_ELITE_ID': 4000,
+type TierKey = "starter" | "pro" | "elite";
+
+const TIER_ARENA_POINTS: Record<TierKey, number> = {
+  starter: 500,
+  pro: 1500,
+  elite: 4000,
+};
+
+const buildPriceToPointsMap = (): Record<string, number> => {
+  const starterPrice = Deno.env.get("STRIPE_PRICE_STARTER");
+  const proPrice = Deno.env.get("STRIPE_PRICE_PRO");
+  const elitePrice = Deno.env.get("STRIPE_PRICE_ELITE");
+
+  const map: Record<string, number> = {};
+  if (starterPrice) map[starterPrice] = TIER_ARENA_POINTS.starter;
+  if (proPrice) map[proPrice] = TIER_ARENA_POINTS.pro;
+  if (elitePrice) map[elitePrice] = TIER_ARENA_POINTS.elite;
+  return map;
 };
 
 // Validate arena points amount
@@ -73,21 +86,23 @@ serve(async (req) => {
 
     logStep("Event verified", { type: event.type, id: event.id });
 
+    const priceToPoints = buildPriceToPointsMap();
+
     // Handle subscription payment events
     if (event.type === "invoice.payment_succeeded") {
       const invoice = event.data.object as Stripe.Invoice;
       
       // Only process subscription invoices (not one-time payments)
-      if (invoice.subscription && invoice.customer_email) {
+      if (invoice.subscription) {
         logStep("Processing subscription payment", { 
           customerId: invoice.customer,
-          email: invoice.customer_email,
           subscriptionId: invoice.subscription 
         });
 
         // Get the subscription to find the price ID
         const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
         const priceId = subscription.items.data[0]?.price.id;
+        const supabaseUserId = (subscription.metadata?.supabase_user_id || "").trim();
         
         if (!priceId) {
           logStep("No price ID found in subscription");
@@ -107,7 +122,7 @@ serve(async (req) => {
           });
         }
 
-        const arenaPoints = TIER_ARENA_POINTS[priceId];
+        const arenaPoints = priceToPoints[priceId];
         
         if (!arenaPoints) {
           logStep("Unknown price ID, no Arena Points to credit", { priceId });
@@ -127,7 +142,18 @@ serve(async (req) => {
           });
         }
 
-        logStep("Crediting Arena Points", { priceId, arenaPoints, email: invoice.customer_email });
+        if (!supabaseUserId) {
+          logStep("Missing supabase_user_id on subscription metadata", {
+            subscriptionId: subscription.id,
+            priceId,
+          });
+          return new Response(JSON.stringify({ received: true, warning: "Missing supabase_user_id" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+
+        logStep("Crediting Arena Points", { priceId, arenaPoints, userId: supabaseUserId });
 
         // Initialize Supabase client with service role key
         const supabaseClient = createClient(
@@ -136,31 +162,13 @@ serve(async (req) => {
           { auth: { persistSession: false } }
         );
 
-        // Find the user by email
-        const { data: users, error: userError } = await supabaseClient.auth.admin.listUsers();
-        
-        if (userError) {
-          logStep("Error listing users", { error: userError.message });
-          throw new Error(`Failed to find user: ${userError.message}`);
-        }
-
-        const user = users.users.find(u => u.email === invoice.customer_email);
-        
-        if (!user) {
-          logStep("User not found for email", { email: invoice.customer_email });
-          return new Response(JSON.stringify({ received: true, warning: "User not found" }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 200,
-          });
-        }
-
-        logStep("Found user", { userId: user.id, email: user.email });
+        const userId = supabaseUserId;
 
         // Fetch current balance and increment
         const { data: profile, error: profileError } = await supabaseClient
           .from('profiles')
           .select('arena_balance')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .single();
 
         if (profileError) {
@@ -180,7 +188,7 @@ serve(async (req) => {
         const updateResult = await supabaseClient
           .from('profiles')
           .update({ arena_balance: newBalance })
-          .eq('user_id', user.id);
+          .eq('user_id', userId);
 
         if (updateResult.error) {
           logStep("Error updating arena balance", { error: updateResult.error.message });
@@ -191,7 +199,7 @@ serve(async (req) => {
         const { error: ledgerError } = await supabaseClient
           .from('arena_ledger')
           .insert({
-            user_id: user.id,
+            user_id: userId,
             amount: arenaPoints,
             source: 'purchase',
             description: `Subscription renewal - ${arenaPoints} Arena Points`,
@@ -207,7 +215,7 @@ serve(async (req) => {
         const { error: notifError } = await supabaseClient
           .from('user_notifications')
           .insert({
-            user_id: user.id,
+            user_id: userId,
             type: 'subscription_renewed',
             title: '🎉 Abonnement renouvelé !',
             message: `Vous avez reçu ${arenaPoints} Arena Points pour votre abonnement mensuel.`,
@@ -220,7 +228,7 @@ serve(async (req) => {
         }
 
         logStep("Successfully credited Arena Points", { 
-          userId: user.id, 
+          userId,
           arenaPoints, 
           newBalance 
         });

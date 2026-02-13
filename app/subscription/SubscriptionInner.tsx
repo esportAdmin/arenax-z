@@ -2,8 +2,10 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+
+import PremiumSubscriptionHub from "@/components/subscription/PremiumSubscriptionHub";
 
 /**
  * Read URL params on client safely (must be under <Suspense/>).
@@ -32,16 +34,5 @@ export default function SubscriptionInner() {
     }
   }, [status, sessionId, router]);
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container-arena py-10">
-        <div className="glass-card p-6">
-          <h1 className="font-display font-bold text-xl">Subscription</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Gérez votre abonnement ici.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return <PremiumSubscriptionHub />;
 }

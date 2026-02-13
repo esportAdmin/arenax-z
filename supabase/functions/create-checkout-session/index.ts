@@ -80,7 +80,7 @@ serve(async (req) => {
     }
 
     // Create checkout session
-    const origin = req.headers.get("origin") || "http://localhost:8080";
+    const origin = req.headers.get("origin") ?? Deno.env.get("SITE_URL") ?? "http://localhost:8080";
     
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -92,8 +92,13 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${origin}/subscription?success=true`,
-      cancel_url: `${origin}/subscription?canceled=true`,
+      success_url: `${origin}/subscription?status=success`,
+      cancel_url: `${origin}/subscription?status=canceled`,
+      subscription_data: {
+        metadata: {
+          supabase_user_id: user.id,
+        },
+      },
       metadata: {
         supabase_user_id: user.id,
       },

@@ -14,12 +14,21 @@ export interface SubscriptionTier {
   popular?: boolean;
 }
 
+const env = {
+  starterPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER,
+  proPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
+  elitePriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ELITE,
+  starterProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_STARTER,
+  proProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_PRO,
+  eliteProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ELITE,
+} as const;
+
 export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    price_id: 'price_STARTER_ID', // TODO: Replace with actual Stripe price ID
-    product_id: 'prod_STARTER_ID', // TODO: Replace with actual Stripe product ID
+    price_id: env.starterPriceId ?? 'price_STARTER_ID',
+    product_id: env.starterProductId ?? 'prod_STARTER_ID',
     price: 9.99,
     currency: 'USD',
     interval: 'month',
@@ -33,8 +42,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    price_id: 'price_PRO_ID', // TODO: Replace with actual Stripe price ID
-    product_id: 'prod_PRO_ID', // TODO: Replace with actual Stripe product ID
+    price_id: env.proPriceId ?? 'price_PRO_ID',
+    product_id: env.proProductId ?? 'prod_PRO_ID',
     price: 19.99,
     currency: 'USD',
     interval: 'month',
@@ -50,8 +59,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   elite: {
     id: 'elite',
     name: 'Elite',
-    price_id: 'price_ELITE_ID', // TODO: Replace with actual Stripe price ID
-    product_id: 'prod_ELITE_ID', // TODO: Replace with actual Stripe product ID
+    price_id: env.elitePriceId ?? 'price_ELITE_ID',
+    product_id: env.eliteProductId ?? 'prod_ELITE_ID',
     price: 39.99,
     currency: 'USD',
     interval: 'month',
