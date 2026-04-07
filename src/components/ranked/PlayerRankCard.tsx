@@ -1,6 +1,4 @@
 "use client";
-
-import { useMemo } from "react";
 import {
   getRankFromMmr,
   formatDivision,
@@ -63,6 +61,9 @@ interface Props {
  * seasonStats est prioritaire sur stats globales pour le rang.
  */
 export function PlayerRankCard({ stats, seasonStats }: Props) {
+  const effectiveMmr = Number(seasonStats?.mmr ?? stats?.mmr ?? 1000);
+  const toNextTier = mmrToNextTier(effectiveMmr);
+
   if (!stats) {
     return (
       <div className="rounded-xl border border-white/10 bg-black/60 p-6 text-white backdrop-blur">
@@ -75,7 +76,6 @@ export function PlayerRankCard({ stats, seasonStats }: Props) {
 
   // ── Rang — Phase 7 ──────────────────────────────────────────────────
   // Priorité : stats saison DB → stats globales DB → calcul client
-  const effectiveMmr = Number(seasonStats?.mmr ?? stats.mmr ?? 1000);
   const derived      = getRankFromMmr(effectiveMmr);
 
   const tier     = ((seasonStats?.rank_tier ?? stats.rank_tier ?? derived.tier) as RankTier);
@@ -90,9 +90,6 @@ export function PlayerRankCard({ stats, seasonStats }: Props) {
   const winrate = stats.total_games > 0
     ? Math.round((stats.total_wins / stats.total_games) * 100)
     : 0;
-
-  // MMR jusqu'au prochain tier (null si Diamond)
-  const toNextTier = useMemo(() => mmrToNextTier(effectiveMmr), [effectiveMmr]);
 
   // LP progress bar (0–100, capé pour l'affichage)
   const lpProgress = Math.max(0, Math.min(100, lp));

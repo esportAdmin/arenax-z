@@ -133,7 +133,6 @@ export default function Rewards() {
                   </div>
 
                   {p.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={p.image_url}
                       alt={p.name}
