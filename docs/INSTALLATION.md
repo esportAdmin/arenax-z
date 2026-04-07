@@ -81,13 +81,12 @@ Créez un fichier `.env.local` à la racine du projet :
 
 ```env
 # Supabase Configuration
-VITE_SUPABASE_URL=https://votre-project-id.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-VITE_SUPABASE_PROJECT_ID=votre-project-id
+NEXT_PUBLIC_SUPABASE_URL=https://votre-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # Pour le développement local avec Supabase CLI
-# VITE_SUPABASE_URL=http://localhost:54321
-# VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ---
@@ -183,7 +182,7 @@ Dans le dashboard Supabase :
 
 1. Allez dans **Authentication > Providers**
 2. Sous **Email**, activez **Confirm email** ou désactivez pour le dev local
-3. Configurez l'URL de redirection : `http://localhost:5173`
+3. Configurez l'URL de redirection : `http://localhost:3000`
 
 Ou via CLI :
 
@@ -237,7 +236,7 @@ Créez vos produits dans Stripe et mettez à jour les IDs dans :
 # Démarrer le serveur de développement
 npm run dev
 
-# Le site sera accessible sur http://localhost:5173
+# Le site sera accessible sur http://localhost:3000
 ```
 
 ### Build de Production
@@ -322,7 +321,7 @@ const corsHeaders = {
 
 ### Erreur "Invalid JWT"
 
-- Vérifiez que `VITE_SUPABASE_PUBLISHABLE_KEY` est correct
+- Vérifiez que `NEXT_PUBLIC_SUPABASE_ANON_KEY` est correct
 - Assurez-vous que l'utilisateur est bien authentifié
 
 ### Erreur de connexion à la base de données

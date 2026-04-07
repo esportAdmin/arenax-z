@@ -39,7 +39,7 @@ import { differenceInDays, parseISO } from "date-fns";
 
 const navLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Games", href: "/games", icon: Gamepad2 },
+  { name: "Games", href: "/game", icon: Gamepad2 },
   { name: "Predictions", href: "/predictions", icon: TrendingUp },
   { name: "Clubs", href: "/clubs", icon: Users },
   { name: "Leaderboard", href: "/leaderboard", icon: Trophy },

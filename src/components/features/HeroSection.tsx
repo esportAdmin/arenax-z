@@ -74,7 +74,7 @@ export function HeroSection() {
               </Button>
             </AppLink>
 
-            <AppLink href="/games">
+            <AppLink href="/game">
               <Button variant="web3" size="xl" className="text-lg">
                 Voir les Jeux
               </Button>

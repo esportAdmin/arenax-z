@@ -62,6 +62,7 @@ const Predictions = () => {
 
   // Stats
   const liveMatchesCount = matches?.filter(m => m.isLive).length || 0;
+  const handlePredict = () => {};
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,10 +160,8 @@ const Predictions = () => {
                     >
                       <MatchCardCompact
                         match={match}
-                        onPlacePrediction={placePrediction}
-                        isPlacing={placing}
-                        userBalance={profile?.arena_balance || 0}
-                        isAuthenticated={!!user}
+                        index={index}
+                        onPredict={handlePredict}
                       />
                     </motion.div>
                   ))
@@ -180,10 +179,6 @@ const Predictions = () => {
             {matchOfTheDay && (
               <MatchOfTheDay 
                 match={matchOfTheDay}
-                onPlacePrediction={placePrediction}
-                isPlacing={placing}
-                userBalance={profile?.arena_balance || 0}
-                isAuthenticated={!!user}
               />
             )}
           </div>

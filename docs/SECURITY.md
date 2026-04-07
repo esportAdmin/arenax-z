@@ -333,9 +333,9 @@ function checkRateLimit(userId: string, limit = 100, windowMs = 60000): boolean 
 
 | Variable                        | Exposition | Usage                     |
 | ------------------------------- | ---------- | ------------------------- |
-| `VITE_SUPABASE_URL`             | ✅ Client  | URL publique Supabase     |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ Client  | Clé anon publique         |
-| `VITE_STRIPE_PUBLISHABLE_KEY`   | ✅ Client  | Clé Stripe publique       |
+| `NEXT_PUBLIC_SUPABASE_URL`      | ✅ Client  | URL publique Supabase     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ Client  | Clé anon publique         |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ Client  | Clé Stripe publique       |
 | `STRIPE_SECRET_KEY`             | ❌ Serveur | Edge Functions uniquement |
 | `STRIPE_WEBHOOK_SECRET`         | ❌ Serveur | Webhooks uniquement       |
 | `PANDASCORE_API_KEY`            | ❌ Serveur | Edge Functions uniquement |
