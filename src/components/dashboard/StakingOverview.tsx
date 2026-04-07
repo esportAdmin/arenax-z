@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { Coins, Lock, Unlock, TrendingUp, ArrowRight } from "lucide-react";
+import { Coins, Lock, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 

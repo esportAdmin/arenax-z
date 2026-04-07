@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Clock, TrendingUp, CheckCircle2, XCircle, Timer } from "lucide-react";
+import { CheckCircle2, XCircle, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Prediction {

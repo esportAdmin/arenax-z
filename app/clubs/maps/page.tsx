@@ -20,7 +20,6 @@ export default function ClubsMapPage() {
 
   const [selected, setSelected] = useState<Territory | null>(null);
   const [clubId, setClubId] = useState<string | null>(null);
-  const [invading, setInvading] = useState(false);
 
   /* =========================
      GET USER CLUB
@@ -56,8 +55,6 @@ export default function ClubsMapPage() {
       return;
     }
 
-    setInvading(true);
-
     try {
       const res = await fetch("/api/territories/invade", {
         method: "POST",
@@ -91,8 +88,6 @@ export default function ClubsMapPage() {
         description: "Unexpected error",
         variant: "destructive",
       });
-    } finally {
-      setInvading(false);
     }
   }
 

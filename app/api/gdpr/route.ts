@@ -7,7 +7,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient }       from "@supabase/supabase-js";
 import { cookies }            from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { sendDeletionConfirmationEmail, sendWelcomeEmail } from "@/lib/email/emailService";
+import { sendDeletionConfirmationEmail } from "@/lib/email/emailService";
 
 function getAdmin() {
   return createClient(
