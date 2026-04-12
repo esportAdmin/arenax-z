@@ -38,9 +38,8 @@ interface PlayerLeaderboardData {
   seasonId: string | null;
 }
 
-const USE_STATIC_PLAYER_LEADERBOARD =
-  process.env.NODE_ENV !== "production" ||
-  process.env.NEXT_PUBLIC_APP_ENV === "preview";
+const USE_LIVE_PLAYER_LEADERBOARD =
+  process.env.NEXT_PUBLIC_ENABLE_LIVE_PLAYER_LEADERBOARD === "true";
 
 const FALLBACK_PLAYER_LEADERBOARD: PlayerLeaderboardEntry[] = [
   {
@@ -250,7 +249,7 @@ export function usePlayerLeaderboard(page = 1, pageSize = 25) {
       setError(null);
 
       try {
-        if (USE_STATIC_PLAYER_LEADERBOARD) {
+        if (!USE_LIVE_PLAYER_LEADERBOARD) {
           if (!cancelled) {
             setData(buildFallbackData(safePage, safePageSize));
           }
@@ -339,7 +338,7 @@ export function usePlayerLeaderboard(page = 1, pageSize = 25) {
 
     void fetchLeaderboard();
 
-    if (USE_STATIC_PLAYER_LEADERBOARD) {
+    if (!USE_LIVE_PLAYER_LEADERBOARD) {
       return () => {
         cancelled = true;
       };
