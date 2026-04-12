@@ -14,6 +14,9 @@ const OUTPUT_DIR = process.env.QA_OUTPUT_DIR
 const SESSION_COOKIE = process.env.QA_COOKIE ?? "";
 const VERCEL_PROTECTION_BYPASS = process.env.QA_VERCEL_PROTECTION_BYPASS ?? "";
 const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS ?? 45000);
+const TWITCH_AUTH_ENABLED =
+  process.env.QA_ENABLE_TWITCH_AUTH === "true" ||
+  process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -39,8 +42,10 @@ const ROUTES = [
     path: "/login",
     actions: [
       { label: "Continue with Discord", expectedPathStartsWith: ["/oauth2/authorize", "/login", "/dashboard", "/auth"] },
-      { label: "Continue with Twitch", expectedPathStartsWith: ["/oauth2/authorize", "/login", "/dashboard", "/auth"] },
-    ],
+      TWITCH_AUTH_ENABLED
+        ? { label: "Continue with Twitch", expectedPathStartsWith: ["/oauth2/authorize", "/login", "/dashboard", "/auth"] }
+        : null,
+    ].filter(Boolean),
   },
   { name: "Clubs", path: "/clubs" },
   { name: "War Map", path: "/war-map" },

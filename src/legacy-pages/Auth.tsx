@@ -27,6 +27,8 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const twitchAuthEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
 
   const { user, loading, signUp, signIn, signInWithDiscord, signInWithTwitch } =
     useAuth();
@@ -132,6 +134,15 @@ const Auth = () => {
   };
 
   const handleTwitchSignIn = async () => {
+    if (!twitchAuthEnabled) {
+      toast({
+        title: "Twitch access is coming next",
+        description:
+          "Discord is the primary launch path while Twitch OAuth is being prepared.",
+      });
+      return;
+    }
+
     const { error } = await signInWithTwitch(redirectTarget);
     if (error) {
       toast({
@@ -191,12 +202,13 @@ const Auth = () => {
           type="button"
           variant="secondary"
           size="lg"
-          className="w-full h-14 mb-6 text-base bg-[#7d3cff] text-white hover:bg-[#6f32e0]"
+          className="w-full h-14 mb-6 text-base bg-[#7d3cff] text-white hover:bg-[#6f32e0] disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-400"
           onClick={handleTwitchSignIn}
-          disabled={isLoading}
+          disabled={isLoading || !twitchAuthEnabled}
+          aria-disabled={!twitchAuthEnabled}
         >
           <FaTwitch className="w-5 h-5 mr-3" />
-          Continue with Twitch
+          {twitchAuthEnabled ? "Continue with Twitch" : "Twitch access coming next"}
         </Button>
 
         {showDevBypass ? (

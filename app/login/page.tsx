@@ -24,6 +24,8 @@ import { AppLink } from "@/components/AppLink";
 function LoginPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailFallback, setShowEmailFallback] = useState(false);
+  const twitchAuthEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
   const searchParams = useSearchParams();
   const { user, loading, signInWithDiscord, signInWithTwitch } = useAuth();
   const navigate = useAppNavigate();
@@ -114,6 +116,15 @@ function LoginPageContent() {
   };
 
   const handleTwitchLogin = async () => {
+    if (!twitchAuthEnabled) {
+      toast({
+        title: "Twitch access is coming next",
+        description:
+          "Discord is the primary launch path while Twitch OAuth is being prepared.",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await signInWithTwitch(redirectTarget);
@@ -290,11 +301,16 @@ function LoginPageContent() {
 
                 <button
                   onClick={handleTwitchLogin}
-                  disabled={isLoading}
-                  className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-[#7d3cff]/40 bg-[#7d3cff]/20 px-6 py-4 font-semibold text-white transition-all duration-300 hover:border-[#7d3cff]/70 hover:bg-[#7d3cff]/28"
+                  disabled={isLoading || !twitchAuthEnabled}
+                  aria-disabled={!twitchAuthEnabled}
+                  className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-[#7d3cff]/40 bg-[#7d3cff]/20 px-6 py-4 font-semibold text-white transition-all duration-300 hover:border-[#7d3cff]/70 hover:bg-[#7d3cff]/28 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-400 disabled:hover:bg-white/5"
                 >
                   <FaTwitch className="h-5 w-5" />
-                  <span>Continue with Twitch</span>
+                  <span>
+                    {twitchAuthEnabled
+                      ? "Continue with Twitch"
+                      : "Twitch access coming next"}
+                  </span>
                 </button>
 
                 {showDevBypass ? (
