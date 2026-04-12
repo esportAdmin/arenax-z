@@ -38,7 +38,9 @@ interface PlayerLeaderboardData {
   seasonId: string | null;
 }
 
-const USE_STATIC_PLAYER_LEADERBOARD = process.env.NODE_ENV !== "production";
+const USE_STATIC_PLAYER_LEADERBOARD =
+  process.env.NODE_ENV !== "production" ||
+  process.env.NEXT_PUBLIC_APP_ENV === "preview";
 
 const FALLBACK_PLAYER_LEADERBOARD: PlayerLeaderboardEntry[] = [
   {

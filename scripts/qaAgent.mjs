@@ -12,6 +12,7 @@ const OUTPUT_DIR = process.env.QA_OUTPUT_DIR
   ? path.resolve(process.env.QA_OUTPUT_DIR)
   : path.join(process.cwd(), "artifacts", "qa-agent");
 const SESSION_COOKIE = process.env.QA_COOKIE ?? "";
+const VERCEL_PROTECTION_BYPASS = process.env.QA_VERCEL_PROTECTION_BYPASS ?? "";
 const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS ?? 45000);
 
 function sleep(ms) {
@@ -37,8 +38,8 @@ const ROUTES = [
     name: "Login",
     path: "/login",
     actions: [
-      { label: "Continue with Discord", expectedPathStartsWith: ["/login", "/dashboard", "/auth"] },
-      { label: "Continue with Google", expectedPathStartsWith: ["/login", "/dashboard", "/auth"] },
+      { label: "Continue with Discord", expectedPathStartsWith: ["/oauth2/authorize", "/login", "/dashboard", "/auth"] },
+      { label: "Continue with Twitch", expectedPathStartsWith: ["/oauth2/authorize", "/login", "/dashboard", "/auth"] },
     ],
   },
   { name: "Clubs", path: "/clubs" },
@@ -165,6 +166,26 @@ async function createInstrumentedPage(browser) {
   });
 
   return { page, consoleIssues };
+}
+
+async function setVercelBypassCookie(browser) {
+  if (!VERCEL_PROTECTION_BYPASS) {
+    return;
+  }
+
+  const page = await browser.newPage();
+  try {
+    const bypassUrl = new URL(BASE_URL);
+    bypassUrl.searchParams.set("x-vercel-set-bypass-cookie", "true");
+    bypassUrl.searchParams.set("x-vercel-protection-bypass", VERCEL_PROTECTION_BYPASS);
+
+    await page.goto(bypassUrl.toString(), {
+      waitUntil: "networkidle2",
+      timeout: TIMEOUT_MS,
+    });
+  } finally {
+    await page.close();
+  }
 }
 
 async function getPageSnapshot(page) {
@@ -314,6 +335,8 @@ async function main() {
   });
 
   try {
+    await setVercelBypassCookie(browser);
+
     const routes = [];
 
     for (const route of ROUTES) {
