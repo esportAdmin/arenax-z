@@ -14,6 +14,12 @@ const OUTPUT_DIR = process.env.QA_OUTPUT_DIR
 const SESSION_COOKIE = process.env.QA_COOKIE ?? "";
 const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS ?? 45000);
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 const ROUTES = [
   {
     name: "Landing",
@@ -241,7 +247,7 @@ async function performActionCheck(browser, route, action) {
         action.expectedPathStartsWith,
       );
     } catch {
-      await page.waitForTimeout(1200);
+      await sleep(1200);
     }
 
     const currentPath = new URL(page.url()).pathname;
@@ -270,7 +276,7 @@ async function inspectRoute(browser, route) {
       waitUntil: "networkidle2",
       timeout: TIMEOUT_MS,
     });
-    await page.waitForTimeout(500);
+    await sleep(500);
 
     const snapshot = await getPageSnapshot(page);
     const actions = [];

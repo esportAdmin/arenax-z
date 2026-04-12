@@ -12,7 +12,6 @@
  */
 
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   DEV_AUTH_COOKIE,
@@ -54,58 +53,11 @@ const AUTH_REQUIRED_PREFIXES = [
   "/api/notifications",
 ];
 
-function getAdminClient() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) return null;
-
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceRoleKey,
-  ) as ReturnType<typeof createClient<any>>;
-}
-
-function getSocialProfileSeed(user: {
-  id: string;
-  email?: string | null;
+function isCommunityAuthProvider(user: {
   app_metadata?: Record<string, unknown>;
-  user_metadata?: Record<string, unknown>;
 }) {
   const provider = String(user.app_metadata?.provider ?? "");
-  const isCommunityProvider = provider === "discord" || provider === "twitch";
-
-  if (!isCommunityProvider) {
-    return { isCommunityProvider: false, profile: null };
-  }
-
-  const rawName =
-    user.user_metadata?.full_name ??
-    user.user_metadata?.name ??
-    user.user_metadata?.preferred_username ??
-    user.email?.split("@")[0] ??
-    "Commander";
-
-  const avatarUrl =
-    user.user_metadata?.avatar_url ??
-    user.user_metadata?.picture ??
-    null;
-
-  const providerId =
-    user.user_metadata?.provider_id ??
-    user.user_metadata?.sub ??
-    null;
-
-  return {
-    isCommunityProvider: true,
-    profile: {
-      id: user.id,
-      display_name: String(rawName),
-      avatar_url: avatarUrl ? String(avatarUrl) : null,
-      discord_id:
-        provider === "discord" && providerId ? String(providerId) : null,
-      onboarding_completed: true,
-      onboarding_completed_at: new Date().toISOString(),
-    },
-  };
+  return provider === "discord" || provider === "twitch";
 }
 
 // ─────────────────────────────────────────────
@@ -232,32 +184,8 @@ export async function middleware(request: NextRequest) {
       .select("onboarding_completed, data_deletion_requested_at")
       .eq("id", user.id)
       .maybeSingle();
-    let profile = currentProfile;
-
-    const admin = getAdminClient();
-    const { isCommunityProvider, profile: socialProfile } = getSocialProfileSeed(
-      user,
-    );
-
-    if (admin && isCommunityProvider) {
-      if (!profile) {
-        await admin.from("profiles").upsert(socialProfile, { onConflict: "id" });
-        profile = {
-          onboarding_completed: true,
-          data_deletion_requested_at: null,
-        };
-      } else if (!profile.onboarding_completed) {
-        await admin
-          .from("profiles")
-          .update({
-            onboarding_completed: true,
-            onboarding_completed_at: new Date().toISOString(),
-          })
-          .eq("id", user.id);
-
-        profile = { ...profile, onboarding_completed: true };
-      }
-    }
+    const profile = currentProfile;
+    const isCommunityProvider = isCommunityAuthProvider(user);
 
     // Compte en cours de suppression RGPD
     if (profile?.data_deletion_requested_at) {
