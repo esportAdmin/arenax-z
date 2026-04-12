@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -31,55 +31,64 @@ export function useDailyChallenges() {
   const [challenges, setChallenges] = useState<DailyChallenge[]>([]);
   const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Try to get notifications
-  let notifyChallengeComplete: ((title: string, xp: number) => void) | null = null;
+
+  let notifyChallengeComplete: ((title: string, xp: number) => void) | null =
+    null;
   try {
     const notifications = useGameNotifications();
     notifyChallengeComplete = notifications.notifyChallengeComplete;
   } catch {
-    // Not in notification provider context
+    notifyChallengeComplete = null;
   }
 
   const fetchChallenges = useCallback(async () => {
     if (!user) {
+      setChallenges([]);
+      setUserChallenges([]);
       setLoading(false);
       return;
     }
 
     try {
-      // Fetch all active challenges
       const { data: challengesData, error: challengesError } = await supabase
         .from("daily_challenges")
         .select("*")
         .eq("active", true);
 
-      if (challengesError) throw challengesError;
+      if (challengesError) {
+        throw challengesError;
+      }
+
       setChallenges(challengesData || []);
 
-      // Fetch user's challenge progress for today
       const today = new Date().toISOString().split("T")[0];
-      const { data: userChallengesData, error: userChallengesError } = await supabase
-        .from("user_daily_challenges")
-        .select(`
-          *,
-          challenge:daily_challenges(*)
-        `)
-        .eq("user_id", user.id)
-        .eq("challenge_date", today);
+      const { data: userChallengesData, error: userChallengesError } =
+        await supabase
+          .from("user_daily_challenges")
+          .select(
+            `
+            *,
+            challenge:daily_challenges(*)
+          `,
+          )
+          .eq("user_id", user.id)
+          .eq("challenge_date", today);
 
-      if (userChallengesError) throw userChallengesError;
+      if (userChallengesError) {
+        throw userChallengesError;
+      }
 
-      // Initialize challenges for today if not exists
-      const existingChallengeIds = (userChallengesData || []).map(uc => uc.challenge_id);
+      const existingChallengeIds = (userChallengesData || []).map(
+        (challenge) => challenge.challenge_id,
+      );
       const missingChallenges = (challengesData || []).filter(
-        c => !existingChallengeIds.includes(c.id)
+        (challenge) => !existingChallengeIds.includes(challenge.id),
       );
 
       if (missingChallenges.length > 0) {
-        const newUserChallenges = missingChallenges.map(c => ({
+        const newUserChallenges = missingChallenges.map((challenge) => ({
           user_id: user.id,
-          challenge_id: c.id,
+          challenge_id: challenge.id,
           challenge_date: today,
           progress: 0,
           completed: false,
@@ -90,15 +99,18 @@ export function useDailyChallenges() {
           .from("user_daily_challenges")
           .insert(newUserChallenges);
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          throw insertError;
+        }
 
-        // Refetch user challenges
         const { data: refreshedData } = await supabase
           .from("user_daily_challenges")
-          .select(`
+          .select(
+            `
             *,
             challenge:daily_challenges(*)
-          `)
+          `,
+          )
           .eq("user_id", user.id)
           .eq("challenge_date", today);
 
@@ -107,33 +119,36 @@ export function useDailyChallenges() {
         setUserChallenges(userChallengesData || []);
       }
 
-      // Auto-complete login challenge
       const loginChallenge = (userChallengesData || []).find(
-        uc => uc.challenge?.challenge_type === "login" && !uc.completed
+        (challenge) =>
+          challenge.challenge?.challenge_type === "login" &&
+          !challenge.completed,
       );
       if (loginChallenge) {
         await supabase
           .from("user_daily_challenges")
-          .update({ 
-            progress: 1, 
-            completed: true, 
-            completed_at: new Date().toISOString() 
+          .update({
+            progress: 1,
+            completed: true,
+            completed_at: new Date().toISOString(),
           })
           .eq("id", loginChallenge.id);
-        
-        // Refetch
+
         const { data: refreshedData } = await supabase
           .from("user_daily_challenges")
-          .select(`
+          .select(
+            `
             *,
             challenge:daily_challenges(*)
-          `)
+          `,
+          )
           .eq("user_id", user.id)
           .eq("challenge_date", today);
         setUserChallenges(refreshedData || []);
       }
-    } catch (error) {
-      console.error("Error fetching daily challenges:", error);
+    } catch {
+      setChallenges([]);
+      setUserChallenges([]);
     } finally {
       setLoading(false);
     }
@@ -144,39 +159,47 @@ export function useDailyChallenges() {
   }, [fetchChallenges]);
 
   const claimReward = async (userChallengeId: string) => {
-    // Find the challenge to get its title
-    const userChallenge = userChallenges.find(uc => uc.id === userChallengeId);
-    
+    const userChallenge = userChallenges.find(
+      (challenge) => challenge.id === userChallengeId,
+    );
+
     try {
       const { data, error } = await supabase.rpc("claim_challenge_reward", {
         p_user_challenge_id: userChallengeId,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
-      const result = data as { success: boolean; xp_earned?: number; error?: string };
-      
+      const result = data as {
+        success: boolean;
+        xp_earned?: number;
+        error?: string;
+      };
+
       if (result.success) {
-        // Send notification
         if (notifyChallengeComplete && userChallenge) {
-          notifyChallengeComplete(userChallenge.challenge.title, result.xp_earned || 0);
+          notifyChallengeComplete(
+            userChallenge.challenge.title,
+            result.xp_earned || 0,
+          );
         }
-        
+
         toast({
-          title: "XP réclamé !",
-          description: `+${result.xp_earned} XP ajoutés à votre profil`,
+          title: "XP claimed",
+          description: `+${result.xp_earned} XP added to your profile.`,
         });
-        
-        // Refresh challenges
+
         fetchChallenges();
         return { success: true, xpEarned: result.xp_earned };
-      } else {
-        throw new Error(result.error);
       }
+
+      throw new Error(result.error);
     } catch (error: any) {
       toast({
-        title: "Erreur",
-        description: error.message || "Impossible de réclamer la récompense",
+        title: "Claim failed",
+        description: error.message || "Unable to claim this challenge reward.",
         variant: "destructive",
       });
       return { success: false };

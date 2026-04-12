@@ -1,8 +1,14 @@
-import { Search, Filter, Gamepad2, Radio, Calendar, CheckCircle } from "lucide-react";
+"use client";
+
+import type { ReactNode } from "react";
+import { Calendar, CheckCircle, Gamepad2, Radio, Search, Sparkles } from "lucide-react";
+
+import { CountdownPill } from "@/components/engagement/CountdownPill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getNextUtcMidnight } from "@/lib/countdown";
 
-type FilterType = 'all' | 'live' | 'upcoming' | 'finished';
+type FilterType = "all" | "live" | "upcoming" | "finished";
 
 interface MatchFiltersProps {
   searchQuery: string;
@@ -15,51 +21,64 @@ export const MatchFilters = ({
   searchQuery,
   onSearchChange,
   activeFilter,
-  onFilterChange
+  onFilterChange,
 }: MatchFiltersProps) => {
-  const filters: { id: FilterType; label: string; icon: React.ReactNode }[] = [
-    { id: 'all', label: 'Tous', icon: <Gamepad2 className="w-4 h-4" /> },
-    { id: 'live', label: 'En Direct', icon: <Radio className="w-4 h-4" /> },
-    { id: 'upcoming', label: 'À Venir', icon: <Calendar className="w-4 h-4" /> },
-    { id: 'finished', label: 'Terminés', icon: <CheckCircle className="w-4 h-4" /> },
+  const filters: { id: FilterType; label: string; icon: ReactNode }[] = [
+    { id: "all", label: "All", icon: <Gamepad2 className="h-4 w-4" /> },
+    { id: "live", label: "Live", icon: <Radio className="h-4 w-4" /> },
+    { id: "upcoming", label: "Upcoming", icon: <Calendar className="h-4 w-4" /> },
+    { id: "finished", label: "Finished", icon: <CheckCircle className="h-4 w-4" /> },
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      {/* Search */}
-      <div className="relative flex-1">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <Input
-          placeholder="Rechercher équipes ou tournois..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-12 h-12 bg-card/50 border-border/50 text-base"
-        />
+    <div className="section-shell space-y-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div className="eyebrow-badge">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Match discovery
+          </div>
+          <h3 className="mt-3 text-2xl font-display font-bold text-white">
+            Filter toward the next meaningful decision
+          </h3>
+        </div>
+        <CountdownPill label="Reset" target={getNextUtcMidnight()} tone="cyan" />
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0">
-        {filters.map((filter) => (
-          <Button
-            key={filter.id}
-            variant={activeFilter === filter.id ? "glass" : "ghost"}
-            onClick={() => onFilterChange(filter.id)}
-            className={`gap-2 whitespace-nowrap transition-all ${
-              activeFilter === filter.id 
-                ? "ring-1 ring-primary/50" 
-                : "hover:bg-muted/50"
-            }`}
-          >
-            {filter.icon}
-            {filter.label}
-            {filter.id === 'live' && (
-              <span className="relative flex h-2 w-2 ml-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
-              </span>
-            )}
-          </Button>
-        ))}
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search teams, tournaments, or narratives..."
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            className="h-12 border-white/10 bg-black/20 pl-12 text-base"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {filters.map((filter) => (
+            <Button
+              key={filter.id}
+              variant={activeFilter === filter.id ? "glass" : "ghost"}
+              onClick={() => onFilterChange(filter.id)}
+              className={`gap-2 whitespace-nowrap ${
+                activeFilter === filter.id
+                  ? "ring-1 ring-primary/50"
+                  : "hover:bg-white/5"
+              }`}
+            >
+              {filter.icon}
+              {filter.label}
+              {filter.id === "live" ? (
+                <span className="relative ml-1 flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
+                </span>
+              ) : null}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );

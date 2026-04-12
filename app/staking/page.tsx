@@ -1,8 +1,5 @@
-"use client";
-
-import Staking from "@/legacy-pages/Staking";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <Staking />;
+  redirect("/rewards");
 }
-

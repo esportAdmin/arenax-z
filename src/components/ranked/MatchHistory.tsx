@@ -68,6 +68,7 @@ interface Props {
 }
 
 export function MatchHistory({ matches, currentUserId, loading = false }: Props) {
+  void currentUserId;
   if (loading) return <MatchHistorySkeleton />;
 
   if (!matches || matches.length === 0) {

@@ -9,15 +9,10 @@ import {
   Edit,
   Trash2,
   UserPlus,
-  TrendingUp,
-  TrendingDown,
   Target,
-  Trophy,
-  Star,
   MoreHorizontal,
   Sparkles,
   Plus,
-  ArrowUpRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -508,7 +503,7 @@ export default function AnalyticsTeams() {
                   <div className="flex items-center gap-2 mb-4">
                     <Target className="w-5 h-5 text-primary" />
                     <h3 className="font-semibold text-foreground">
-                      Recent Player Predictions
+            Recent Player Live Calls
                     </h3>
                   </div>
                   <table className="w-full">
@@ -734,7 +729,7 @@ export default function AnalyticsTeams() {
                       Remove player
                     </Button>
                     <Button variant="outline" size="sm" className="w-full">
-                      Generate predictions
+            Generate live calls
                     </Button>
                     <Button
                       variant="outline"

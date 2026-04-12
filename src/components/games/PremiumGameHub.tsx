@@ -85,7 +85,7 @@ function getAccentTokens(accent: Accent) {
  * console.log(url);
  */
 function gameHref(id: string) {
-  return `/predictions?game=${encodeURIComponent(id)}`;
+  return `/live-calls?game=${encodeURIComponent(id)}`;
 }
 
 function LivePill() {
@@ -155,7 +155,7 @@ function GameCardView({ game }: { game: GameCard }) {
             <span
               className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold ${t.ring} bg-primary/15 text-white/90 shadow-[0_0_25px_rgba(0,255,255,0.12)]`}
             >
-              Prédire
+              Make call
             </span>
           ) : null}
 
@@ -186,9 +186,9 @@ export default function PremiumGameHub() {
   ];
 
   const upcoming: UpcomingItem[] = [
-    { id: "u1", title: "Team A vs Team B", time: "03:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b" },
-    { id: "u2", title: "Team A vs Team B", time: "05:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-2" },
-    { id: "u3", title: "Team A vs Team B", time: "05:45 PM", href: "/predictions?from=games_upcoming&match=team-a-vs-team-b-3" },
+    { id: "u1", title: "Team A vs Team B", time: "03:45 PM", href: "/live-calls?from=games_upcoming&match=team-a-vs-team-b" },
+    { id: "u2", title: "Team A vs Team B", time: "05:45 PM", href: "/live-calls?from=games_upcoming&match=team-a-vs-team-b-2" },
+    { id: "u3", title: "Team A vs Team B", time: "05:45 PM", href: "/live-calls?from=games_upcoming&match=team-a-vs-team-b-3" },
   ];
 
   return (
@@ -248,7 +248,7 @@ export default function PremiumGameHub() {
           <div className="flex items-center justify-between">
             <h2 className="font-display text-xl font-bold text-white">Upcoming</h2>
             <Link
-              href="/predictions?from=games_view_all"
+              href="/live-calls?from=games_view_all"
               className="text-sm font-semibold text-primary/80 hover:text-primary"
             >
               View All

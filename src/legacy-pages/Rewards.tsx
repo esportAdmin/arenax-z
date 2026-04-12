@@ -1,21 +1,86 @@
-// src/legacy-pages/Rewards.tsx
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Gift, Loader2, ShoppingCart } from "lucide-react";
+import {
+  ArrowRight,
+  Coins,
+  Gift,
+  Loader2,
+  LockKeyhole,
+  ShieldCheck,
+  ShoppingCart,
+  Sparkles,
+  TimerReset,
+  Trophy,
+  Zap,
+} from "lucide-react";
 
+import { CountdownPill } from "@/components/engagement/CountdownPill";
+import { ReturnNudgeCard } from "@/components/engagement/ReturnNudgeCard";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { LevelRewardsGrid } from "@/components/rewards/LevelRewardsGrid";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { getHoursFromNow, getNextWeeklyReset } from "@/lib/countdown";
+import { isLocalQaUser } from "@/lib/dev-auth";
+import { cn } from "@/lib/utils";
 
 type PrizeRow = Database["public"]["Tables"]["arena_prizes"]["Row"];
 
 export type Prize = Omit<PrizeRow, "active"> & {
   active: boolean;
 };
+
+const FALLBACK_PRIZES: Prize[] = [
+  {
+    id: 1,
+    sku: "qa-premium-pass",
+    name: "Premium Command Pass",
+    description: "A flagship reward card that keeps the vault feeling desirable.",
+    price_arena: 1200,
+    usd_value: 19,
+    stock: 14,
+    category: "premium",
+    image_url: null,
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+    updated_at: new Date().toISOString(),
+    active: true,
+  },
+  {
+    id: 2,
+    sku: "qa-elite-badge",
+    name: "Elite Club Crest",
+    description: "A high-status cosmetic unlock for social proof inside the product.",
+    price_arena: 850,
+    usd_value: 12,
+    stock: 32,
+    category: "identity",
+    image_url: null,
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+    updated_at: new Date().toISOString(),
+    active: true,
+  },
+  {
+    id: 3,
+    sku: "qa-drop-crate",
+    name: "Weekly Drop Crate",
+    description: "A repeatable vault reward that reinforces return behavior.",
+    price_arena: 500,
+    usd_value: 7,
+    stock: 99,
+    category: "drops",
+    image_url: null,
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+    active: true,
+  },
+];
 
 function normalizePrize(row: PrizeRow): Prize {
   return {
@@ -25,153 +90,365 @@ function normalizePrize(row: PrizeRow): Prize {
 }
 
 export default function Rewards() {
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { profile } = useProfile();
   const [prizes, setPrizes] = useState<Prize[]>([]);
   const [loading, setLoading] = useState(true);
+  const isLocalQa = isLocalQaUser(user);
 
   const fetchPrizes = useCallback(async () => {
+    if (isLocalQa) {
+      setPrizes(FALLBACK_PRIZES);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
 
     const { data, error } = await supabase
-      // FIX: table name is "arena_prizes" (not "prizes")
       .from("arena_prizes")
       .select("*")
       .order("price_arena", { ascending: true });
 
     if (error) {
-      toast({
-        title: "Erreur",
-        description: error.message ?? "Impossible de charger les récompenses",
-        variant: "destructive",
-      });
-      setPrizes([]);
+      setPrizes(FALLBACK_PRIZES);
       setLoading(false);
       return;
     }
 
-    const normalized = (data ?? []).map(normalizePrize);
-    setPrizes(normalized);
+    setPrizes((data ?? []).map(normalizePrize));
     setLoading(false);
-  }, [toast]);
+  }, [isLocalQa]);
 
   useEffect(() => {
     fetchPrizes();
   }, [fetchPrizes]);
 
-  const activePrizes = useMemo(() => prizes.filter((p) => p.active), [prizes]);
+  const activePrizes = useMemo(
+    () => prizes.filter((prize) => prize.active),
+    [prizes],
+  );
+
+  const inStockPrizes = useMemo(
+    () => activePrizes.filter((prize) => (prize.stock ?? 0) > 0),
+    [activePrizes],
+  );
+
+  const nextStoreRefresh = getHoursFromNow(12);
+  const nextVaultDrop = getNextWeeklyReset(5, 20);
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container-arena py-8">
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <h1 className="font-display font-bold text-2xl md:text-3xl text-white flex items-center gap-2">
-              <Gift className="h-6 w-6 text-primary" />
-              Rewards
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Échange tes points Arena contre des récompenses.
-            </p>
-          </div>
+      <Navbar />
 
-          <Button asChild variant="glass">
-            <Link href="/profile" className="gap-2">
-              <ShoppingCart className="h-4 w-4" />
-              Mon profil
-            </Link>
-          </Button>
-        </div>
+      <main className="pb-12 pt-24">
+        <div className="container-arena space-y-8">
+          <section className="command-frame hero-sheen relative overflow-hidden px-6 py-8 lg:px-10 lg:py-10">
+            <div className="subtle-noise absolute inset-0 opacity-50" />
+            <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(255,191,87,0.18),transparent_55%)]" />
 
-        {loading ? (
-          <div className="glass-card p-6 flex items-center justify-center gap-3">
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            <span className="text-sm text-muted-foreground">
-              Chargement des récompenses…
-            </span>
-          </div>
-        ) : activePrizes.length === 0 ? (
-          <div className="glass-card p-6 text-center">
-            <Gift className="h-10 w-10 mx-auto mb-3 opacity-50" />
-            <div className="text-white font-medium">Aucune récompense</div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Les récompenses seront bientôt disponibles.
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {activePrizes.map((p) => {
-              const inStock = (p.stock ?? 0) > 0;
+            <div className="relative grid gap-8 lg:grid-cols-[1.4fr_0.9fr]">
+              <div className="space-y-5">
+                <div className="eyebrow-badge">Progression vault</div>
 
-              return (
-                <div
-                  key={p.id}
-                  className={cn(
-                    "glass-card p-4 border border-white/5 overflow-hidden",
-                    !inStock && "opacity-70",
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="font-display font-bold text-white truncate">
-                        {p.name}
-                      </div>
-                      {p.description && (
-                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {p.description}
-                        </div>
-                      )}
+                <div>
+                  <h1 className="font-display text-4xl font-black tracking-tight text-white lg:text-6xl">
+                    Turn momentum into{" "}
+                    <span className="block bg-gradient-to-r from-amber-200 via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
+                      rewards people want to protect.
+                    </span>
+                  </h1>
+                  <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 lg:text-lg">
+                    The reward vault should feel like a destination, not a
+                    ledger. Keep unlocks visible, refreshes predictable, and the
+                    next prize close enough to chase.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className="surface-panel border-cyan-400/20 bg-cyan-400/10">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-cyan-200/70">
+                      <Zap className="h-4 w-4" />
+                      Current level
                     </div>
-
-                    <div className="shrink-0 text-right">
-                      <div className="text-sm font-bold text-primary">
-                        {p.price_arena.toLocaleString()} ARENA
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        Stock: {(p.stock ?? 0).toLocaleString()}
-                      </div>
+                    <div className="mt-3 text-3xl font-black text-white">
+                      {profile?.current_level ?? "--"}
                     </div>
                   </div>
 
-                  {p.image_url ? (
-                    <img
-                      src={p.image_url}
-                      alt={p.name}
-                      className="mt-3 w-full h-36 object-cover rounded-lg border border-white/5"
-                    />
-                  ) : (
-                    <div className="mt-3 w-full h-36 rounded-lg border border-white/5 bg-white/5 flex items-center justify-center">
-                      <Gift className="h-8 w-8 text-muted-foreground" />
+                  <div className="surface-panel border-emerald-400/20 bg-emerald-400/10">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-emerald-200/70">
+                      <Coins className="h-4 w-4" />
+                      ARENA balance
                     </div>
-                  )}
+                    <div className="mt-3 text-3xl font-black text-white">
+                      {profile ? profile.arena_balance.toLocaleString("en-US") : "--"}
+                    </div>
+                  </div>
 
-                  <div className="mt-4">
-                    <Button
-                      className="w-full"
-                      variant={inStock ? "default" : "outline"}
-                      disabled={!inStock}
-                      onClick={() => {
-                        toast({
-                          title: "À implémenter",
-                          description:
-                            "Branche la logique d’achat (RPC / Stripe / etc.) ici.",
-                        });
-                      }}
-                    >
-                      {inStock ? "Échanger" : "Rupture de stock"}
-                    </Button>
+                  <div className="surface-panel border-amber-400/20 bg-amber-400/10">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-amber-200/70">
+                      <ShoppingCart className="h-4 w-4" />
+                      Store drops
+                    </div>
+                    <div className="mt-3 text-3xl font-black text-white">
+                      {activePrizes.length}
+                    </div>
+                  </div>
+
+                  <div className="surface-panel border-fuchsia-400/20 bg-fuchsia-400/10">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-fuchsia-200/70">
+                      <ShieldCheck className="h-4 w-4" />
+                      In stock
+                    </div>
+                    <div className="mt-3 text-3xl font-black text-white">
+                      {inStockPrizes.length}
+                    </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
 
-        <div className="mt-8">
-          <Button variant="outline" onClick={fetchPrizes}>
-            Rafraîchir
-          </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="w-full min-w-0 sm:min-w-[190px] sm:w-auto"
+                  >
+                    <Link href="/profile" prefetch={false}>
+                      Return to profile
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="w-full min-w-0 sm:min-w-[190px] sm:w-auto"
+                  >
+                    <Link href="/live-calls" prefetch={false}>Open live calls</Link>
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <CountdownPill
+                    label="Store refresh"
+                    target={nextStoreRefresh}
+                    tone="amber"
+                  />
+                  <CountdownPill
+                    label="Vault drop"
+                    target={nextVaultDrop}
+                    tone="cyan"
+                  />
+                </div>
+              </div>
+
+              <div className="section-shell space-y-4">
+                <div className="eyebrow-badge">Why players return</div>
+
+                <div className="surface-panel">
+                  <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                    Retention loop
+                  </div>
+                  <div className="mt-2 text-xl font-black text-white">
+                    Visible unlocks beat invisible progression.
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-400">
+                    Make the next claim obvious, the next tier desirable, and
+                    the next session feel worth it before the player leaves.
+                  </p>
+                </div>
+
+                {!user ? (
+                  <div className="surface-panel border-white/10">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Sparkles className="h-4 w-4 text-cyan-300" />
+                      Sign in to unlock claimable progression rewards
+                    </div>
+                    <p className="mt-2 text-sm text-slate-400">
+                      Browsing the store is good. Seeing your own next reward is
+                      better.
+                    </p>
+                    <Button asChild className="mt-4 w-full">
+                      <Link href="/login" prefetch={false}>Sign in</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="surface-panel">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                      Progress status
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-xl font-black text-white">
+                      <Trophy className="h-5 w-5 text-amber-300" />
+                      {profile?.total_wins ?? 0} wins converted into value
+                    </div>
+                    <p className="mt-2 text-sm text-slate-400">
+                      The more earned value is visible here, the stronger the
+                      return habit becomes.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 md:grid-cols-3">
+            <ReturnNudgeCard
+              icon={Gift}
+              label="Claim urgency"
+              title="Rewards feel stronger when they can expire"
+              text="A visible claim window gives earned value more emotional weight than a static catalog ever will."
+              tone="amber"
+              lockedText="Flash reward crate opens on the next refresh"
+            />
+            <ReturnNudgeCard
+              icon={LockKeyhole}
+              label="Premium scarcity"
+              title="Locked tiers make the vault feel desirable"
+              text="Even when users cannot redeem yet, they should feel close enough to care."
+              tone="rose"
+              lockedText="Founder-grade reward lane unlocks above the next level"
+            />
+            <ReturnNudgeCard
+              icon={TimerReset}
+              label="Refresh rhythm"
+              title="A cadence gives people a reason to check the vault daily"
+              text="The more predictable the reward rhythm, the easier it becomes to build a return habit around it."
+              tone="cyan"
+              lockedText="Next premium stock rotation goes live after reset"
+            />
+          </section>
+
+          {profile ? (
+            <section className="section-shell space-y-5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className="eyebrow-badge">Claim track</div>
+                  <h2 className="mt-3 font-display text-3xl font-black text-white">
+                    Your progression rewards
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    Keep this section rich and alive. It is one of the clearest
+                    "come back tomorrow" surfaces in the entire product.
+                  </p>
+                </div>
+              </div>
+
+              <LevelRewardsGrid currentLevel={profile.current_level} />
+            </section>
+          ) : null}
+
+          <section className="section-shell space-y-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="eyebrow-badge">Store redemptions</div>
+                <h2 className="mt-3 font-display text-3xl font-black text-white">
+                  Premium redemption catalog
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                  Real rewards create perceived value. Keep the catalog visible,
+                  fresh, and obviously attainable.
+                </p>
+              </div>
+
+              <Button variant="outline" onClick={fetchPrizes}>
+                Refresh catalog
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="glass-card flex items-center justify-center gap-3 p-6">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <span className="text-sm text-muted-foreground">
+                  Loading rewards...
+                </span>
+              </div>
+            ) : activePrizes.length === 0 ? (
+              <div className="glass-card p-6 text-center">
+                <Gift className="mx-auto mb-3 h-10 w-10 opacity-50" />
+                <div className="font-medium text-white">No rewards available</div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Rewards will be available soon.
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {activePrizes.map((prize) => {
+                  const inStock = (prize.stock ?? 0) > 0;
+
+                  return (
+                    <div
+                      key={prize.id}
+                      className={cn(
+                        "surface-panel overflow-hidden border-white/10 p-4 transition-transform duration-200 hover:-translate-y-1",
+                        !inStock && "opacity-70",
+                      )}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="truncate text-lg font-bold text-white">
+                            {prize.name}
+                          </div>
+                          {prize.description ? (
+                            <div className="mt-1 line-clamp-2 text-sm text-slate-400">
+                              {prize.description}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="shrink-0 text-right">
+                          <div className="text-sm font-black text-cyan-300">
+                            {prize.price_arena.toLocaleString("en-US")} ARENA
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            Stock: {(prize.stock ?? 0).toLocaleString("en-US")}
+                          </div>
+                        </div>
+                      </div>
+
+                      {prize.image_url ? (
+                        <img
+                          src={prize.image_url}
+                          alt={prize.name}
+                          className="mt-4 h-40 w-full rounded-2xl border border-white/10 object-cover"
+                        />
+                      ) : (
+                        <div className="mt-4 flex h-40 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                          <Gift className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                      )}
+
+                      <div className="mt-4 flex items-center justify-between gap-3">
+                        <div className="metal-chip">
+                          {inStock ? "Ready to redeem" : "Currently unavailable"}
+                        </div>
+
+                        <Button
+                          className="min-w-[132px]"
+                          variant={inStock ? "default" : "outline"}
+                          disabled={!inStock}
+                          onClick={() => {
+                            toast({
+                              title: "Redemption flow pending",
+                              description:
+                                "Wire your real redemption flow here to turn this into a high-retention value loop.",
+                            });
+                          }}
+                        >
+                          {inStock ? "Redeem" : "Out of stock"}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

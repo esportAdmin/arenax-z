@@ -2,11 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Coins, Lock, Unlock, TrendingUp, Shield, Info, Calculator, Wallet } from "lucide-react";
+import { Coins, Lock, Unlock, Shield, Info, Calculator, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
 
 const lockingTiers = [
   { id: "flexible", name: "Flexible", bonus: 8, lockPeriod: 0, minLock: 100, description: "No lock period, withdraw anytime" },

@@ -15,26 +15,6 @@ export interface Tournament {
   region: string;
 }
 
-interface PandaScoreTournament {
-  id: number;
-  name: string;
-  begin_at: string | null;
-  end_at: string | null;
-  prizepool: string | null;
-  tier: string;
-  league: {
-    id: number;
-    name: string;
-    image_url: string | null;
-  };
-  serie: {
-    id: number;
-    name: string | null;
-    full_name: string | null;
-  };
-  teams?: Array<{ id: number; name: string }>;
-}
-
 interface UseTournamentsOptions {
   filter?: 'all' | 'ongoing' | 'upcoming' | 'finished';
   refreshInterval?: number;

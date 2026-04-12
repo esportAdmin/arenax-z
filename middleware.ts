@@ -12,7 +12,13 @@
  */
 
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  DEV_AUTH_COOKIE,
+  DEV_AUTH_COOKIE_VALUE,
+  isDevBypassAvailable,
+} from "@/lib/dev-auth";
 
 // ─────────────────────────────────────────────
 // ROUTES
@@ -36,10 +42,7 @@ const PUBLIC_API_PREFIXES = ["/api/auth", "/api/health"];
 
 /** Routes UI + API qui nécessitent une session valide */
 const AUTH_REQUIRED_PREFIXES = [
-  "/play",
   "/match",
-  "/profile",
-  "/leaderboard",
   "/replays",
   "/wars",
   "/api/queue",
@@ -50,6 +53,60 @@ const AUTH_REQUIRED_PREFIXES = [
   "/api/profile",
   "/api/notifications",
 ];
+
+function getAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) return null;
+
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    serviceRoleKey,
+  ) as ReturnType<typeof createClient<any>>;
+}
+
+function getSocialProfileSeed(user: {
+  id: string;
+  email?: string | null;
+  app_metadata?: Record<string, unknown>;
+  user_metadata?: Record<string, unknown>;
+}) {
+  const provider = String(user.app_metadata?.provider ?? "");
+  const isCommunityProvider = provider === "discord" || provider === "twitch";
+
+  if (!isCommunityProvider) {
+    return { isCommunityProvider: false, profile: null };
+  }
+
+  const rawName =
+    user.user_metadata?.full_name ??
+    user.user_metadata?.name ??
+    user.user_metadata?.preferred_username ??
+    user.email?.split("@")[0] ??
+    "Commander";
+
+  const avatarUrl =
+    user.user_metadata?.avatar_url ??
+    user.user_metadata?.picture ??
+    null;
+
+  const providerId =
+    user.user_metadata?.provider_id ??
+    user.user_metadata?.sub ??
+    null;
+
+  return {
+    isCommunityProvider: true,
+    profile: {
+      id: user.id,
+      display_name: String(rawName),
+      avatar_url: avatarUrl ? String(avatarUrl) : null,
+      discord_id:
+        provider === "discord" && providerId ? String(providerId) : null,
+      onboarding_completed: true,
+      onboarding_completed_at: new Date().toISOString(),
+    },
+  };
+}
 
 // ─────────────────────────────────────────────
 // CONTENT SECURITY POLICY
@@ -105,6 +162,9 @@ function addSecurityHeaders(res: NextResponse, isApi = false): NextResponse {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApi = pathname.startsWith("/api");
+  const hasDevBypass =
+    isDevBypassAvailable() &&
+    request.cookies.get(DEV_AUTH_COOKIE)?.value === DEV_AUTH_COOKIE_VALUE;
 
   // ── Preflight CORS ───────────────────────────────────────────────
   if (request.method === "OPTIONS") {
@@ -153,7 +213,7 @@ export async function middleware(request: NextRequest) {
   // ── Auth gating ──────────────────────────────────────────────────
   const needsAuth = AUTH_REQUIRED_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (needsAuth && !user) {
+  if (needsAuth && !user && !hasDevBypass) {
     if (isApi) {
       return addSecurityHeaders(
         NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
@@ -167,11 +227,37 @@ export async function middleware(request: NextRequest) {
 
   // ── Onboarding + RGPD gating (UI uniquement) ─────────────────────
   if (user && needsAuth && !isApi && pathname !== "/onboarding") {
-    const { data: profile } = await supabase
+    const { data: currentProfile } = await supabase
       .from("profiles")
       .select("onboarding_completed, data_deletion_requested_at")
       .eq("id", user.id)
       .maybeSingle();
+    let profile = currentProfile;
+
+    const admin = getAdminClient();
+    const { isCommunityProvider, profile: socialProfile } = getSocialProfileSeed(
+      user,
+    );
+
+    if (admin && isCommunityProvider) {
+      if (!profile) {
+        await admin.from("profiles").upsert(socialProfile, { onConflict: "id" });
+        profile = {
+          onboarding_completed: true,
+          data_deletion_requested_at: null,
+        };
+      } else if (!profile.onboarding_completed) {
+        await admin
+          .from("profiles")
+          .update({
+            onboarding_completed: true,
+            onboarding_completed_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+
+        profile = { ...profile, onboarding_completed: true };
+      }
+    }
 
     // Compte en cours de suppression RGPD
     if (profile?.data_deletion_requested_at) {
@@ -180,10 +266,15 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    // Onboarding incomplet ou pas de profil
-    if (!profile || !profile.onboarding_completed) {
+    // Les providers community-first (Discord/Twitch) ne doivent pas tomber
+    // dans un onboarding bloquant sur les routes produit.
+    if ((!profile || !profile.onboarding_completed) && !isCommunityProvider) {
       return NextResponse.redirect(new URL("/onboarding", request.url));
     }
+  }
+
+  if (hasDevBypass && needsAuth && !isApi) {
+    return addSecurityHeaders(response, isApi);
   }
 
   // ── Protection /admin/* — logique de l'ancien middleware préservée ──

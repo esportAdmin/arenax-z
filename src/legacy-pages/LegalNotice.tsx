@@ -98,7 +98,7 @@ const LegalNotice = () => {
                     <p className="text-muted-foreground leading-relaxed">
                       FanArena Pro is an entertainment platform. Arena Points are virtual items with no 
                       real-world monetary value and cannot be exchanged for cash or real currency. 
-                      This platform does not constitute gambling or real-money wagering.
+                      The platform is designed for community engagement, retention, and competitive entertainment.
                     </p>
                     <p className="text-muted-foreground leading-relaxed mt-4">
                       The information provided on this website is for general informational purposes only. 

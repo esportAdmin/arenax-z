@@ -123,7 +123,7 @@ export function PlayerRankCard({ stats, seasonStats }: Props) {
           {/* Phase 9 — badge placements */}
           {inPlacement && (
             <span className="rounded-full bg-white/8 px-2.5 py-1 text-[10px] font-semibold text-white/50">
-              Placement {(placementPlayed ?? 0) + 1}/{PROGRESSION_CONFIG.PLACEMENT_MATCHES_REQUIRED}
+              Placement Matches {(placementPlayed ?? 0) + 1}/{PROGRESSION_CONFIG.PLACEMENT_MATCHES_REQUIRED}
             </span>
           )}
 

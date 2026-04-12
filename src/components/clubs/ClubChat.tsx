@@ -2,15 +2,13 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MessageCircle, Send, Users, Smile, Loader2, 
-  ChevronDown, X, Plus, AtSign, Volume2, VolumeX,
+  ChevronDown, X, Volume2, VolumeX,
   Reply, CornerDownRight, Trash2, Pin, PinOff,
-  Paperclip, Image, FileText, Download, BarChart3, Ban
+  Paperclip, FileText, Download, Ban
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useClubChat, ChatMessage, AVAILABLE_EMOJIS, ReplyToMessage } from '@/hooks/useClubChat';
 import { useClubMembers, useClubs } from '@/hooks/useClubs';
 import { ModerationLogs } from './ModerationLogs';
@@ -24,7 +22,7 @@ import { useClubMute } from '@/hooks/useClubMute';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { format, isToday, isYesterday } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { isSoundEnabled, toggleSound, playNotificationSound } from '@/lib/sounds';
 import {
@@ -47,11 +45,11 @@ interface ClubChatProps {
 const formatMessageTime = (date: string) => {
   const d = new Date(date);
   if (isToday(d)) {
-    return format(d, 'HH:mm', { locale: fr });
+    return format(d, 'HH:mm', { locale: enUS });
   } else if (isYesterday(d)) {
-    return 'Hier ' + format(d, 'HH:mm', { locale: fr });
+    return 'Yesterday ' + format(d, 'HH:mm', { locale: enUS });
   }
-  return format(d, 'dd/MM HH:mm', { locale: fr });
+  return format(d, 'MM/dd HH:mm', { locale: enUS });
 };
 
 // Parse message content and highlight mentions
@@ -158,7 +156,7 @@ const FileAttachment = ({
     return (
       <div className="mt-2 flex items-center gap-2 p-2 bg-muted/50 rounded-lg max-w-[200px]">
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Chargement...</span>
+        <span className="text-xs text-muted-foreground">Loading...</span>
       </div>
     );
   }
@@ -167,7 +165,7 @@ const FileAttachment = ({
     return (
       <div className="mt-2 flex items-center gap-2 p-2 bg-destructive/10 rounded-lg max-w-[200px]">
         <FileText className="h-4 w-4 text-destructive" />
-        <span className="text-xs text-destructive">Fichier inaccessible</span>
+        <span className="text-xs text-destructive">File unavailable</span>
       </div>
     );
   }
@@ -196,7 +194,7 @@ const FileAttachment = ({
       <FileText className="h-5 w-5 text-primary shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium truncate">{fileName}</p>
-        <p className="text-[10px] text-muted-foreground">Cliquer pour ouvrir</p>
+        <p className="text-[10px] text-muted-foreground">Click to open</p>
       </div>
       <Download className="h-4 w-4 text-muted-foreground shrink-0" />
     </a>
@@ -334,7 +332,7 @@ const ReplyPreview = ({
     return (
       <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
         <CornerDownRight className="h-3 w-3" />
-        <span className="font-medium">{replyTo.display_name || 'Anonyme'}</span>
+        <span className="font-medium">{replyTo.display_name || 'Anonymous'}</span>
         <span className="truncate max-w-[150px]">{truncatedContent}</span>
       </div>
     );
@@ -345,7 +343,7 @@ const ReplyPreview = ({
       <Reply className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-primary">
-          {replyTo.display_name || 'Anonyme'}
+          {replyTo.display_name || 'Anonymous'}
         </p>
         <p className="text-xs text-muted-foreground truncate">
           {truncatedContent}
@@ -381,7 +379,7 @@ const PinnedMessagesBanner = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-primary">
-              {currentMessage.profile?.display_name || 'Anonyme'}
+              {currentMessage.profile?.display_name || 'Anonymous'}
             </span>
             {messages.length > 1 && (
               <span className="text-xs text-muted-foreground">
@@ -482,7 +480,7 @@ const MessageBubble = ({
             "text-xs text-muted-foreground mb-0.5",
             isOwn && "text-right"
           )}>
-            {message.profile?.display_name || 'Anonyme'}
+            {message.profile?.display_name || 'Anonymous'}
           </p>
         )}
         
@@ -533,7 +531,7 @@ const MessageBubble = ({
                     <Trash2 className="h-3 w-3 text-destructive" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>Supprimer</TooltipContent>
+                <TooltipContent>Delete</TooltipContent>
               </Tooltip>
             )}
             
@@ -555,7 +553,7 @@ const MessageBubble = ({
                     )}
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>{message.is_pinned ? 'Désépingler' : 'Épingler'}</TooltipContent>
+                <TooltipContent>{message.is_pinned ? 'Unpin' : 'Pin'}</TooltipContent>
               </Tooltip>
             )}
             
@@ -564,7 +562,7 @@ const MessageBubble = ({
               <MuteUserDialog
                 clubId={clubId}
                 userId={message.user_id}
-                userName={message.profile?.display_name || 'Anonyme'}
+                userName={message.profile?.display_name || 'Anonymous'}
                 trigger={
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -583,7 +581,7 @@ const MessageBubble = ({
               <BanUserDialog
                 clubId={clubId}
                 userId={message.user_id}
-                userName={message.profile?.display_name || 'Anonyme'}
+                userName={message.profile?.display_name || 'Anonymous'}
                 trigger={
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -591,7 +589,7 @@ const MessageBubble = ({
                         <Ban className="h-3 w-3 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>Bannir</TooltipContent>
+                    <TooltipContent>Ban</TooltipContent>
                   </Tooltip>
                 }
               />
@@ -607,7 +605,7 @@ const MessageBubble = ({
                   <Reply className="h-3 w-3 text-muted-foreground" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent>Répondre</TooltipContent>
+              <TooltipContent>Reply</TooltipContent>
             </Tooltip>
             
             {/* Reaction button */}
@@ -660,7 +658,7 @@ const useMentions = (clubId: string) => {
       .slice(0, 5)
       .map(m => ({
         user_id: m.user_id,
-        display_name: m.profile?.display_name || 'Anonyme',
+        display_name: m.profile?.display_name || 'Anonymous',
         avatar_url: m.profile?.avatar_url || null
       }));
   }, [mentionQuery, members]);
@@ -721,10 +719,10 @@ const TypingIndicator = ({ users }: { users: { user_id: string; display_name: st
   if (users.length === 0) return null;
 
   const text = users.length === 1
-    ? `${users[0].display_name} écrit...`
+    ? `${users[0].display_name} is typing...`
     : users.length === 2
-    ? `${users[0].display_name} et ${users[1].display_name} écrivent...`
-    : `${users[0].display_name} et ${users.length - 1} autres écrivent...`;
+    ? `${users[0].display_name} and ${users[1].display_name} are typing...`
+    : `${users[0].display_name} and ${users.length - 1} others are typing...`;
 
   return (
     <motion.div
@@ -852,7 +850,7 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
     if (file) {
       // Check file size (10MB max)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Le fichier est trop volumineux (max 10MB)');
+        alert('File is too large (max 10MB)');
         return;
       }
       setSelectedFile(file);
@@ -933,10 +931,10 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
             <MessageCircle className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">{clubName || 'Chat du club'}</h3>
+            <h3 className="font-semibold text-sm">{clubName || 'Club chat'}</h3>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-green-500" />
-              {onlineUsers.length} en ligne
+              {onlineUsers.length} online
             </div>
           </div>
         </div>
@@ -958,7 +956,7 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {soundEnabled ? 'Désactiver le son' : 'Activer le son'}
+                {soundEnabled ? 'Turn sound off' : 'Turn sound on'}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -1017,8 +1015,8 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
             <MessageCircle className="h-12 w-12 mb-4 opacity-30" />
-            <p className="text-sm">Aucun message</p>
-            <p className="text-xs">Soyez le premier à écrire !</p>
+            <p className="text-sm">No messages yet</p>
+            <p className="text-xs">Be the first to post a message.</p>
           </div>
         ) : (
           messages.map((message, index) => (
@@ -1063,7 +1061,7 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
                   <Reply className="h-4 w-4 text-primary shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-primary">
-                      Réponse à {replyingTo.profile?.display_name || 'Anonyme'}
+                      Replying to {replyingTo.profile?.display_name || 'Anonymous'}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
                       {replyingTo.content.slice(0, 50)}{replyingTo.content.length > 50 ? '...' : ''}
@@ -1127,7 +1125,7 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
           <div className="flex items-center gap-2 p-2 bg-destructive/10 border border-destructive/20 rounded-lg">
             <VolumeX className="h-4 w-4 text-destructive shrink-0" />
             <p className="text-xs text-destructive">
-              Vous êtes mute {muteExpiresAt && `jusqu'à ${formatDistanceToNow(muteExpiresAt, { addSuffix: true, locale: fr })}`}
+              You are muted {muteExpiresAt && `until ${formatDistanceToNow(muteExpiresAt, { addSuffix: true, locale: enUS })}`}
             </p>
           </div>
         ) : (
@@ -1143,7 +1141,7 @@ export const ClubChat = ({ clubId, clubName }: ClubChatProps) => {
             </Button>
             <Input
               ref={inputRef}
-              placeholder={replyingTo ? "Écrire votre réponse..." : "Écrire un message..."}
+              placeholder={replyingTo ? "Write your reply..." : "Write a message..."}
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -1173,7 +1171,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
   const { user } = useAuth();
   const { messages, pinnedMessages, onlineUsers, typingUsers, loading, sending, sendMessage, deleteMessage, togglePin, toggleReaction, startTyping, stopTyping, getSignedFileUrl } = useClubChat(clubId);
   const { myMembership } = useClubs();
-  const { isMuted, muteExpiresAt, isUserMuted } = useClubMute(clubId);
+  const { isMuted, muteExpiresAt } = useClubMute(clubId);
   const [inputValue, setInputValue] = useState('');
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [showPinned, setShowPinned] = useState(true);
@@ -1262,7 +1260,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
     if (file) {
       // Check file size (10MB max)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Le fichier est trop volumineux (max 10MB)');
+        alert('File is too large (max 10MB)');
         return;
       }
       setSelectedFile(file);
@@ -1314,10 +1312,10 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
             <MessageCircle className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold">Chat du club</h3>
+            <h3 className="font-semibold">{clubName || "Club chat"}</h3>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span className="w-2 h-2 rounded-full bg-green-500" />
-              {onlineUsers.length} membre{onlineUsers.length > 1 ? 's' : ''} en ligne
+              {onlineUsers.length} member{onlineUsers.length > 1 ? 's' : ''} online
             </div>
           </div>
         </div>
@@ -1367,7 +1365,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {soundEnabled ? 'Désactiver le son' : 'Activer le son'}
+                {soundEnabled ? 'Turn sound off' : 'Turn sound on'}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -1404,9 +1402,9 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
             <MessageCircle className="h-16 w-16 mb-4 opacity-30" />
-            <p className="font-medium">Aucun message</p>
-            <p className="text-sm">Lancez la conversation avec votre club !</p>
-            <p className="text-xs mt-2">Tapez @ pour mentionner un membre</p>
+            <p className="font-medium">No messages yet</p>
+            <p className="text-sm">Start the conversation with your club.</p>
+            <p className="text-xs mt-2">Type @ to mention a member</p>
           </div>
         ) : (
           messages.map((message, index) => (
@@ -1451,7 +1449,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
                   <Reply className="h-4 w-4 text-primary shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-primary">
-                      Réponse à {replyingTo.profile?.display_name || 'Anonyme'}
+                      Replying to {replyingTo.profile?.display_name || 'Anonymous'}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
                       {replyingTo.content.slice(0, 60)}{replyingTo.content.length > 60 ? '...' : ''}
@@ -1515,7 +1513,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
           <div className="flex items-center gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
             <VolumeX className="h-5 w-5 text-destructive shrink-0" />
             <p className="text-sm text-destructive">
-              Vous êtes mute et ne pouvez pas envoyer de messages {muteExpiresAt && `(expire ${formatDistanceToNow(muteExpiresAt, { addSuffix: true, locale: fr })})`}
+              You are muted and cannot send messages {muteExpiresAt && `(expires ${formatDistanceToNow(muteExpiresAt, { addSuffix: true, locale: enUS })})`}
             </p>
           </div>
         ) : (
@@ -1531,7 +1529,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
             </Button>
             <Input
               ref={inputRef}
-              placeholder={replyingTo ? "Écrire votre réponse..." : "Écrire un message..."}
+              placeholder={replyingTo ? "Write your reply..." : "Write a message..."}
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -1548,7 +1546,7 @@ export const ClubChatFull = ({ clubId, clubName }: ClubChatProps) => {
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Envoyer
+                  Send
                 </>
               )}
             </Button>

@@ -8,9 +8,9 @@ import { useRouter } from "next/navigation";
 import { AppLink } from "@/components/AppLink";
 
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
-import { DailyProPick } from "@/components/dashboard/DailyProPick";
-import { DailyPicksHistory } from "@/components/dashboard/DailyPicksHistory";
-import { RecentPredictions } from "@/components/dashboard/RecentPredictions";
+import { DailyLiveCalls } from "@/components/dashboard/DailyLiveCalls";
+import { DailyCallsHistory } from "@/components/dashboard/DailyCallsHistory";
+import { RecentCalls } from "@/components/dashboard/RecentCalls";
 import { StakingOverview } from "@/components/dashboard/StakingOverview";
 import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
 import { DailyChallengesCard } from "@/components/challenges/DailyChallengesCard";
@@ -316,7 +316,7 @@ const Dashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <DailyProPick />
+                    <DailyLiveCalls />
                 </motion.div>
               )}
 
@@ -326,7 +326,7 @@ const Dashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 }}
                 >
-                  <DailyPicksHistory />
+                    <DailyCallsHistory />
                 </motion.div>
               )}
 
@@ -336,7 +336,7 @@ const Dashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <RecentPredictions />
+                    <RecentCalls />
                 </motion.div>
               )}
             </div>
@@ -391,7 +391,7 @@ const Dashboard = () => {
                         variant="outline"
                         className="w-full justify-start gap-2"
                       >
-                        🎯 Browse Predictions
+                        🎯 Browse Live Calls
                       </Button>
                       <Button
                         variant="outline"
@@ -403,7 +403,7 @@ const Dashboard = () => {
                         variant="outline"
                         className="w-full justify-start gap-2"
                       >
-                        💰 Stake More AXT
+                        💰 Grow AXT Reserves
                       </Button>
                       <Button
                         variant="outline"

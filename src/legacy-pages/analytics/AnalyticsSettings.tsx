@@ -13,8 +13,6 @@ import {
   Zap,
   Moon,
   Sun,
-  Check,
-  ChevronRight,
   Mail,
   Smartphone,
 } from "lucide-react";
@@ -247,7 +245,7 @@ export default function AnalyticsSettings() {
                             Prediction Updates
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Notifications about your predictions
+                    Notifications about your live calls
                           </p>
                         </div>
                         <Switch
@@ -548,7 +546,7 @@ export default function AnalyticsSettings() {
                               Twitter
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Share predictions on Twitter
+                    Share live calls on Twitter
                             </p>
                           </div>
                         </div>
@@ -666,7 +664,7 @@ export default function AnalyticsSettings() {
                       Data Export
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      Download a copy of your data including predictions,
+                  Download a copy of your data including live calls,
                       reports, and settings.
                     </p>
                     <Button variant="outline">Request Data Export</Button>

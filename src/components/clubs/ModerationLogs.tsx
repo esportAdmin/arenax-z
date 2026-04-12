@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Shield, Trash2, Pin, PinOff, Clock, User,
+  Shield, Trash2, Pin, PinOff,
   ChevronDown, ChevronUp, RefreshCw, MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useModerationLogs, ModerationLog } from '@/hooks/useModerationLogs';
 import { format, formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -45,11 +45,11 @@ const getActionIcon = (actionType: ModerationLog['action_type']) => {
 const getActionLabel = (actionType: ModerationLog['action_type']) => {
   switch (actionType) {
     case 'delete':
-      return 'Message supprimé';
+      return 'Message deleted';
     case 'pin':
-      return 'Message épinglé';
+      return 'Message pinned';
     case 'unpin':
-      return 'Message désépinglé';
+      return 'Message unpinned';
     default:
       return 'Action';
   }
@@ -94,7 +94,7 @@ const LogItem = ({ log }: { log: ModerationLog }) => {
                 {getActionLabel(log.action_type)}
               </Badge>
               <span className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: fr })}
+                {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: enUS })}
               </span>
             </div>
             
@@ -106,13 +106,13 @@ const LogItem = ({ log }: { log: ModerationLog }) => {
                 </AvatarFallback>
               </Avatar>
               <span className="font-medium">
-                {log.moderator?.display_name || 'Modérateur'}
+                {log.moderator?.display_name || 'Moderator'}
               </span>
               {log.message_author_name && (
                 <>
                   <span className="text-muted-foreground">→</span>
                   <span className="text-muted-foreground">
-                    message de {log.message_author_name}
+                    message from {log.message_author_name}
                   </span>
                 </>
               )}
@@ -123,7 +123,7 @@ const LogItem = ({ log }: { log: ModerationLog }) => {
               <CollapsibleTrigger asChild>
                 <button className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                   <MessageSquare className="h-3 w-3" />
-                  <span>Voir le contenu</span>
+                  <span>View content</span>
                   {isExpanded ? (
                     <ChevronUp className="h-3 w-3" />
                   ) : (
@@ -136,7 +136,7 @@ const LogItem = ({ log }: { log: ModerationLog }) => {
           
           {/* Time */}
           <div className="text-[10px] text-muted-foreground shrink-0">
-            {format(new Date(log.created_at), 'HH:mm', { locale: fr })}
+            {format(new Date(log.created_at), 'HH:mm', { locale: enUS })}
           </div>
         </div>
         
@@ -164,20 +164,20 @@ export const ModerationLogs = ({ clubId }: ModerationLogsProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Shield className="h-4 w-4" />
-          Logs de modération
+          Moderation logs
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Historique de modération
+            Moderation history
           </DialogTitle>
         </DialogHeader>
         
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
-            {logs.length} action{logs.length !== 1 ? 's' : ''} enregistrée{logs.length !== 1 ? 's' : ''}
+            {logs.length} recorded action{logs.length !== 1 ? 's' : ''}
           </p>
           <Button
             variant="ghost"
@@ -187,7 +187,7 @@ export const ModerationLogs = ({ clubId }: ModerationLogsProps) => {
             className="gap-2"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
-            Actualiser
+            Refresh
           </Button>
         </div>
         
@@ -199,8 +199,8 @@ export const ModerationLogs = ({ clubId }: ModerationLogsProps) => {
           ) : logs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-center text-muted-foreground">
               <Shield className="h-12 w-12 mb-4 opacity-30" />
-              <p className="font-medium">Aucune action de modération</p>
-              <p className="text-sm">Les actions seront enregistrées ici</p>
+              <p className="font-medium">No moderation actions yet</p>
+              <p className="text-sm">Actions will appear here</p>
             </div>
           ) : (
             <div className="space-y-3">

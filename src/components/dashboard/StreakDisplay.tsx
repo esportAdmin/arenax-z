@@ -1,8 +1,17 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, Calendar, Trophy, Gift } from "lucide-react";
+import {
+  Calendar,
+  Crown,
+  Flame,
+  Gem,
+  Gift,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { isLocalQaUser } from "@/lib/dev-auth";
 
 interface StreakData {
   active_streak: number;
@@ -11,10 +20,19 @@ interface StreakData {
 
 const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100];
 
+const milestoneIcons = {
+  3: Flame,
+  7: Sparkles,
+  14: Trophy,
+  30: Crown,
+  60: Gem,
+};
+
 export function StreakDisplay() {
   const { user } = useAuth();
   const [streakData, setStreakData] = useState<StreakData | null>(null);
   const [loading, setLoading] = useState(true);
+  const isLocalQa = isLocalQaUser(user);
 
   useEffect(() => {
     const fetchStreak = async () => {
@@ -23,35 +41,49 @@ export function StreakDisplay() {
         return;
       }
 
+      if (isLocalQa) {
+        setStreakData({
+          active_streak: 6,
+          total_predictions: 48,
+        });
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("profiles")
         .select("active_streak, total_predictions")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (!error && data) {
         setStreakData(data);
       }
+
       setLoading(false);
     };
 
-    fetchStreak();
-  }, [user]);
+    void fetchStreak();
+  }, [isLocalQa, user]);
 
   if (loading) {
     return (
-      <div className="glass-card p-4 animate-pulse">
-        <div className="h-20 bg-muted rounded" />
+      <div className="section-shell animate-pulse p-4">
+        <div className="h-24 rounded-2xl bg-white/5" />
       </div>
     );
   }
 
-  const streak = streakData?.active_streak || 0;
-  const nextMilestone = STREAK_MILESTONES.find(m => m > streak) || 100;
-  const prevMilestone = STREAK_MILESTONES.filter(m => m <= streak).pop() || 0;
-  const progressToNext = ((streak - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+  const streak = streakData?.active_streak ?? 0;
+  const totalPredictions = streakData?.total_predictions ?? 0;
+  const nextMilestone =
+    STREAK_MILESTONES.find((milestone) => milestone > streak) ?? 100;
+  const previousMilestone =
+    STREAK_MILESTONES.filter((milestone) => milestone <= streak).pop() ?? 0;
+  const progressToNext =
+    ((streak - previousMilestone) / (nextMilestone - previousMilestone || 1)) *
+    100;
 
-  // Determine flame intensity based on streak
   const getFlameColor = () => {
     if (streak >= 30) return "text-orange-500";
     if (streak >= 14) return "text-amber-500";
@@ -61,147 +93,190 @@ export function StreakDisplay() {
   };
 
   const getStreakMessage = () => {
-    if (streak === 0) return "Commence ta série aujourd'hui !";
-    if (streak === 1) return "C'est le début ! Reviens demain 🔥";
-    if (streak < 3) return "Continue comme ça ! 💪";
-    if (streak < 7) return "Tu es en feu ! 🔥";
-    if (streak < 14) return "Incroyable série ! 🌟";
-    if (streak < 30) return "Tu es une légende ! 👑";
-    return "INVINCIBLE ! 🏆";
+    if (streak === 0) return "Start your streak today.";
+    if (streak === 1) return "Nice start. Come back tomorrow.";
+    if (streak < 3) return "Keep it going.";
+    if (streak < 7) return "You're heating up.";
+    if (streak < 14) return "Momentum is building.";
+    if (streak < 30) return "You are in elite form.";
+    return "You are almost untouchable.";
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card overflow-hidden"
+      className="section-shell overflow-hidden"
     >
-      {/* Header avec flamme */}
-      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
-        <div className="flex items-center justify-between">
+      <div className="border-b border-white/8 bg-gradient-to-r from-orange-500/12 via-amber-500/10 to-cyan-500/5 p-5">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <motion.div
-              animate={{ 
-                scale: streak > 0 ? [1, 1.1, 1] : 1,
+              animate={{ scale: streak > 0 ? [1, 1.08, 1] : 1 }}
+              transition={{
+                repeat: streak > 0 ? Infinity : 0,
+                duration: 1.6,
+                ease: "easeInOut",
               }}
-              transition={{ 
-                repeat: streak > 0 ? Infinity : 0, 
-                duration: 1.5,
-                ease: "easeInOut"
-              }}
-              className={`w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-amber-500/20 flex items-center justify-center`}
+              className="flex h-12 w-12 items-center justify-center rounded-2xl border border-orange-400/20 bg-gradient-to-br from-orange-500/20 to-amber-500/20 shadow-[0_0_30px_rgba(251,146,60,0.18)]"
             >
-              <Flame className={`w-5 h-5 ${getFlameColor()}`} />
+              <Flame className={`h-5 w-5 ${getFlameColor()}`} />
             </motion.div>
             <div>
-              <h3 className="font-display font-bold">Série Active</h3>
-              <p className="text-xs text-muted-foreground">{getStreakMessage()}</p>
+              <div className="eyebrow-badge mb-2">Daily comeback loop</div>
+              <h3 className="font-display text-xl font-black text-white">
+                Active Streak
+              </h3>
+              <p className="text-xs text-slate-400">{getStreakMessage()}</p>
             </div>
           </div>
-          
-          {/* Streak counter */}
+
           <motion.div
             key={streak}
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="text-right"
           >
-            <div className="font-display font-bold text-3xl gradient-text-primary">
+            <div className="gradient-text-primary text-4xl font-display font-black">
               {streak}
             </div>
-            <div className="text-xs text-muted-foreground">jours</div>
+            <div className="text-xs uppercase tracking-[0.24em] text-slate-500">
+              days
+            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Progress vers le prochain milestone */}
-      <div className="p-4 space-y-4">
-        {/* Progress bar */}
-        <div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-            <span className="flex items-center gap-1">
-              <Trophy className="w-3 h-3" />
-              Prochain palier
-            </span>
-            <span className="font-medium text-foreground">{nextMilestone} jours</span>
+      <div className="space-y-5 p-5">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="surface-panel border-orange-400/15 bg-orange-400/5 p-4">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Current streak
+            </div>
+            <div className="mt-2 text-2xl font-black text-white">
+              {streak} days
+            </div>
           </div>
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progressToNext}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
-            />
+
+          <div className="surface-panel border-cyan-400/15 bg-cyan-400/5 p-4">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Live calls
+            </div>
+            <div className="mt-2 text-2xl font-black text-white">
+              {totalPredictions.toLocaleString("en-US")}
+            </div>
           </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>{streak} / {nextMilestone}</span>
-            <span>{nextMilestone - streak} jours restants</span>
+
+          <div className="surface-panel border-emerald-400/15 bg-emerald-400/5 p-4">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+              Next milestone
+            </div>
+            <div className="mt-2 text-2xl font-black text-white">
+              {nextMilestone}d
+            </div>
           </div>
         </div>
 
-        {/* Milestones preview */}
+        <div>
+          <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Trophy className="h-3 w-3" />
+              Next milestone
+            </span>
+            <span className="font-medium text-foreground">
+              {nextMilestone} days
+            </span>
+          </div>
+
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.max(progressToNext, 0)}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500"
+            />
+          </div>
+
+          <div className="mt-1 flex justify-between text-xs text-muted-foreground">
+            <span>
+              {streak} / {nextMilestone}
+            </span>
+            <span>{nextMilestone - streak} days remaining</span>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between gap-2">
           {STREAK_MILESTONES.slice(0, 5).map((milestone, index) => {
             const isAchieved = streak >= milestone;
             const isNext = milestone === nextMilestone;
-            
+            const Icon =
+              milestoneIcons[milestone as keyof typeof milestoneIcons] ?? Gift;
+
             return (
               <motion.div
                 key={milestone}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`flex-1 text-center p-2 rounded-lg border transition-all ${
-                  isAchieved 
-                    ? "bg-primary/10 border-primary/30" 
-                    : isNext 
-                      ? "bg-orange-500/10 border-orange-500/30 ring-1 ring-orange-500/20" 
-                      : "bg-muted/50 border-border/30"
+                className={`flex-1 rounded-xl border p-3 text-center transition-all ${
+                  isAchieved
+                    ? "border-primary/30 bg-primary/10"
+                    : isNext
+                      ? "border-orange-500/30 bg-orange-500/10 ring-1 ring-orange-500/20"
+                      : "border-white/8 bg-white/5"
                 }`}
               >
-                <div className={`text-lg mb-0.5 ${isAchieved ? "" : "grayscale opacity-50"}`}>
-                  {milestone === 3 && "🔥"}
-                  {milestone === 7 && "⭐"}
-                  {milestone === 14 && "🌟"}
-                  {milestone === 30 && "👑"}
-                  {milestone === 60 && "💎"}
-                  {milestone === 100 && "🏆"}
+                <div className="mb-1 flex justify-center">
+                  <Icon
+                    className={`h-5 w-5 ${
+                      isAchieved
+                        ? "text-white"
+                        : isNext
+                          ? "text-orange-300"
+                          : "text-slate-500"
+                    }`}
+                  />
                 </div>
-                <div className={`text-xs font-medium ${isAchieved ? "text-primary" : "text-muted-foreground"}`}>
-                  {milestone}j
+                <div
+                  className={`text-xs font-medium ${
+                    isAchieved ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {milestone}d
                 </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Reward teaser */}
-        {streak > 0 && (
+        {streak > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20"
+            className="flex items-center gap-2 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10 p-4"
           >
-            <Gift className="w-4 h-4 text-primary" />
+            <Gift className="h-4 w-4 text-primary" />
             <span className="text-sm">
-              <span className="font-medium text-primary">+{(nextMilestone - streak) * 10} ARENA</span>
-              <span className="text-muted-foreground"> au prochain palier !</span>
+              <span className="font-medium text-primary">
+                +{(nextMilestone - streak) * 10} ARENA
+              </span>
+              <span className="text-muted-foreground">
+                {" "}
+                waiting at the next milestone.
+              </span>
             </span>
           </motion.div>
-        )}
-
-        {/* Call to action si streak = 0 */}
-        {streak === 0 && (
+        ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-center p-3 rounded-lg bg-muted/50 border border-border/50"
+            className="rounded-xl border border-white/8 bg-white/5 p-4 text-center"
           >
-            <Calendar className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
+            <Calendar className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Fais ta première prédiction pour démarrer ta série !
+              Make your first prediction to start your streak.
             </p>
           </motion.div>
         )}

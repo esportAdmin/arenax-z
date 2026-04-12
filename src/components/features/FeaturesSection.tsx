@@ -4,38 +4,38 @@ import { Zap, Trophy, Coins, Shield, Users, BarChart3 } from "lucide-react";
 const features = [
   {
     icon: Zap,
-    title: "Daily Pro Picks",
-    description: "Complete 3 quick predictions daily to earn ARENA credits and boost your Arena Score.",
+    title: "Daily Signature Calls",
+    description: "Complete a short slate of high-attention live calls each day to grow your standing and stack rewards.",
     color: "primary",
   },
   {
     icon: Trophy,
-    title: "Competitive Predictions",
-    description: "Lock credits on match outcomes. Predict winners, scores, and MVPs across CS2 and major leagues.",
+    title: "High-Conviction Reads",
+    description: "Call match winners, standout performances, and pivotal outcomes across the biggest esports stages.",
     color: "accent",
   },
   {
     icon: Coins,
-    title: "Rewards Locking",
-    description: "Lock your ARENA credits to earn passive rewards. Higher returns for longer lock periods.",
+    title: "Smart Reward Locking",
+    description: "Put idle balance to work with longer-term reward strategies designed for committed players.",
     color: "secondary",
   },
   {
     icon: BarChart3,
-    title: "Live Leaderboards",
-    description: "Compete globally or within your club. Track your rank and climb to the top.",
+    title: "Live Prestige Rankings",
+    description: "Track your position in real time, defend your status, and rise above the global field.",
     color: "primary",
   },
   {
     icon: Users,
-    title: "Club Ecosystems",
-    description: "Join exclusive fan communities. Access club-specific quests and merchandise drops.",
+    title: "Club Power Networks",
+    description: "Join premium fan circles, unlock club-specific missions, and compete together with purpose.",
     color: "accent",
   },
   {
     icon: Shield,
-    title: "Utility NFTs",
-    description: "Earn achievement badges and utility passes. Unlock real-world perks and discounts.",
+    title: "Status Unlocks",
+    description: "Earn badges, access passes, and reward drops that make your profile feel earned, not generic.",
     color: "secondary",
   },
 ];
@@ -74,11 +74,11 @@ export function FeaturesSection() {
           className="text-center mb-16"
         >
           <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
-            <span className="text-foreground">Your </span>
-            <span className="gradient-text-primary">Arena Awaits</span>
+            <span className="text-foreground">A competition layer built for </span>
+            <span className="gradient-text-primary">ambitious fans</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Everything you need to transform passive watching into active engagement
+            Everything you need to turn passive viewing into reputation, momentum, and meaningful community rewards.
           </p>
         </motion.div>
 

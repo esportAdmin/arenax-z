@@ -114,7 +114,7 @@ const Subscription = () => {
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Get monthly Arena Points and exclusive features to dominate the
-            predictions arena.
+            community competition layer.
           </p>
         </div>
 

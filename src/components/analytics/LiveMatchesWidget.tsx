@@ -76,7 +76,7 @@ function mapMatchToCard(match: Match): MatchCardProps {
 
   const status = getStatus();
   
-  // Generate a simple prediction message
+  // Generate a simple live-call signal message
   const getPrediction = () => {
     if (match.isFinished && match.winner) {
       return `${match.winner} won`;
@@ -85,10 +85,15 @@ function mapMatchToCard(match: Match): MatchCardProps {
       const winner = match.mapScore.teamA > match.mapScore.teamB ? match.teamA.name : match.teamB.name;
       return `${winner} won`;
     }
-    // Use odds to determine favored team
-    const favored = match.teamA.odds < match.teamB.odds ? match.teamA.name : match.teamB.name;
-    const percentage = Math.round((1 / Math.min(match.teamA.odds, match.teamB.odds)) * 100);
-    return `Prediction: ${favored} favored (${Math.min(percentage, 85)}%)`;
+    const favored =
+      match.teamA.signalScore >= match.teamB.signalScore
+        ? match.teamA.name
+        : match.teamB.name;
+    const signal = Math.min(
+      Math.max(match.teamA.signalScore, match.teamB.signalScore),
+      240,
+    );
+    return `Live call: ${favored} signal ${signal}`;
   };
 
   // Format time for upcoming matches

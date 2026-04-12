@@ -35,7 +35,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     arenaPointsPerMonth: 500,
     features: [
       '500 Arena Points / month',
-      'Basic predictions',
+      'Basic live calls',
       'Access to public clubs',
     ],
   },
@@ -50,7 +50,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     arenaPointsPerMonth: 1500,
     features: [
       '1,500 Arena Points / month',
-      'Priority predictions',
+      'Priority live calls',
       'Create & manage clubs',
       'Exclusive badges',
     ],
@@ -67,7 +67,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     arenaPointsPerMonth: 4000,
     features: [
       '4,000 Arena Points / month',
-      'VIP predictions with analytics',
+      'VIP live calls with analytics',
       'Create unlimited clubs',
       'Legendary badges',
       'Priority support',

@@ -358,7 +358,7 @@ export function useAdmin() {
     if (ledgerError) throw ledgerError;
 
     // Create notification for user
-    const { error: notifError } = await supabase
+    await supabase
       .from('user_notifications')
       .insert({
         user_id: userId,

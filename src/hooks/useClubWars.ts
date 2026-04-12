@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -38,7 +38,7 @@ export const useClubWars = (clubId?: string) => {
   const [userClubId, setUserClubId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const fetchUserClub = async () => {
+  const fetchUserClub = useCallback(async () => {
     if (!user) return;
     
     const { data } = await supabase
@@ -51,9 +51,9 @@ export const useClubWars = (clubId?: string) => {
       setUserClubId(data.club_id);
       setIsAdmin(['owner', 'admin'].includes(data.role));
     }
-  };
+  }, [user]);
 
-  const fetchWars = async () => {
+  const fetchWars = useCallback(async () => {
     try {
       const targetClubId = clubId || userClubId;
       if (!targetClubId) {
@@ -88,7 +88,7 @@ export const useClubWars = (clubId?: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [clubId, userClubId]);
 
   const createWar = async (defenderId: string, durationDays: number = 7) => {
     try {
@@ -131,14 +131,14 @@ export const useClubWars = (clubId?: string) => {
   };
 
   useEffect(() => {
-    fetchUserClub();
-  }, [user]);
+    void fetchUserClub();
+  }, [fetchUserClub]);
 
   useEffect(() => {
     if (clubId || userClubId) {
-      fetchWars();
+      void fetchWars();
     }
-  }, [clubId, userClubId]);
+  }, [clubId, userClubId, fetchWars]);
 
   return {
     wars,

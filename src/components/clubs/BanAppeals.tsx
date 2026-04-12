@@ -1,14 +1,29 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Scale, MessageSquare, Check, X, Clock, CheckCircle, XCircle, AlertCircle, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertCircle,
+  Check,
+  CheckCircle,
+  Clock,
+  MessageSquare,
+  Scale,
+  X,
+  XCircle,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useBanAppeals, BanAppeal } from "@/hooks/useBanAppeals";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { BanAppeal, useBanAppeals } from "@/hooks/useBanAppeals";
 
 interface BanAppealsListProps {
   clubId: string;
@@ -16,9 +31,21 @@ interface BanAppealsListProps {
 
 const AppealStatusBadge = ({ status }: { status: BanAppeal["status"] }) => {
   const config = {
-    pending: { label: "En attente", icon: Clock, className: "bg-amber-500/20 text-amber-500" },
-    approved: { label: "Accepté", icon: CheckCircle, className: "bg-green-500/20 text-green-500" },
-    rejected: { label: "Refusé", icon: XCircle, className: "bg-destructive/20 text-destructive" },
+    pending: {
+      label: "Pending",
+      icon: Clock,
+      className: "bg-amber-500/20 text-amber-500",
+    },
+    approved: {
+      label: "Approved",
+      icon: CheckCircle,
+      className: "bg-green-500/20 text-green-500",
+    },
+    rejected: {
+      label: "Rejected",
+      icon: XCircle,
+      className: "bg-destructive/20 text-destructive",
+    },
   };
 
   const { label, icon: Icon, className } = config[status];
@@ -36,7 +63,11 @@ const AppealCard = ({
   onRespond,
 }: {
   appeal: BanAppeal;
-  onRespond: (id: string, approved: boolean, response?: string) => Promise<boolean>;
+  onRespond: (
+    id: string,
+    approved: boolean,
+    response?: string,
+  ) => Promise<boolean>;
 }) => {
   const [showResponse, setShowResponse] = useState(false);
   const [response, setResponse] = useState("");
@@ -54,37 +85,46 @@ const AppealCard = ({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-card/50 border border-border/50 rounded-lg p-4"
+      className="rounded-lg border border-border/50 bg-card/50 p-4"
     >
       <div className="flex items-start gap-3">
         <Avatar className="h-10 w-10">
           <AvatarImage src={appeal.profile?.avatar_url || undefined} />
-          <AvatarFallback>{appeal.profile?.display_name?.charAt(0) || "?"}</AvatarFallback>
+          <AvatarFallback>
+            {appeal.profile?.display_name?.charAt(0) || "?"}
+          </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium">{appeal.profile?.display_name || "Utilisateur inconnu"}</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium">
+              {appeal.profile?.display_name || "Unknown user"}
+            </span>
             <AppealStatusBadge status={appeal.status} />
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {formatDistanceToNow(new Date(appeal.created_at), { addSuffix: true, locale: fr })}
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(appeal.created_at), {
+              addSuffix: true,
+              locale: enUS,
+            })}
           </p>
         </div>
       </div>
 
-      <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-        <p className="text-sm font-medium mb-1">Raison de l'appel :</p>
+      <div className="mt-3 rounded-lg bg-muted/50 p-3">
+        <p className="mb-1 text-sm font-medium">Appeal reason:</p>
         <p className="text-sm text-muted-foreground">{appeal.reason}</p>
       </div>
 
-      {appeal.admin_response && (
-        <div className="mt-2 p-3 bg-primary/5 border-l-2 border-primary rounded-r-lg">
-          <p className="text-sm font-medium mb-1">Réponse de l'admin :</p>
-          <p className="text-sm text-muted-foreground">{appeal.admin_response}</p>
+      {appeal.admin_response ? (
+        <div className="mt-2 rounded-r-lg border-l-2 border-primary bg-primary/5 p-3">
+          <p className="mb-1 text-sm font-medium">Admin response:</p>
+          <p className="text-sm text-muted-foreground">
+            {appeal.admin_response}
+          </p>
         </div>
-      )}
+      ) : null}
 
-      {appeal.status === "pending" && (
+      {appeal.status === "pending" ? (
         <AnimatePresence>
           {showResponse ? (
             <motion.div
@@ -94,14 +134,19 @@ const AppealCard = ({
               className="mt-3 space-y-3"
             >
               <Textarea
-                placeholder="Réponse à l'utilisateur (optionnel)..."
+                placeholder="Reply to the user (optional)..."
                 value={response}
-                onChange={(e) => setResponse(e.target.value)}
+                onChange={(event) => setResponse(event.target.value)}
                 rows={2}
               />
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowResponse(false)} className="flex-1">
-                  Annuler
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowResponse(false)}
+                  className="flex-1"
+                >
+                  Cancel
                 </Button>
                 <Button
                   variant="destructive"
@@ -111,65 +156,86 @@ const AppealCard = ({
                   className="flex-1 gap-1"
                 >
                   <X className="h-3 w-3" />
-                  Refuser
+                  Reject
                 </Button>
-                <Button size="sm" onClick={() => handleRespond(true)} disabled={responding} className="flex-1 gap-1">
+                <Button
+                  size="sm"
+                  onClick={() => handleRespond(true)}
+                  disabled={responding}
+                  className="flex-1 gap-1"
+                >
                   <Check className="h-3 w-3" />
-                  Accepter
+                  Approve
                 </Button>
               </div>
             </motion.div>
           ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 flex justify-end">
-              <Button variant="outline" size="sm" onClick={() => setShowResponse(true)} className="gap-1">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-3 flex justify-end"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowResponse(true)}
+                className="gap-1"
+              >
                 <MessageSquare className="h-3 w-3" />
-                Répondre
+                Reply
               </Button>
             </motion.div>
           )}
         </AnimatePresence>
-      )}
+      ) : null}
     </motion.div>
   );
 };
 
 export const BanAppealsList = ({ clubId }: BanAppealsListProps) => {
   const [open, setOpen] = useState(false);
-  const { appeals, pendingAppeals, loading, respondToAppeal } = useBanAppeals(clubId);
+  const { appeals, pendingAppeals, loading, respondToAppeal } =
+    useBanAppeals(clubId);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Scale className="h-4 w-4" />
-          Appels
-          {pendingAppeals.length > 0 && (
-            <span className="bg-amber-500/20 text-amber-500 text-xs px-1.5 py-0.5 rounded-full">
+          Appeals
+          {pendingAppeals.length > 0 ? (
+            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-500">
               {pendingAppeals.length}
             </span>
-          )}
+          ) : null}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="flex max-h-[80vh] max-w-lg flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Scale className="h-5 w-5 text-primary" />
-            Appels de bannissement
+            Ban appeals
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-3 mt-4">
+        <div className="mt-4 flex-1 space-y-3 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
             </div>
           ) : appeals.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
-              <Scale className="h-12 w-12 mx-auto mb-2 opacity-30" />
-              <p>Aucun appel</p>
+            <div className="py-8 text-center text-muted-foreground">
+              <Scale className="mx-auto mb-2 h-12 w-12 opacity-30" />
+              <p>No appeals</p>
             </div>
           ) : (
-            appeals.map((appeal) => <AppealCard key={appeal.id} appeal={appeal} onRespond={respondToAppeal} />)
+            appeals.map((appeal) => (
+              <AppealCard
+                key={appeal.id}
+                appeal={appeal}
+                onRespond={respondToAppeal}
+              />
+            ))
           )}
         </div>
       </DialogContent>
@@ -177,19 +243,23 @@ export const BanAppealsList = ({ clubId }: BanAppealsListProps) => {
   );
 };
 
-// Component for banned users to submit an appeal
 interface SubmitAppealDialogProps {
   clubId: string;
   clubName: string;
 }
 
-export const SubmitAppealDialog = ({ clubId, clubName }: SubmitAppealDialogProps) => {
+export const SubmitAppealDialog = ({
+  clubId,
+  clubName,
+}: SubmitAppealDialogProps) => {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const { myAppeal, loading, submitAppeal } = useBanAppeals(clubId);
 
   const handleSubmit = async () => {
-    if (!reason.trim()) return;
+    if (!reason.trim()) {
+      return;
+    }
 
     const success = await submitAppeal(reason);
     if (success) {
@@ -198,25 +268,30 @@ export const SubmitAppealDialog = ({ clubId, clubName }: SubmitAppealDialogProps
     }
   };
 
-  // If user already has a pending or recent appeal
   if (myAppeal) {
     return (
-      <div className="p-4 bg-card/50 border border-border/50 rounded-lg">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="rounded-lg border border-border/50 bg-card/50 p-4">
+        <div className="mb-3 flex items-center gap-2">
           <Scale className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Votre appel</h3>
+          <h3 className="font-semibold">Your appeal</h3>
           <AppealStatusBadge status={myAppeal.status} />
         </div>
-        <p className="text-sm text-muted-foreground mb-2">
-          Soumis {formatDistanceToNow(new Date(myAppeal.created_at), { addSuffix: true, locale: fr })}
+        <p className="mb-2 text-sm text-muted-foreground">
+          Submitted{" "}
+          {formatDistanceToNow(new Date(myAppeal.created_at), {
+            addSuffix: true,
+            locale: enUS,
+          })}
         </p>
-        <div className="p-3 bg-muted/50 rounded-lg text-sm">{myAppeal.reason}</div>
-        {myAppeal.admin_response && (
-          <div className="mt-2 p-3 bg-primary/5 border-l-2 border-primary rounded-r-lg text-sm">
-            <p className="font-medium mb-1">Réponse :</p>
+        <div className="rounded-lg bg-muted/50 p-3 text-sm">
+          {myAppeal.reason}
+        </div>
+        {myAppeal.admin_response ? (
+          <div className="mt-2 rounded-r-lg border-l-2 border-primary bg-primary/5 p-3 text-sm">
+            <p className="mb-1 font-medium">Response:</p>
             <p className="text-muted-foreground">{myAppeal.admin_response}</p>
           </div>
-        )}
+        ) : null}
       </div>
     );
   }
@@ -226,28 +301,28 @@ export const SubmitAppealDialog = ({ clubId, clubName }: SubmitAppealDialogProps
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <Scale className="h-4 w-4" />
-          Faire appel
+          Submit appeal
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Scale className="h-5 w-5 text-primary" />
-            Contester votre bannissement
+            Appeal your ban
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 mt-4">
-          <div className="p-3 bg-muted/50 rounded-lg">
+        <div className="mt-4 space-y-4">
+          <div className="rounded-lg bg-muted/50 p-3">
             <div className="flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="text-sm text-muted-foreground">
                 <p>
-                  Vous avez été banni de <strong>{clubName}</strong>.
+                  You have been banned from <strong>{clubName}</strong>.
                 </p>
                 <p className="mt-1">
-                  Expliquez pourquoi vous pensez que ce bannissement n'est pas justifié. Les administrateurs examineront
-                  votre demande.
+                  Explain why you believe this ban is not justified.
+                  Administrators will review your request.
                 </p>
               </div>
             </div>
@@ -255,20 +330,30 @@ export const SubmitAppealDialog = ({ clubId, clubName }: SubmitAppealDialogProps
 
           <div>
             <Textarea
-              placeholder="Expliquez votre situation..."
+              placeholder="Explain your situation..."
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
+              onChange={(event) => setReason(event.target.value)}
               rows={4}
             />
-            <p className="text-xs text-muted-foreground mt-1">Soyez respectueux et honnête dans votre explication.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Please stay respectful and honest in your explanation.
+            </p>
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
-              Annuler
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="flex-1"
+            >
+              Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={loading || !reason.trim()} className="flex-1">
-              {loading ? "Envoi..." : "Soumettre l'appel"}
+            <Button
+              onClick={handleSubmit}
+              disabled={loading || !reason.trim()}
+              className="flex-1"
+            >
+              {loading ? "Submitting..." : "Submit appeal"}
             </Button>
           </div>
         </div>

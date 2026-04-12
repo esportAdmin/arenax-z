@@ -1,16 +1,19 @@
 "use client";
 
 import NextLink from "next/link";
-import type { ComponentProps } from "react";
+import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
 
-type AppLinkProps = ComponentProps<typeof NextLink> & {
+type AppLinkProps = ComponentPropsWithoutRef<typeof NextLink> & {
   className?: string;
 };
 
-export function AppLink({ href, className, children, ...rest }: AppLinkProps) {
-  return (
-    <NextLink href={href} className={className} {...rest}>
-      {children}
-    </NextLink>
-  );
-}
+export const AppLink = forwardRef<ElementRef<typeof NextLink>, AppLinkProps>(
+  function AppLink({ href, className, children, ...rest }, ref) {
+    return (
+      <NextLink ref={ref} href={href} className={className} {...rest}>
+        {children}
+      </NextLink>
+    );
+  },
+);

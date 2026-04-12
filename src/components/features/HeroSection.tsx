@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button";
 import { AppLink } from "@/components/AppLink";
 
 const stats = [
-  { value: "50K+", label: "Utilisateurs Actifs", icon: Target },
-  { value: "1M+", label: "Prédictions", icon: Sparkles },
-  { value: "85%", label: "Précision Top Joueurs", icon: Trophy },
-  { value: "AXT", label: "Token Économie", icon: Zap },
+  { value: "50K+", label: "Competitive Fans", icon: Target },
+  { value: "1M+", label: "Live Calls Logged", icon: Sparkles },
+  { value: "85%", label: "Top-Tier Accuracy", icon: Trophy },
+  { value: "AXT", label: "Premium Rewards Layer", icon: Zap },
 ];
 
 export function HeroSection() {
@@ -35,7 +35,7 @@ export function HeroSection() {
           >
             <Shield className="w-4 h-4 text-success" />
             <span className="text-sm font-medium text-white">
-              Secure & 100% Free
+              Premium competition. No paywall to enter.
             </span>
             <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
           </motion.div>
@@ -55,9 +55,9 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Prédictions, Staking et Récompenses.{" "}
+            The premium layer for esports fans who want more than watching.{" "}
             <br className="hidden sm:block" />
-            Rejoignez la nouvelle ère de l&apos;Esport et gagnez des{" "}
+            Make sharper live calls, climb the ladder, and unlock{" "}
             <span className="text-accent font-bold">AXT</span>.
           </motion.p>
 
@@ -69,14 +69,14 @@ export function HeroSection() {
           >
             <AppLink href="/auth">
               <Button variant="hero" size="xl" className="group text-lg">
-                Commencer l&apos;Aventure
+                Claim Your Spot
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </AppLink>
 
             <AppLink href="/game">
               <Button variant="web3" size="xl" className="text-lg">
-                Voir les Jeux
+                See Live Matchups
               </Button>
             </AppLink>
           </motion.div>

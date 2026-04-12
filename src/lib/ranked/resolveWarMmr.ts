@@ -48,11 +48,9 @@
 //     createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 import { createServiceRoleClient } from "@/integrations/supabase/service-role";
 import { computeElo } from "@/lib/ranked/mmr";
-import { getRankFromMmr, detectRankTransition } from "@/lib/ranked/rankSystem";
 import {
   computeProgressionUpdate,
   applyProgressionUpdate,
-  isInPlacement,
   type SeasonProgressionRow,
 } from "@/lib/ranked/rankProgression";
 

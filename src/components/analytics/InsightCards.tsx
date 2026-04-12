@@ -70,7 +70,7 @@ export function InsightCards() {
     {
       type: "opportunity",
       title: "Opportunity",
-      description: "High odds on Team E, potential ROI 3.5x. AI model suggests underestimation by bookmakers."
+    description: "High signal movement on Team E. AI model suggests the community may be under-reading this match."
     }
   ];
 

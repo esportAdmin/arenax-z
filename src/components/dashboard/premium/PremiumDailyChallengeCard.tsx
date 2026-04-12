@@ -36,7 +36,7 @@ export default function PremiumDailyChallengeCard() {
       <div className="h-full px-8 pt-8 pb-7">
         {/* Header */}
         <div>
-          <div className="text-3xl font-display font-bold text-white">Défi du Jour</div>
+          <div className="text-3xl font-display font-bold text-white">Daily Challenge</div>
           <div className="mt-1 text-sm text-white/45">Gagne 500 Points + 10 XP</div>
         </div>
 
@@ -89,7 +89,7 @@ export default function PremiumDailyChallengeCard() {
           </div>
 
           <div className="mt-4 flex items-center justify-between text-base font-semibold text-white/55">
-            <div>3/3 <span className="font-medium">Terminés</span></div>
+            <div>3/3 <span className="font-medium">Completed</span></div>
             <div>Début: 03:45:22</div>
           </div>
         </div>

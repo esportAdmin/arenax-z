@@ -1,5 +1,14 @@
 import { motion } from "framer-motion";
-import { Trophy, Target, TrendingUp, Coins, Award, Flame, BarChart3, Zap } from "lucide-react";
+import {
+  Award,
+  BarChart3,
+  Coins,
+  Flame,
+  Target,
+  TrendingUp,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { UserProfile } from "@/hooks/useProfile";
 
 interface ProfileStatsProps {
@@ -10,31 +19,31 @@ interface ProfileStatsProps {
 export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
   const stats = [
     {
-      label: "Score Aréna",
-      value: profile.arena_score.toLocaleString(),
+      label: "Arena Score",
+      value: profile.arena_score.toLocaleString("en-US"),
       icon: Trophy,
       color: "text-primary",
       bgColor: "bg-primary/10",
       borderColor: "border-primary/30",
     },
     {
-      label: "Balance ARENA",
-      value: profile.arena_balance.toLocaleString(),
+      label: "ARENA Balance",
+      value: profile.arena_balance.toLocaleString("en-US"),
       icon: Coins,
       color: "text-accent",
       bgColor: "bg-accent/10",
       borderColor: "border-accent/30",
     },
     {
-      label: "Pronostics",
-      value: profile.total_predictions.toString(),
+      label: "Live Calls",
+      value: profile.total_live_calls.toString(),
       icon: Target,
       color: "text-secondary",
       bgColor: "bg-secondary/10",
       borderColor: "border-secondary/30",
     },
     {
-      label: "Victoires",
+      label: "Wins",
       value: profile.total_wins.toString(),
       icon: TrendingUp,
       color: "text-green-400",
@@ -42,15 +51,15 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       borderColor: "border-green-400/30",
     },
     {
-      label: "Précision",
-      value: `${profile.prediction_accuracy?.toFixed(1) || 0}%`,
+      label: "Accuracy",
+      value: `${profile.signal_accuracy?.toFixed(1) || 0}%`,
       icon: BarChart3,
       color: "text-cyan-400",
       bgColor: "bg-cyan-400/10",
       borderColor: "border-cyan-400/30",
     },
     {
-      label: "Série Active",
+      label: "Active Streak",
       value: profile.active_streak.toString(),
       icon: Flame,
       color: "text-amber-400",
@@ -66,8 +75,11 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       borderColor: "border-purple-400/30",
     },
     {
-      label: "Membre depuis",
-      value: new Date(profile.created_at).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
+      label: "Member Since",
+      value: new Date(profile.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      }),
       icon: Zap,
       color: "text-pink-400",
       bgColor: "bg-pink-400/10",
@@ -82,25 +94,27 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       transition={{ delay: 0.1 }}
       className="glass-card p-6"
     >
-      <h2 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
-        <BarChart3 className="w-5 h-5 text-primary" />
-        Statistiques Détaillées
+      <h2 className="mb-6 flex items-center gap-2 text-lg font-display font-bold">
+        <BarChart3 className="h-5 w-5 text-primary" />
+        Detailed Stats
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 + index * 0.05 }}
-            className={`p-4 rounded-xl ${stat.bgColor} border ${stat.borderColor} hover:scale-105 transition-transform`}
+            className={`rounded-xl border p-4 transition-transform hover:scale-105 ${stat.bgColor} ${stat.borderColor}`}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <stat.icon className={`w-4 h-4 ${stat.color}`} />
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
+            <div className="mb-2 flex items-center gap-2">
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              <span className="text-xs text-muted-foreground">
+                {stat.label}
+              </span>
             </div>
-            <div className={`font-display font-bold text-xl ${stat.color}`}>
+            <div className={`text-xl font-display font-bold ${stat.color}`}>
               {stat.value}
             </div>
           </motion.div>

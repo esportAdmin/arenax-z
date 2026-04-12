@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useModerationStats } from '@/hooks/useModerationStats';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 
 interface ModerationStatsProps {
   clubId: string;
@@ -73,7 +73,7 @@ const MiniChart = ({ data }: { data: { date: string; count: number }[] }) => {
             style={{ minHeight: item.count > 0 ? '8px' : '4px' }}
           />
           <span className="text-[9px] text-muted-foreground">
-            {format(new Date(item.date), 'EEE', { locale: fr }).charAt(0).toUpperCase()}
+            {format(new Date(item.date), 'EEE', { locale: enUS }).charAt(0).toUpperCase()}
           </span>
         </div>
       ))}
@@ -83,7 +83,7 @@ const MiniChart = ({ data }: { data: { date: string; count: number }[] }) => {
 
 export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
   const [open, setOpen] = useState(false);
-  const { stats, loading, refresh } = useModerationStats(clubId);
+  const { stats, loading } = useModerationStats(clubId);
 
   const exportToCSV = () => {
     if (!stats) return;
@@ -92,24 +92,24 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
     
     // Build CSV content
     const rows: string[][] = [
-      ['Statistiques de modération', date],
+      ['Moderation statistics', date],
       [],
-      ['Métrique', 'Valeur'],
-      ['Messages supprimés', stats.totalMessagesDeleted.toString()],
-      ['Messages épinglés', stats.totalPins.toString()],
-      ['Messages désépinglés', stats.totalUnpins.toString()],
-      ['Membres mutés (total)', stats.totalMutes.toString()],
-      ['Membres unmutés', stats.totalUnmutes.toString()],
-      ['Mutes actifs', stats.activeMutes.toString()],
-      ['Sondages créés', stats.totalPolls.toString()],
-      ['Sondages actifs', stats.activePolls.toString()],
+      ['Metric', 'Value'],
+      ['Deleted messages', stats.totalMessagesDeleted.toString()],
+      ['Pinned messages', stats.totalPins.toString()],
+      ['Unpinned messages', stats.totalUnpins.toString()],
+      ['Muted members (total)', stats.totalMutes.toString()],
+      ['Unmuted members', stats.totalUnmutes.toString()],
+      ['Active mutes', stats.activeMutes.toString()],
+      ['Polls created', stats.totalPolls.toString()],
+      ['Active polls', stats.activePolls.toString()],
       [],
-      ['Activité des 7 derniers jours'],
+      ['Activity over the last 7 days'],
       ['Date', 'Actions'],
       ...stats.recentActions.map(a => [a.date, a.count.toString()]),
       [],
-      ['Modérateurs les plus actifs'],
-      ['Nom', 'Actions'],
+      ['Most active moderators'],
+      ['Name', 'Actions'],
       ...stats.topModerators.map(m => [m.display_name, m.action_count.toString()])
     ];
 
@@ -126,7 +126,7 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    toast.success('Statistiques exportées en CSV');
+    toast.success('Statistics exported as CSV');
   };
 
   return (
@@ -134,7 +134,7 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <ChartBar className="h-4 w-4" />
-          Statistiques
+          Statistics
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
@@ -142,7 +142,7 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
-              Statistiques de modération
+              Moderation statistics
             </DialogTitle>
             {stats && (
               <Button 
@@ -152,7 +152,7 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
                 className="gap-2"
               >
                 <Download className="h-4 w-4" />
-                Exporter CSV
+                Export CSV
               </Button>
             )}
           </div>
@@ -168,26 +168,26 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
             <div className="grid grid-cols-2 gap-3">
               <StatCard
                 icon={Trash2}
-                label="Messages supprimés"
+                label="Deleted messages"
                 value={stats.totalMessagesDeleted}
                 color="destructive"
               />
               <StatCard
                 icon={VolumeX}
-                label="Membres mutés"
+                label="Muted members"
                 value={stats.totalMutes}
                 subValue={`${stats.activeMutes} actif${stats.activeMutes > 1 ? 's' : ''}`}
                 color="warning"
               />
               <StatCard
                 icon={Pin}
-                label="Messages épinglés"
+                label="Pinned messages"
                 value={stats.totalPins}
                 color="primary"
               />
               <StatCard
                 icon={BarChart3}
-                label="Sondages créés"
+                label="Polls created"
                 value={stats.totalPolls}
                 subValue={`${stats.activePolls} actif${stats.activePolls > 1 ? 's' : ''}`}
                 color="success"
@@ -198,11 +198,11 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
             <div className="bg-card/50 border border-border/50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-4 w-4 text-primary" />
-                <h4 className="font-medium text-sm">Activité des 7 derniers jours</h4>
+                  <h4 className="font-medium text-sm">Activity over the last 7 days</h4>
               </div>
               <MiniChart data={stats.recentActions} />
               <p className="text-xs text-muted-foreground text-center mt-2">
-                {stats.recentActions.reduce((acc, d) => acc + d.count, 0)} actions cette semaine
+                {stats.recentActions.reduce((acc, d) => acc + d.count, 0)} actions this week
               </p>
             </div>
 
@@ -211,7 +211,7 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
               <div className="bg-card/50 border border-border/50 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Users className="h-4 w-4 text-primary" />
-                  <h4 className="font-medium text-sm">Modérateurs les plus actifs</h4>
+                  <h4 className="font-medium text-sm">Most active moderators</h4>
                 </div>
                 <div className="space-y-2">
                   {stats.topModerators.map((mod, index) => (
@@ -253,13 +253,13 @@ export const ModerationStats = ({ clubId }: ModerationStatsProps) => {
             {/* Summary */}
             <div className="text-center text-xs text-muted-foreground border-t pt-4">
               <p>
-                Total: {stats.totalMessagesDeleted + stats.totalPins + stats.totalUnpins + stats.totalMutes + stats.totalUnmutes} actions de modération
+                Total: {stats.totalMessagesDeleted + stats.totalPins + stats.totalUnpins + stats.totalMutes + stats.totalUnmutes} moderation actions
               </p>
             </div>
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-8">
-            Aucune statistique disponible
+            No statistics available
           </div>
         )}
       </DialogContent>

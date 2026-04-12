@@ -22,7 +22,7 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
   const { banMember, loading } = useClubBan(clubId);
 
   const handleBan = async () => {
-    if (confirmText !== "BANNIR") return;
+    if (confirmText !== "BAN") return;
 
     const success = await banMember(userId, reason || undefined);
     if (success) {
@@ -39,7 +39,7 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
         {trigger || (
           <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive">
             <Ban className="h-3 w-3" />
-            Bannir
+            Ban
           </Button>
         )}
       </DialogTrigger>
@@ -47,7 +47,7 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
             <Ban className="h-5 w-5" />
-            Bannir {userName}
+            Ban {userName}
           </DialogTitle>
         </DialogHeader>
 
@@ -60,25 +60,25 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-6 w-6 text-destructive shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-destructive">Action irréversible</p>
+                <p className="font-semibold text-destructive">Irreversible action</p>
                 <p className="text-sm text-destructive/80 mt-1">
-                  {userName} sera définitivement exclu du club et ne pourra plus le rejoindre tant qu'un administrateur
-                  ne le débannit pas.
+                  {userName} will be permanently removed from the club and cannot rejoin until an administrator
+                  unbans them.
                 </p>
                 <ul className="text-sm text-destructive/80 mt-2 list-disc list-inside space-y-1">
-                  <li>Sera retiré de la liste des membres</li>
-                  <li>Ne pourra plus voir le chat du club</li>
-                  <li>Ne pourra plus participer aux activités</li>
+                  <li>Will be removed from the member list</li>
+                  <li>Will lose access to club chat</li>
+                  <li>Will no longer take part in club activities</li>
                 </ul>
               </div>
             </div>
           </motion.div>
 
           <div>
-            <Label htmlFor="reason">Raison du bannissement (optionnel)</Label>
+            <Label htmlFor="reason">Ban reason (optional)</Label>
             <Input
               id="reason"
-              placeholder="Ex: Comportement toxique, spam répété..."
+              placeholder="Example: toxic behavior, repeated spam..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="mt-1"
@@ -87,11 +87,11 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
 
           <div>
             <Label htmlFor="confirm" className="text-destructive">
-              Tapez BANNIR pour confirmer
+              Type BAN to confirm
             </Label>
             <Input
               id="confirm"
-              placeholder="BANNIR"
+              placeholder="BAN"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
               className="mt-1 border-destructive/50 focus:border-destructive"
@@ -100,16 +100,16 @@ export const BanUserDialog = ({ clubId, userId, userName, trigger, onBanned }: B
 
           <div className="flex gap-2 pt-2">
             <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
-              Annuler
+              Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleBan}
-              disabled={loading || confirmText !== "BANNIR"}
+              disabled={loading || confirmText !== "BAN"}
               className="flex-1 gap-2"
             >
               <UserX className="h-4 w-4" />
-              {loading ? "Bannissement..." : "Confirmer le bannissement"}
+              {loading ? "Banning..." : "Confirm ban"}
             </Button>
           </div>
         </div>

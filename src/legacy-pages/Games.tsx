@@ -101,7 +101,7 @@ const Games = () => {
             </h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            Select your arena and start predicting.
+            Select your arena and start making live calls.
           </p>
         </motion.div>
 
@@ -116,7 +116,7 @@ const Games = () => {
               className={`${game.isFeatured ? "lg:col-span-2 lg:row-span-1 md:col-span-2" : ""}`}
             >
               <AppLink
-                href={`/predictions?game=${game.id}`}
+                href={`/live-calls?game=${game.id}`}
                 className="block h-full"
               >
                 {/* Design Spécial pour la carte Featured (DOTA 2) */}
@@ -162,7 +162,7 @@ const Games = () => {
                         </h2>
                         <p className="text-slate-300 max-w-md text-lg mb-6 drop-shadow-md">
                           Cyberpunk Ascension Season is LIVE. Join 50,000+ fans
-                          competing.
+                          building momentum.
                         </p>
 
                         <motion.div
@@ -271,7 +271,7 @@ const Games = () => {
               </h3>
               <p className="text-muted-foreground">
                 Gather your friends, compete against other clubs, and earn
-                massive rewards.
+                visible community rewards.
               </p>
             </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>

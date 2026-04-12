@@ -26,15 +26,15 @@ export function LiveMatchesSection() {
           <div>
             <h2 className="font-display font-bold text-3xl md:text-4xl mb-2">
               <span className="text-foreground">Live </span>
-              <span className="gradient-text-accent">Predictions</span>
+              <span className="gradient-text-accent">Match Calls</span>
             </h2>
             <p className="text-muted-foreground">
-              Lock ARENA credits on upcoming matches and multiply your holdings
+              Track the live board, log your calls, and stay close to the next momentum shift
             </p>
           </div>
 
           <Button asChild variant="outline" className="gap-2">
-            <AppLink href="/predictions">
+            <AppLink href="/live-calls">
               View All Matches
               <ChevronRight className="w-4 h-4" />
             </AppLink>
@@ -73,7 +73,7 @@ export function LiveMatchesSection() {
                           {match.teamA.name}
                         </div>
                         <div className="text-sm text-primary font-semibold">
-                          {match.teamA.odds}x
+                          {match.teamA.signalScore} signal
                         </div>
                       </div>
                     </div>
@@ -116,7 +116,7 @@ export function LiveMatchesSection() {
                           {match.teamB.name}
                         </div>
                         <div className="text-sm text-primary font-semibold">
-                          {match.teamB.odds}x
+                          {match.teamB.signalScore} signal
                         </div>
                       </div>
                       <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-2xl">
@@ -140,7 +140,7 @@ export function LiveMatchesSection() {
                     <div className="flex flex-col gap-1 text-right">
                       <div className="flex items-center gap-1 text-xs text-accent">
                         <TrendingUp className="w-3 h-3" />
-                        Pool
+                        Activity
                       </div>
                       <div className="text-sm font-display font-bold">
                         {match.totalLocked.toLocaleString()} ARENA
@@ -153,8 +153,8 @@ export function LiveMatchesSection() {
                       size="sm"
                       disabled={match.isFinished}
                     >
-                      <AppLink href="/predictions">
-                        {match.isFinished ? "Finished" : "Predict"}
+              <AppLink href="/live-calls">
+                        {match.isFinished ? "Finished" : "Open Call"}
                       </AppLink>
                     </Button>
                   </div>

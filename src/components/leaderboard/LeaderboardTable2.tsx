@@ -34,7 +34,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
         <div className="col-span-1">Rank</div>
         <div className="col-span-5 md:col-span-4">Fan</div>
         <div className="col-span-3 md:col-span-2 text-right">Score</div>
-        <div className="col-span-2 text-right hidden md:block">Predictions</div>
+        <div className="col-span-2 text-right hidden md:block">Live calls</div>
         <div className="col-span-2 text-right hidden md:block">Accuracy</div>
         <div className="col-span-3 md:col-span-1 text-right">Var.</div>
       </div>

@@ -1,29 +1,29 @@
 import { motion } from "framer-motion";
-import { History, CheckCircle, XCircle, Clock, TrendingUp, Coins } from "lucide-react";
-import { PredictionHistory as PredictionHistoryType } from "@/hooks/useProfile";
+import { CheckCircle, Clock, Coins, History, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { LiveCallHistory } from "@/hooks/useProfile";
 
-interface PredictionHistoryProps {
-  predictions: PredictionHistoryType[];
+interface LiveCallHistoryProps {
+  liveCalls: LiveCallHistory[];
 }
 
 const statusConfig = {
   won: {
-    label: "Gagné",
+    label: "Won",
     icon: CheckCircle,
     color: "text-green-400",
     bgColor: "bg-green-400/10",
     borderColor: "border-green-400/30",
   },
   lost: {
-    label: "Perdu",
+    label: "Lost",
     icon: XCircle,
     color: "text-red-400",
     bgColor: "bg-red-400/10",
     borderColor: "border-red-400/30",
   },
   pending: {
-    label: "En cours",
+    label: "Pending",
     icon: Clock,
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
@@ -31,8 +31,8 @@ const statusConfig = {
   },
 };
 
-export function PredictionHistory({ predictions }: PredictionHistoryProps) {
-  if (predictions.length === 0) {
+export function PredictionHistory({ liveCalls }: LiveCallHistoryProps) {
+  if (liveCalls.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -40,22 +40,24 @@ export function PredictionHistory({ predictions }: PredictionHistoryProps) {
         transition={{ delay: 0.2 }}
         className="glass-card p-6"
       >
-        <h2 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
-          <History className="w-5 h-5 text-primary" />
-          Historique des Pronostics
+        <h2 className="mb-6 flex items-center gap-2 text-lg font-display font-bold">
+          <History className="h-5 w-5 text-primary" />
+          Live Call History
         </h2>
-        <div className="text-center py-8 text-muted-foreground">
-          <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>Aucun pronostic pour le moment</p>
-          <p className="text-sm mt-2">Faites votre premier pronostic !</p>
+        <div className="py-8 text-center text-muted-foreground">
+          <Clock className="mx-auto mb-4 h-12 w-12 opacity-50" />
+          <p>No live calls yet</p>
+          <p className="mt-2 text-sm">
+            Make your first live call to start building your record.
+          </p>
         </div>
       </motion.div>
     );
   }
 
-  const wonCount = predictions.filter(p => p.status === 'won').length;
-  const lostCount = predictions.filter(p => p.status === 'lost').length;
-  const pendingCount = predictions.filter(p => p.status === 'pending').length;
+  const wonCount = liveCalls.filter((liveCall) => liveCall.status === "won").length;
+  const lostCount = liveCalls.filter((liveCall) => liveCall.status === "lost").length;
+  const pendingCount = liveCalls.filter((liveCall) => liveCall.status === "pending").length;
 
   return (
     <motion.div
@@ -64,64 +66,83 @@ export function PredictionHistory({ predictions }: PredictionHistoryProps) {
       transition={{ delay: 0.2 }}
       className="glass-card p-6"
     >
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-display font-bold text-lg flex items-center gap-2">
-          <History className="w-5 h-5 text-primary" />
-          Historique des Pronostics
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-lg font-display font-bold">
+          <History className="h-5 w-5 text-primary" />
+          Live Call History
         </h2>
         <div className="flex gap-2">
-          <Badge variant="outline" className="bg-green-400/10 text-green-400 border-green-400/30">
-            {wonCount} gagnés
+          <Badge
+            variant="outline"
+            className="border-green-400/30 bg-green-400/10 text-green-400"
+          >
+            {wonCount} won
           </Badge>
-          <Badge variant="outline" className="bg-red-400/10 text-red-400 border-red-400/30">
-            {lostCount} perdus
+          <Badge
+            variant="outline"
+            className="border-red-400/30 bg-red-400/10 text-red-400"
+          >
+            {lostCount} lost
           </Badge>
-          <Badge variant="outline" className="bg-amber-400/10 text-amber-400 border-amber-400/30">
-            {pendingCount} en cours
+          <Badge
+            variant="outline"
+            className="border-amber-400/30 bg-amber-400/10 text-amber-400"
+          >
+            {pendingCount} pending
           </Badge>
         </div>
       </div>
 
-      <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-        {predictions.map((prediction, index) => {
-          const config = statusConfig[prediction.status as keyof typeof statusConfig] || statusConfig.pending;
+      <div className="max-h-[400px] space-y-3 overflow-y-auto pr-2">
+        {liveCalls.map((liveCall, index) => {
+          const config =
+            statusConfig[liveCall.status as keyof typeof statusConfig] ??
+            statusConfig.pending;
           const StatusIcon = config.icon;
 
           return (
             <motion.div
-              key={prediction.id}
+              key={liveCall.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + index * 0.03 }}
-              className={`p-4 rounded-xl ${config.bgColor} border ${config.borderColor} hover:scale-[1.02] transition-transform`}
+              className={`rounded-xl border p-4 transition-transform hover:scale-[1.02] ${config.bgColor} ${config.borderColor}`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <StatusIcon className={`w-5 h-5 ${config.color}`} />
+                  <StatusIcon className={`h-5 w-5 ${config.color}`} />
                   <div>
-                    <div className="font-medium flex items-center gap-2">
-                      {prediction.selected_team}
+                    <div className="flex items-center gap-2 font-medium">
+                      {liveCall.selected_team}
                       <span className="text-xs text-muted-foreground">
-                        @ {prediction.odds.toFixed(2)}
+                        Signal {Math.round(liveCall.signalWeight * 100)}
                       </span>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {new Date(prediction.created_at).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                      {new Date(liveCall.created_at).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </div>
                   </div>
                 </div>
+
                 <div className="text-right">
                   <div className="flex items-center gap-1 text-sm">
-                    <Coins className="w-3 h-3 text-accent" />
-                    <span>{prediction.stake_amount}</span>
+                    <Coins className="h-3 w-3 text-accent" />
+                    <span>{liveCall.activityCommitment}</span>
                   </div>
-                  <div className={`text-xs ${prediction.status === 'won' ? 'text-green-400' : 'text-muted-foreground'}`}>
-                    {prediction.status === 'won' ? '+' : ''}{prediction.potential_winnings} potentiel
+                  <div
+                    className={`text-xs ${
+                      liveCall.status === "won"
+                        ? "text-green-400"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {liveCall.status === "won" ? "+" : ""}
+                    {liveCall.projectedImpact} impact
                   </div>
                 </div>
               </div>

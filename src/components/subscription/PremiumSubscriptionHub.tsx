@@ -15,9 +15,8 @@ import {
   Zap,
 } from "lucide-react";
 
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-
+import { Navbar } from "@/components/layout/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,10 +27,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useToast } from "@/hooks/use-toast";
 import { SUBSCRIPTION_TIERS } from "@/lib/subscriptionTiers";
 
 type PlanId = "free" | "starter" | "pro" | "elite";
@@ -61,15 +59,6 @@ function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
-/**
- * PremiumSubscriptionHub
- *
- * Subscription page (design pro). Checkout is intentionally stubbed.
- * Replace `startCheckout` with Stripe/Lemon-Squeezy adapter.
- *
- * @example
- * <PremiumSubscriptionHub />
- */
 export default function PremiumSubscriptionHub() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -90,56 +79,52 @@ export default function PremiumSubscriptionHub() {
         id: "starter",
         name: "Starter",
         priceLabel: "€9",
-        priceSubLabel: "/ mois",
+        priceSubLabel: "/ month",
         accent: "cyan",
         icon: Sparkles,
-        highlights: ["Accès premium de base", "Bonus XP", "Support standard"],
+        highlights: ["Core premium access", "XP boost", "Standard support"],
         includes: [
-          "Pronostics premium (limité)",
-          "Accès clubs + chat",
+          "Premium picks (limited)",
+          "Club access + chat",
           "Badges & cosmetics",
-          "Bonus XP +10%",
+          "XP bonus +10%",
         ],
-        cta: "Passer Starter",
+        cta: "Upgrade to Starter",
       },
       {
         id: "pro",
         name: "Pro",
         priceLabel: "€19",
-        priceSubLabel: "/ mois",
+        priceSubLabel: "/ month",
         accent: "violet",
         icon: Star,
-        highlights: [
-          "Le meilleur rapport valeur",
-          "Priorité features",
-          "Rewards",
-        ],
+        highlights: ["Best value", "Priority features", "Rewards"],
         includes: [
-          "Pronostics premium (illimité)",
-          "Accès challenges & wars",
-          "Rewards mensuelles",
-          "Bonus XP +25%",
-          "Support prioritaire",
+          "Premium picks (unlimited)",
+          "Challenges & wars access",
+          "Monthly rewards",
+          "XP bonus +25%",
+          "Priority support",
         ],
-        cta: "Passer Pro",
+        cta: "Upgrade to Pro",
         recommended: true,
       },
       {
         id: "elite",
         name: "Elite",
         priceLabel: "€39",
-        priceSubLabel: "/ mois",
+        priceSubLabel: "/ month",
         accent: "amber",
         icon: Crown,
-        highlights: ["Expérience complète", "VIP perks", "Max rewards"],
+        highlights: ["Full experience", "VIP perks", "Maximum rewards"],
         includes: [
-          "Tout Pro inclus",
-          "Accès VIP & drops exclusifs",
-          "Rewards mensuelles ++",
-          "Bonus XP +50%",
-          "Support VIP",
+          "Everything in Pro",
+          "VIP access & exclusive drops",
+          "Enhanced monthly rewards",
+          "XP bonus +50%",
+          "VIP support",
         ],
-        cta: "Passer Elite",
+        cta: "Upgrade to Elite",
       },
     ],
     [],
@@ -148,20 +133,20 @@ export default function PremiumSubscriptionHub() {
   const faqs: FaqItem[] = useMemo(
     () => [
       {
-        q: "Puis-je annuler quand je veux ?",
-        a: "Oui. L’abonnement reste actif jusqu’à la fin de la période en cours. (À connecter au provider de paiement.)",
+        q: "Can I cancel anytime?",
+        a: "Yes. Your subscription stays active until the end of the current billing period. This still needs to be wired to the payment provider.",
       },
       {
-        q: "Comment fonctionne le paiement ?",
-        a: "Le checkout doit être branché via Stripe ou Lemon Squeezy (port-adapter). Le bouton déclenche une session de paiement.",
+        q: "How does billing work?",
+        a: "Checkout should be connected through Stripe or Lemon Squeezy. The button starts a payment session.",
       },
       {
-        q: "Que se passe-t-il si je change de plan ?",
-        a: "Le changement doit être géré côté provider (proration / upgrade / downgrade). L’UI est prête.",
+        q: "What happens if I change plans?",
+        a: "Proration, upgrades, and downgrades should be handled by the billing provider. The UI is ready for that flow.",
       },
       {
-        q: "J’ai un problème, qui contacter ?",
-        a: "Support in-app (à connecter) + email support. L’abonnement “Elite” bénéficie d’une priorité.",
+        q: "I have an issue. Who should I contact?",
+        a: "In-app support plus support email. The Elite tier receives priority handling.",
       },
     ],
     [],
@@ -175,21 +160,12 @@ export default function PremiumSubscriptionHub() {
     return "free";
   }, [tier]);
 
-  /**
-   * startCheckout
-   *
-   * Creates a Stripe Checkout Session through the Supabase Edge Function
-   * `create-checkout` and redirects the user to Stripe.
-   *
-   * @example
-   * await startCheckout("pro");
-   */
   const startCheckout = useCallback(
     async (planId: PaidPlanId) => {
       if (!user) {
         toast({
-          title: "Connexion requise",
-          description: "Connectez-vous pour activer un abonnement.",
+          title: "Sign-in required",
+          description: "Sign in to activate a subscription.",
           variant: "destructive",
         });
         return;
@@ -198,12 +174,11 @@ export default function PremiumSubscriptionHub() {
       const tierConfig = SUBSCRIPTION_TIERS[planId];
       const priceId = tierConfig?.price_id;
 
-      // Placeholder values in the repo use suffix "_ID" (ex: price_STARTER_ID).
       if (!priceId || /_ID$/.test(priceId)) {
         toast({
-          title: "Billing non configuré",
+          title: "Billing not configured",
           description:
-            "Définis NEXT_PUBLIC_STRIPE_PRICE_* (Starter/Pro/Elite) puis redeploie.",
+            "Set NEXT_PUBLIC_STRIPE_PRICE_* (Starter/Pro/Elite) and redeploy.",
           variant: "destructive",
         });
         return;
@@ -235,6 +210,7 @@ export default function PremiumSubscriptionHub() {
         borderHover: "hover:border-cyan-500/35",
       };
     }
+
     if (accent === "amber") {
       return {
         ring: "ring-amber-500/25",
@@ -244,6 +220,7 @@ export default function PremiumSubscriptionHub() {
         borderHover: "hover:border-amber-500/35",
       };
     }
+
     return {
       ring: "ring-purple-500/25",
       glow: "shadow-[0_0_30px_rgba(168,85,247,0.18)]",
@@ -257,16 +234,14 @@ export default function PremiumSubscriptionHub() {
     <div className="min-h-screen bg-[#0A0B14] text-white">
       <Navbar />
 
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(1100px_circle_at_20%_25%,rgba(0,240,255,0.12),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_80%_35%,rgba(168,85,247,0.14),transparent_55%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
       </div>
 
-      <main className="pt-24 pb-16">
+      <main className="pb-16 pt-24">
         <div className="container-arena">
-          {/* Hero */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -278,15 +253,15 @@ export default function PremiumSubscriptionHub() {
             </div>
 
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight md:text-6xl">
-              Passez en{" "}
+              Go{" "}
               <span className="bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(168,85,247,0.28)]">
                 Premium
               </span>
             </h1>
 
             <p className="mx-auto mt-4 max-w-2xl text-base text-white/60 md:text-lg">
-              Des fonctionnalités avancées, des rewards mensuelles et un accès
-              VIP. Une hiérarchie claire, un design premium, et une UX rapide.
+              Advanced features, monthly rewards, and VIP access in a premium
+              package built for fast, polished UX.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -297,12 +272,11 @@ export default function PremiumSubscriptionHub() {
                 WCAG 2.2 AA
               </Badge>
               <Badge className="border-white/15 bg-white/5 text-white/70">
-                Sans pleine largeur
+                Focused layout
               </Badge>
             </div>
           </motion.div>
 
-          {/* Status strip */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -316,28 +290,28 @@ export default function PremiumSubscriptionHub() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-bold text-white">
-                    Statut abonnement
+                    Subscription status
                   </div>
                   <div className="mt-0.5 text-sm text-white/60">
                     {subLoading ? (
                       <span className="inline-flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Chargement…
+                        <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                       </span>
                     ) : subscribed ? (
                       <>
-                        Actif •{" "}
+                        Active •{" "}
                         <span className="font-semibold">
                           {tier?.name ?? "Premium"}
                         </span>
                         {subscriptionEnd ? (
                           <span className="text-white/45">
                             {" "}
-                            • fin {subscriptionEnd}
+                            • ends {subscriptionEnd}
                           </span>
                         ) : null}
                       </>
                     ) : (
-                      "Aucun abonnement actif"
+                      "No active subscription"
                     )}
                   </div>
                 </div>
@@ -363,14 +337,13 @@ export default function PremiumSubscriptionHub() {
                     el?.scrollIntoView({ behavior: "smooth", block: "start" });
                   }}
                 >
-                  Voir les plans
+                  View plans
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </motion.div>
 
-          {/* Plans */}
           <div id="subscription-plans" className="mt-10">
             <div className="mb-4 flex items-end justify-between gap-3">
               <div>
@@ -378,30 +351,30 @@ export default function PremiumSubscriptionHub() {
                   Plans
                 </div>
                 <div className="mt-1 text-xl font-extrabold">
-                  Choisissez votre niveau
+                  Choose your tier
                 </div>
               </div>
               <Badge className="border-white/15 bg-white/5 text-white/70">
-                Paiement mensuel
+                Monthly billing
               </Badge>
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {plans.map((p, idx) => {
-                const s = accentStyles(p.accent);
-                const isCurrent = currentTierId === p.id;
+              {plans.map((plan, index) => {
+                const styles = accentStyles(plan.accent);
+                const isCurrent = currentTierId === plan.id;
 
                 return (
                   <motion.div
-                    key={p.id}
+                    key={plan.id}
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.04 * idx }}
+                    transition={{ delay: 0.04 * index }}
                     className={cx(
                       "relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900/65 to-slate-950/70 p-7 backdrop-blur-xl",
-                      s.borderHover,
-                      p.recommended && "ring-1 " + s.ring,
-                      p.recommended && s.glow,
+                      styles.borderHover,
+                      plan.recommended && "ring-1 " + styles.ring,
+                      plan.recommended && styles.glow,
                     )}
                   >
                     <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
@@ -411,58 +384,58 @@ export default function PremiumSubscriptionHub() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-black/20">
-                            <p.icon className="h-6 w-6 text-white/80" />
+                            <plan.icon className="h-6 w-6 text-white/80" />
                           </div>
                           <div>
                             <div className="text-lg font-extrabold">
-                              {p.name}
+                              {plan.name}
                             </div>
                             <div className="mt-1 text-sm text-white/55">
-                              {p.highlights[0]}
+                              {plan.highlights[0]}
                             </div>
                           </div>
                         </div>
 
-                        {p.recommended ? (
-                          <Badge className={cx("border", s.chip)}>
-                            Recommandé
+                        {plan.recommended ? (
+                          <Badge className={cx("border", styles.chip)}>
+                            Recommended
                           </Badge>
                         ) : null}
                       </div>
 
                       <div className="mt-6 flex items-end gap-2">
                         <div className="text-5xl font-extrabold tracking-tight">
-                          {p.priceLabel}
+                          {plan.priceLabel}
                         </div>
                         <div className="pb-2 text-sm font-semibold text-white/55">
-                          {p.priceSubLabel}
+                          {plan.priceSubLabel}
                         </div>
                       </div>
 
                       <div className="mt-5 space-y-2">
-                        {p.highlights.slice(1).map((h) => (
+                        {plan.highlights.slice(1).map((highlight) => (
                           <div
-                            key={h}
+                            key={highlight}
                             className="flex items-center gap-2 text-sm text-white/65"
                           >
                             <Check className="h-4 w-4 text-emerald-300" />
-                            <span>{h}</span>
+                            <span>{highlight}</span>
                           </div>
                         ))}
                       </div>
 
                       <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
                         <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">
-                          Inclus
+                          Included
                         </div>
                         <div className="mt-3 space-y-2">
-                          {p.includes.map((it) => (
+                          {plan.includes.map((item) => (
                             <div
-                              key={it}
+                              key={item}
                               className="flex items-start gap-2 text-sm text-white/70"
                             >
                               <span className="mt-[2px] h-2 w-2 shrink-0 rounded-full bg-white/35" />
-                              <span>{it}</span>
+                              <span>{item}</span>
                             </div>
                           ))}
                         </div>
@@ -472,21 +445,21 @@ export default function PremiumSubscriptionHub() {
                         <Button
                           className={cx(
                             "h-12 w-full rounded-2xl font-extrabold text-black",
-                            "bg-gradient-to-r " + s.cta,
+                            "bg-gradient-to-r " + styles.cta,
                           )}
                           disabled={isCurrent || isStartingCheckout}
-                          onClick={() => openConfirm(p.id)}
-                          aria-label={`Choisir ${p.name}`}
+                          onClick={() => openConfirm(plan.id)}
+                          aria-label={`Choose ${plan.name}`}
                         >
                           {isStartingCheckout ? (
                             <span className="inline-flex items-center gap-2">
                               <Loader2 className="h-4 w-4 animate-spin" />
-                              Chargement…
+                              Loading...
                             </span>
                           ) : isCurrent ? (
-                            "Plan actuel"
+                            "Current plan"
                           ) : (
-                            p.cta
+                            plan.cta
                           )}
                         </Button>
 
@@ -494,15 +467,11 @@ export default function PremiumSubscriptionHub() {
                           variant="outline"
                           className="h-12 w-full rounded-2xl border-white/15 bg-transparent text-white hover:bg-white/5"
                           onClick={() => {
-                            const el =
-                              document.getElementById("subscription-faq");
-                            el?.scrollIntoView({
-                              behavior: "smooth",
-                              block: "start",
-                            });
+                            const el = document.getElementById("subscription-faq");
+                            el?.scrollIntoView({ behavior: "smooth", block: "start" });
                           }}
                         >
-                          Détails & FAQ
+                          Details & FAQ
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       </div>
@@ -513,21 +482,20 @@ export default function PremiumSubscriptionHub() {
             </div>
           </div>
 
-          {/* FAQ */}
           <div id="subscription-faq" className="mt-12">
             <div className="mb-4">
               <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">
                 FAQ
               </div>
               <div className="mt-1 text-xl font-extrabold">
-                Questions fréquentes
+                Frequently asked questions
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              {faqs.map((f) => (
+              {faqs.map((faq) => (
                 <div
-                  key={f.q}
+                  key={faq.q}
                   className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
                 >
                   <div className="flex items-start gap-3">
@@ -535,8 +503,8 @@ export default function PremiumSubscriptionHub() {
                       <HelpCircle className="h-4 w-4 text-white/70" />
                     </div>
                     <div>
-                      <div className="font-bold">{f.q}</div>
-                      <div className="mt-1 text-sm text-white/60">{f.a}</div>
+                      <div className="font-bold">{faq.q}</div>
+                      <div className="mt-1 text-sm text-white/60">{faq.a}</div>
                     </div>
                   </div>
                 </div>
@@ -544,17 +512,12 @@ export default function PremiumSubscriptionHub() {
             </div>
           </div>
 
-          {/* Confirm dialog */}
-          <Dialog
-            open={confirm.open}
-            onOpenChange={(v) => !v && closeConfirm()}
-          >
+          <Dialog open={confirm.open} onOpenChange={(open) => !open && closeConfirm()}>
             <DialogContent className="border-white/10 bg-slate-950/80 text-white backdrop-blur-xl sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Confirmer l’abonnement</DialogTitle>
+                <DialogTitle>Confirm subscription</DialogTitle>
                 <DialogDescription className="text-white/60">
-                  Vous allez être redirigé vers le paiement pour activer votre
-                  plan.
+                  You will be redirected to checkout to activate your plan.
                 </DialogDescription>
               </DialogHeader>
 
@@ -566,8 +529,7 @@ export default function PremiumSubscriptionHub() {
                   </span>
                 </div>
                 <div className="mt-2 text-xs text-white/50">
-                  {/* TODO-human: provider checkout */}
-                  Le checkout est à connecter (Stripe/Lemon-Squeezy).
+                  Checkout still needs a live Stripe/Lemon Squeezy connection.
                 </div>
               </div>
 
@@ -578,7 +540,7 @@ export default function PremiumSubscriptionHub() {
                   onClick={closeConfirm}
                   disabled={isStartingCheckout}
                 >
-                  Annuler
+                  Cancel
                 </Button>
 
                 <Button
@@ -590,7 +552,7 @@ export default function PremiumSubscriptionHub() {
                   }}
                   disabled={isStartingCheckout}
                 >
-                  Continuer
+                  Continue
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </DialogFooter>

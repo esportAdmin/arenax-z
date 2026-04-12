@@ -4,7 +4,6 @@ import { AnalyticsTopbar } from "@/components/analytics/AnalyticsTopbar";
 import {
   Brain,
   TrendingUp,
-  TrendingDown,
   Target,
   Sparkles,
   AlertTriangle,
@@ -15,16 +14,11 @@ import {
   Clock,
   RefreshCw,
   Search,
-  Filter,
   Download,
-  BarChart3,
-  Trophy,
-  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import {
   LineChart,
@@ -57,7 +51,7 @@ const recentPredictions = [
     confidence: 85,
     result: "correct",
     date: "2024-01-18",
-    odds: "1.85",
+    odds: "185",
   },
   {
     id: 2,
@@ -66,7 +60,7 @@ const recentPredictions = [
     confidence: 72,
     result: "correct",
     date: "2024-01-17",
-    odds: "2.10",
+    odds: "210",
   },
   {
     id: 3,
@@ -75,7 +69,7 @@ const recentPredictions = [
     confidence: 68,
     result: "incorrect",
     date: "2024-01-16",
-    odds: "1.95",
+    odds: "195",
   },
   {
     id: 4,
@@ -84,7 +78,7 @@ const recentPredictions = [
     confidence: 78,
     result: "pending",
     date: "2024-01-19",
-    odds: "1.75",
+    odds: "175",
   },
   {
     id: 5,
@@ -93,7 +87,7 @@ const recentPredictions = [
     confidence: 82,
     result: "correct",
     date: "2024-01-15",
-    odds: "1.65",
+    odds: "165",
   },
 ];
 
@@ -103,7 +97,7 @@ const aiInsights = [
     icon: TrendingUp,
     title: "High Value Opportunity",
     description:
-      "Team Alpha has 78% win probability but odds suggest only 60%. Potential value bet.",
+    "Team Alpha has a strong signal gap compared with current community attention.",
     confidence: 85,
   },
   {
@@ -190,7 +184,7 @@ export default function AnalyticsPredictions() {
     <div className="flex h-screen bg-[#0a0a0f] overflow-hidden">
       <AnalyticsSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <AnalyticsTopbar title="Predictions / AI" />
+  <AnalyticsTopbar title="Live Calls / AI" />
         <main className="flex-1 overflow-auto">
           <div className="flex">
             {/* Main Content */}
@@ -209,16 +203,16 @@ export default function AnalyticsPredictions() {
                 <div className="relative z-10 flex items-center justify-between">
                   <div>
                     <h1 className="text-3xl font-display font-bold text-foreground mb-2">
-                      AI Predictions & Insights
+              AI Live Calls & Insights
                     </h1>
                     <p className="text-muted-foreground">
-                      Machine learning powered predictions with real-time
+              Machine learning powered live-call insights with real-time
                       accuracy tracking
                     </p>
                   </div>
                   <Button className="bg-primary hover:bg-primary/90 font-semibold px-6">
                     <Brain className="w-4 h-4 mr-2" />
-                    Generate Predictions
+              Generate Live Calls
                   </Button>
                 </div>
               </div>
@@ -231,7 +225,7 @@ export default function AnalyticsPredictions() {
                       <Brain className="w-5 h-5 text-primary" />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      Total Predictions
+              Total Live Calls
                     </span>
                   </div>
                   <div className="flex items-baseline gap-2">
@@ -275,7 +269,7 @@ export default function AnalyticsPredictions() {
                       <CheckCircle2 className="w-5 h-5 text-secondary" />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      Correct Predictions
+              Correct Calls
                     </span>
                   </div>
                   <div className="flex items-baseline gap-2">
@@ -317,7 +311,7 @@ export default function AnalyticsPredictions() {
                 <div className="bg-[#12121a] rounded-xl border border-white/5 p-5">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold text-foreground">
-                      Prediction Accuracy Trend
+              Signal Accuracy Trend
                     </h3>
                     <Badge variant="outline" className="text-xs">
                       Last 7 months
@@ -396,7 +390,7 @@ export default function AnalyticsPredictions() {
                               {model.name}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {model.predictions.toLocaleString()} predictions
+                    {model.predictions.toLocaleString()} live calls
                             </p>
                           </div>
                           <div className="text-right">
@@ -433,7 +427,7 @@ export default function AnalyticsPredictions() {
               <div className="bg-[#12121a] rounded-xl border border-white/5 p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-foreground">
-                    Recent Predictions
+              Recent Live Calls
                   </h3>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1">
@@ -492,13 +486,13 @@ export default function AnalyticsPredictions() {
                         Match
                       </th>
                       <th className="py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Prediction
+                    Live Call
                       </th>
                       <th className="py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Confidence
                       </th>
                       <th className="py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        Odds
+                    Signal
                       </th>
                       <th className="py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         Date
@@ -669,7 +663,7 @@ export default function AnalyticsPredictions() {
               {/* Upcoming Predictions */}
               <div className="bg-[#12121a] rounded-xl border border-white/5 p-5">
                 <h3 className="font-semibold text-foreground mb-4">
-                  Upcoming Predictions
+            Upcoming Live Calls
                 </h3>
                 <div className="space-y-3">
                   {upcomingPredictions.map((pred) => (
@@ -698,7 +692,7 @@ export default function AnalyticsPredictions() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-primary">
-                          Prediction: {pred.prediction}
+                      Live call: {pred.prediction}
                         </span>
                         <span
                           className={cn(

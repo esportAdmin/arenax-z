@@ -48,7 +48,25 @@ export async function POST(req: NextRequest): Promise<Response> {
   });
 
   if (rpcError) return NextResponse.json({ error: rpcError.message }, { status: 500 });
-  if (!result?.success) return NextResponse.json({ error: "Already in queue", session_id: result?.session_id ?? null }, { status: 409 });
+  if (!result?.success) {
+    const { data: existingSession } = await admin
+      .from("queue_sessions")
+      .select("id, status, estimated_wait_s, war_id")
+      .eq("player_id", user.id)
+      .in("status", ["searching", "match_found"])
+      .order("created_at", { ascending: false })
+      .maybeSingle();
+
+    return NextResponse.json({
+      success: true,
+      alreadyQueued: true,
+      session_id: existingSession?.id ?? result?.session_id ?? null,
+      estimated_wait_s:
+        existingSession?.estimated_wait_s ?? result?.estimated_wait_s ?? null,
+      queue_type: queueType,
+      session: existingSession ?? null,
+    });
+  }
 
   void admin
     .rpc("track_event", {

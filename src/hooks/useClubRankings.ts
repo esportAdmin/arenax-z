@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -52,7 +52,7 @@ export const useClubRankings = () => {
     };
   };
 
-  const fetchRankings = async () => {
+  const fetchRankings = useCallback(async () => {
     try {
       const { start } = getCurrentWeek();
       
@@ -93,9 +93,9 @@ export const useClubRankings = () => {
     } catch (error) {
       console.error('Error fetching club rankings:', error);
     }
-  };
+  }, [user]);
 
-  const fetchRewards = async () => {
+  const fetchRewards = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('club_rewards')
@@ -108,7 +108,7 @@ export const useClubRankings = () => {
     } catch (error) {
       console.error('Error fetching club rewards:', error);
     }
-  };
+  }, []);
 
   const claimReward = async (rankingId: string) => {
     try {
@@ -135,8 +135,8 @@ export const useClubRankings = () => {
       await Promise.all([fetchRankings(), fetchRewards()]);
       setLoading(false);
     };
-    loadData();
-  }, [user]);
+    void loadData();
+  }, [user, fetchRankings, fetchRewards]);
 
   return {
     rankings,

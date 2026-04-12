@@ -7,12 +7,6 @@ import { toast } from "sonner";
 
 import PremiumSubscriptionHub from "@/components/subscription/PremiumSubscriptionHub";
 
-/**
- * Read URL params on client safely (must be under <Suspense/>).
- *
- * @example
- * // /subscription?status=success -> shows success toast
- */
 export default function SubscriptionInner() {
   const params = useSearchParams();
   const router = useRouter();
@@ -21,11 +15,10 @@ export default function SubscriptionInner() {
   const sessionId = useMemo(() => params.get("session_id"), [params]);
 
   useEffect(() => {
-    if (status === "success") toast.success("Abonnement activé");
-    if (status === "canceled") toast.error("Paiement annulé");
-    if (status === "error") toast.error("Erreur de paiement");
+    if (status === "success") toast.success("Subscription activated");
+    if (status === "canceled") toast.error("Payment canceled");
+    if (status === "error") toast.error("Payment error");
 
-    // optional: clean URL after handling
     if (status || sessionId) {
       const url = new URL(window.location.href);
       url.searchParams.delete("status");

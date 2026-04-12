@@ -25,10 +25,7 @@ interface LevelProgressProps {
 
 type Tier = { name: string; color: string; icon: typeof Star };
 
-const rarityStyles: Record<
-  string,
-  { bg: string; border: string; text: string }
-> = {
+const rarityStyles: Record<string, { bg: string; border: string; text: string }> = {
   common: {
     bg: "bg-muted/50",
     border: "border-border",
@@ -60,21 +57,21 @@ const rewardIcons: Record<string, typeof Gift> = {
   sparkles: Sparkles,
 };
 
-/**
- * Get level tier label and style.
- *
- * @example
- * getLevelTier(1).name; // "Débutant"
- */
 function getLevelTier(level: number): Tier {
-  if (level >= 50)
-    return { name: "Légendaire", color: "text-amber-400", icon: Sparkles };
-  if (level >= 30)
-    return { name: "Maître", color: "text-purple-400", icon: Star };
-  if (level >= 20)
+  if (level >= 50) {
+    return { name: "Legendary", color: "text-amber-400", icon: Sparkles };
+  }
+  if (level >= 30) {
+    return { name: "Master", color: "text-purple-400", icon: Star };
+  }
+  if (level >= 20) {
     return { name: "Expert", color: "text-accent", icon: TrendingUp };
-  if (level >= 10) return { name: "Avancé", color: "text-primary", icon: Zap };
-  return { name: "Débutant", color: "text-muted-foreground", icon: Star };
+  }
+  if (level >= 10) {
+    return { name: "Advanced", color: "text-primary", icon: Zap };
+  }
+
+  return { name: "Beginner", color: "text-muted-foreground", icon: Star };
 }
 
 export function LevelProgress({
@@ -84,15 +81,13 @@ export function LevelProgress({
 }: LevelProgressProps) {
   const progressPercent =
     xpForNextLevel > 0 ? (currentXp / xpForNextLevel) * 100 : 0;
-
   const tier = getLevelTier(currentLevel);
   const TierIcon = tier.icon;
-
   const { rewards, claimedRewards, availableRewards, loading } =
     useLevelRewards(currentLevel);
 
   const upcomingRewards = rewards
-    .filter((r) => !claimedRewards.some((c) => c.reward_id === r.id))
+    .filter((reward) => !claimedRewards.some((claimed) => claimed.reward_id === reward.id))
     .slice(0, 3);
 
   return (
@@ -102,13 +97,13 @@ export function LevelProgress({
       transition={{ delay: 0.15 }}
       className="glass-card p-6"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display font-bold text-lg flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" />
-          Progression
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-lg font-display font-bold">
+          <Zap className="h-5 w-5 text-primary" />
+          Progress
         </h2>
         <div className={`flex items-center gap-1 text-sm ${tier.color}`}>
-          <TierIcon className="w-4 h-4" />
+          <TierIcon className="h-4 w-4" />
           <span className="font-medium">{tier.name}</span>
         </div>
       </div>
@@ -120,13 +115,13 @@ export function LevelProgress({
           transition={{ type: "spring", delay: 0.2 }}
           className="relative"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.4)]">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent shadow-[0_0_30px_hsl(var(--primary)/0.4)]">
             <div className="text-center">
               <div className="text-2xl font-display font-bold text-primary-foreground">
                 {currentLevel}
               </div>
-              <div className="text-[10px] text-primary-foreground/80 uppercase tracking-wider">
-                Niveau
+              <div className="text-[10px] uppercase tracking-wider text-primary-foreground/80">
+                Level
               </div>
             </div>
           </div>
@@ -141,17 +136,17 @@ export function LevelProgress({
         <div className="flex-1 space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
-              Niveau {currentLevel} → {currentLevel + 1}
+              Level {currentLevel} to {currentLevel + 1}
             </span>
             <span className="font-display font-bold text-primary">
-              {currentXp.toLocaleString()} / {xpForNextLevel.toLocaleString()}{" "}
-              XP
+              {currentXp.toLocaleString("en-US")} /{" "}
+              {xpForNextLevel.toLocaleString("en-US")} XP
             </span>
           </div>
 
-          <div className="relative h-4 bg-muted/50 rounded-full overflow-hidden border border-border/50">
+          <div className="relative h-4 overflow-hidden rounded-full border border-border/50 bg-muted/50">
             <motion.div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-secondary to-accent rounded-full"
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
               transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
@@ -164,41 +159,42 @@ export function LevelProgress({
           </div>
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{Math.round(progressPercent)}% complété</span>
+            <span>{Math.round(progressPercent)}% complete</span>
             <span>
-              {(xpForNextLevel - currentXp).toLocaleString()} XP restants
+              {(xpForNextLevel - currentXp).toLocaleString("en-US")} XP remaining
             </span>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-border/50">
-        <div className="flex items-center justify-between mb-3">
+      <div className="mt-6 border-t border-border/50 pt-4">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Gift className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Récompenses</span>
+            <Gift className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Rewards</span>
             {availableRewards.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-primary text-primary-foreground animate-pulse">
-                {availableRewards.length} à réclamer
+              <span className="animate-pulse rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+                {availableRewards.length} to claim
               </span>
             )}
           </div>
 
           <Link
             href="/rewards"
+            prefetch={false}
             className="flex items-center gap-1 text-xs text-primary hover:underline"
           >
-            Voir tout
-            <ChevronRight className="w-3 h-3" />
+            View all
+            <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
 
         {loading ? (
           <div className="flex gap-2">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map((item) => (
               <div
-                key={i}
-                className="flex-1 h-16 rounded-lg bg-muted/30 animate-pulse"
+                key={item}
+                className="h-16 flex-1 animate-pulse rounded-lg bg-muted/30"
               />
             ))}
           </div>
@@ -208,7 +204,7 @@ export function LevelProgress({
               const isUnlocked = currentLevel >= reward.level_required;
               const canClaim =
                 isUnlocked &&
-                !claimedRewards.some((c) => c.reward_id === reward.id);
+                !claimedRewards.some((claimed) => claimed.reward_id === reward.id);
               const rarity = rarityStyles[reward.rarity] || rarityStyles.common;
               const Icon = rewardIcons[reward.icon] || Gift;
 
@@ -219,7 +215,7 @@ export function LevelProgress({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + index * 0.1 }}
                   className={cn(
-                    "relative p-3 rounded-lg border text-center transition-all",
+                    "relative rounded-lg border p-3 text-center transition-all",
                     rarity.bg,
                     rarity.border,
                     canClaim &&
@@ -229,7 +225,7 @@ export function LevelProgress({
                 >
                   <div
                     className={cn(
-                      "absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold",
+                      "absolute -right-1.5 -top-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
                       isUnlocked
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground",
@@ -240,43 +236,42 @@ export function LevelProgress({
 
                   <div
                     className={cn(
-                      "w-8 h-8 mx-auto rounded-lg flex items-center justify-center mb-1",
+                      "mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg border",
                       rarity.bg,
                       rarity.border,
-                      "border",
                     )}
                   >
                     {isUnlocked ? (
-                      <Icon className={cn("w-4 h-4", rarity.text)} />
+                      <Icon className={cn("h-4 w-4", rarity.text)} />
                     ) : (
-                      <Lock className="w-4 h-4 text-muted-foreground" />
+                      <Lock className="h-4 w-4 text-muted-foreground" />
                     )}
                   </div>
 
-                  <div className="text-[10px] font-medium truncate">
+                  <div className="truncate text-[10px] font-medium">
                     {reward.title}
                   </div>
 
-                  <div className={cn("text-[9px] mt-0.5", rarity.text)}>
+                  <div className={cn("mt-0.5 text-[9px]", rarity.text)}>
                     {reward.reward_type === "arena_points" &&
                       `+${reward.reward_value} ARENA`}
                     {reward.reward_type === "xp_bonus" &&
                       `+${reward.reward_value} XP`}
-                    {reward.reward_type === "title" && "Titre"}
+                    {reward.reward_type === "title" && "Title"}
                     {reward.reward_type === "feature" && "Feature"}
                   </div>
 
                   {canClaim && (
-                    <div className="absolute inset-0 rounded-lg border-2 border-primary animate-pulse" />
+                    <div className="absolute inset-0 animate-pulse rounded-lg border-2 border-primary" />
                   )}
                 </motion.div>
               );
             })}
           </div>
         ) : (
-          <div className="text-center py-4 text-sm text-muted-foreground">
-            <Gift className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            Toutes les récompenses ont été réclamées !
+          <div className="py-4 text-center text-sm text-muted-foreground">
+            <Gift className="mx-auto mb-2 h-8 w-8 opacity-50" />
+            All rewards have been claimed.
           </div>
         )}
       </div>

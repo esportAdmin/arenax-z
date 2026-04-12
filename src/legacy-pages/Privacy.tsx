@@ -42,7 +42,7 @@ const Privacy = () => {
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
                       <li><strong>Personal Information:</strong> Email address, username, display name, avatar</li>
-                      <li><strong>Usage Data:</strong> Predictions, scores, platform activity, feature interactions</li>
+                      <li><strong>Usage Data:</strong> Live calls, scores, platform activity, feature interactions</li>
                       <li><strong>Device Information:</strong> IP address, browser type, operating system, device identifiers</li>
                       <li><strong>Payment Information:</strong> Processed securely by our third-party payment providers</li>
                       <li><strong>Communications:</strong> Messages sent through the Platform, support inquiries</li>

@@ -1,174 +1,228 @@
-import { motion } from "framer-motion";
-import { Trophy, Clock, TrendingUp, Coins, Target, Flame } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+"use client";
 
-interface Prediction {
+import { motion } from "framer-motion";
+import {
+  Clock,
+  Coins,
+  Flame,
+  LockKeyhole,
+  Target,
+  Trophy,
+  TrendingUp,
+} from "lucide-react";
+
+import { CountdownPill } from "@/components/engagement/CountdownPill";
+import { getNextUtcMidnight } from "@/lib/countdown";
+
+interface LiveCall {
   id: string;
   match_id: string;
   selected_team: string;
-  stake_amount: number;
-  potential_winnings: number;
-  odds: number;
+  activityCommitment: number;
+  projectedImpact: number;
+  signalWeight: number;
   status: string;
   created_at: string;
 }
 
 interface UserPredictionsSidebarProps {
-  predictions: Prediction[];
+  liveCalls: LiveCall[];
   balance: number;
-  totalPredictions: number;
+  totalLiveCalls: number;
   totalWins: number;
 }
 
 export const UserPredictionsSidebar = ({
-  predictions,
+  liveCalls,
   balance,
-  totalPredictions,
-  totalWins
+  totalLiveCalls,
+  totalWins,
 }: UserPredictionsSidebarProps) => {
-  const recentPredictions = predictions.slice(0, 5);
-  const pendingPredictions = predictions.filter(p => p.status === 'pending');
-  const winRate = totalPredictions > 0 ? Math.round((totalWins / totalPredictions) * 100) : 0;
+  const recentLiveCalls = liveCalls.slice(0, 5);
+  const pendingLiveCalls = liveCalls.filter((liveCall) => liveCall.status === "pending");
+  const winRate =
+    totalLiveCalls > 0 ? Math.round((totalWins / totalLiveCalls) * 100) : 0;
 
-  const getStatusColor = (status: string) => {
+  const getStatusTone = (status: string) => {
     switch (status) {
-      case 'won': return 'bg-accent/20 text-accent border-accent/30';
-      case 'lost': return 'bg-destructive/20 text-destructive border-destructive/30';
-      case 'pending': return 'bg-primary/20 text-primary border-primary/30';
-      default: return 'bg-muted text-muted-foreground';
+      case "won":
+        return "text-emerald-300";
+      case "lost":
+        return "text-rose-300";
+      default:
+        return "text-cyan-300";
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'won': return 'Gagné';
-      case 'lost': return 'Perdu';
-      case 'pending': return 'En cours';
-      default: return status;
+      case "won":
+        return "Won";
+      case "lost":
+        return "Lost";
+      case "pending":
+        return "Pending";
+      default:
+        return status;
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Balance Card */}
+    <div className="space-y-5">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-6"
+        className="section-shell"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30">
-            <Coins className="w-6 h-6 text-primary" />
-          </div>
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-muted-foreground">Votre Solde</p>
-            <p className="font-display font-bold text-2xl">{balance.toLocaleString()} <span className="text-primary">AP</span></p>
+            <div className="eyebrow-badge">
+              <Coins className="h-4 w-4 text-primary" />
+              Personal war chest
+            </div>
+            <h3 className="mt-3 text-2xl font-display font-bold text-white">
+              Keep your live-call momentum visible
+            </h3>
           </div>
+          <CountdownPill label="Reset" target={getNextUtcMidnight()} tone="cyan" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 rounded-lg bg-muted/30">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <Target className="w-4 h-4" />
-              <span className="text-xs">Pronostics</span>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+          <div className="surface-panel border-cyan-400/18 bg-cyan-400/8 p-4">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-400">
+              <Coins className="h-4 w-4 text-primary" />
+              Balance
             </div>
-            <p className="font-bold text-lg">{totalPredictions}</p>
+            <div className="mt-2 text-3xl font-display font-bold text-white">
+              {balance.toLocaleString("en-US")}
+            </div>
           </div>
-          <div className="p-3 rounded-lg bg-muted/30">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <Flame className="w-4 h-4" />
-              <span className="text-xs">Win Rate</span>
+
+          <div className="surface-panel border-amber-400/18 bg-amber-400/8 p-4">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-400">
+              <Target className="h-4 w-4 text-amber-300" />
+              Total picks
             </div>
-            <p className="font-bold text-lg">{winRate}%</p>
+            <div className="mt-2 text-3xl font-display font-bold text-white">
+              {totalLiveCalls}
+            </div>
+          </div>
+
+          <div className="surface-panel border-emerald-400/18 bg-emerald-400/8 p-4">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-slate-400">
+              <Flame className="h-4 w-4 text-emerald-300" />
+              Hit rate
+            </div>
+            <div className="mt-2 text-3xl font-display font-bold text-white">
+              {winRate}%
+            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Pending Predictions */}
-      {pendingPredictions.length > 0 && (
+      {pendingLiveCalls.length > 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card p-6"
+          transition={{ delay: 0.06 }}
+          className="section-shell"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-5 h-5 text-primary" />
-            <h3 className="font-display font-bold">En Attente</h3>
-            <Badge variant="secondary" className="ml-auto">{pendingPredictions.length}</Badge>
+          <div className="flex items-center justify-between gap-3">
+            <div className="eyebrow-badge">
+              <Clock className="h-4 w-4 text-primary" />
+              Pending calls
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white">
+              {pendingLiveCalls.length}
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {pendingPredictions.slice(0, 3).map((prediction) => (
-              <div
-                key={prediction.id}
-                className="p-3 rounded-lg bg-muted/30 border border-border/50"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">{prediction.selected_team}</span>
-                  <Badge className={getStatusColor(prediction.status)}>
-                    {getStatusLabel(prediction.status)}
-                  </Badge>
+          <div className="mt-4 space-y-3">
+            {pendingLiveCalls.slice(0, 3).map((liveCall) => (
+              <div key={liveCall.id} className="surface-panel p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-white">
+                    {liveCall.selected_team}
+                  </span>
+                  <span className="rounded-full border border-cyan-400/18 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200">
+                    {getStatusLabel(liveCall.status)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{prediction.stake_amount} AP</span>
-                  <span className="text-accent">+{prediction.potential_winnings} AP</span>
+                <div className="mt-3 flex items-center justify-between text-sm text-slate-400">
+                  <span>{liveCall.activityCommitment} ARENA activity</span>
+                  <span className="font-semibold text-amber-300">
+                    {liveCall.projectedImpact} impact
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         </motion.div>
-      )}
+      ) : null}
 
-      {/* Recent Activity */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass-card p-6"
+        transition={{ delay: 0.12 }}
+        className="section-shell"
       >
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h3 className="font-display font-bold">Activité Récente</h3>
+        <div className="eyebrow-badge">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          Recent activity
         </div>
 
-        {recentPredictions.length > 0 ? (
-          <div className="space-y-3">
-            {recentPredictions.map((prediction) => (
+        {recentLiveCalls.length > 0 ? (
+          <div className="mt-4 space-y-3">
+            {recentLiveCalls.map((liveCall) => (
               <div
-                key={prediction.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
+                key={liveCall.id}
+                className="surface-panel flex items-center justify-between gap-3 p-4"
               >
                 <div className="flex items-center gap-3">
-                  {prediction.status === 'won' ? (
-                    <Trophy className="w-4 h-4 text-accent" />
-                  ) : prediction.status === 'lost' ? (
-                    <div className="w-4 h-4 rounded-full bg-destructive/50" />
+                  {liveCall.status === "won" ? (
+                    <Trophy className="h-4 w-4 text-amber-300" />
+                  ) : liveCall.status === "lost" ? (
+                    <div className="h-3 w-3 rounded-full bg-rose-400" />
                   ) : (
-                    <Clock className="w-4 h-4 text-primary" />
+                    <Clock className="h-4 w-4 text-primary" />
                   )}
                   <div>
-                    <p className="text-sm font-medium">{prediction.selected_team}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(prediction.created_at).toLocaleDateString('fr-FR')}
-                    </p>
+                    <div className="text-sm font-semibold text-white">
+                      {liveCall.selected_team}
+                    </div>
+                    <div className="text-[11px] uppercase tracking-[0.14em] text-slate-500">
+                      {new Date(liveCall.created_at).toLocaleDateString("en-US")}
+                    </div>
                   </div>
                 </div>
-                <span className={`text-sm font-bold ${
-                  prediction.status === 'won' ? 'text-accent' : 
-                  prediction.status === 'lost' ? 'text-destructive' : 'text-foreground'
-                }`}>
-                  {prediction.status === 'won' ? '+' : ''}{prediction.status === 'won' ? prediction.potential_winnings : prediction.stake_amount} AP
-                </span>
+                <div className={`text-sm font-bold ${getStatusTone(liveCall.status)}`}>
+                  {liveCall.status === "won" ? "+" : ""}
+                  {liveCall.status === "won"
+                    ? liveCall.projectedImpact
+                    : liveCall.activityCommitment}{" "}
+                  ARENA
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            Aucun pronostic pour le moment
-          </p>
+          <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-black/20 p-5 text-center text-sm text-slate-400">
+            No live-call history yet. The first strong call should immediately
+            make this sidebar feel alive.
+          </div>
         )}
       </motion.div>
+
+      <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+        <div className="flex items-center gap-2 text-sm font-semibold text-white">
+          <LockKeyhole className="h-4 w-4 text-slate-200" />
+          Premium call journal unlocks after your next accuracy tier
+        </div>
+        <p className="mt-2 text-sm leading-6 text-slate-400">
+          Your sidebars should always suggest there is a sharper layer waiting
+          above your current tier.
+        </p>
+      </div>
     </div>
   );
 };

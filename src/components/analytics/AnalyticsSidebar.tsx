@@ -23,7 +23,7 @@ const navItems = [
   { icon: Trophy, label: "Tournaments", href: "/analytics/tournaments" },
   { icon: Users, label: "Teams & Players", href: "/analytics/teams" },
   { icon: BarChart3, label: "Analytics", href: "/analytics/data" },
-  { icon: Brain, label: "Predictions / AI", href: "/analytics/predictions" },
+  { icon: Brain, label: "Live Calls / AI", href: "/analytics/predictions" },
   { icon: FileText, label: "Reports", href: "/analytics/reports" },
   { icon: Settings, label: "Settings", href: "/analytics/settings" },
 ];
