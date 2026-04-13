@@ -13,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaTwitch } from "react-icons/fa";
 import { CountdownPill } from "@/components/engagement/CountdownPill";
 import Navigation from "@/components/landing/Navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,7 +33,7 @@ const launchSteps = [
 ];
 
 export default function Page() {
-  const { getDiscordAccessToken, user, signOut } = useAuth();
+  const { getDiscordAccessToken, session, user, signOut } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -130,8 +130,16 @@ export default function Page() {
     router.push("/login");
   };
 
+  const handleSwitchToDiscord = async () => {
+    await signOut();
+    router.push("/login?redirect=/dashboard");
+  };
+
   const nextClubPulse = getHoursFromNow(4);
   const dailyReset = getNextUtcMidnight();
+  const sessionProvider = String(session?.user?.app_metadata?.provider ?? "");
+  const isTwitchSession = sessionProvider === "twitch";
+  const hasDiscordProvider = sessionProvider === "discord";
 
   return (
     <div className="min-h-screen text-white">
@@ -297,28 +305,65 @@ export default function Page() {
             {!loading && guilds.length === 0 ? (
               <div className="section-shell text-center">
                 <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.6rem] border border-amber-400/18 bg-amber-400/10">
-                  <Shield className="h-10 w-10 text-amber-300" />
+                  {isTwitchSession ? (
+                    <FaTwitch className="h-10 w-10 text-[#a970ff]" />
+                  ) : (
+                    <Shield className="h-10 w-10 text-amber-300" />
+                  )}
                 </div>
                 <h2 className="text-2xl font-display font-bold text-white">
-                  No eligible servers found
+                  {isTwitchSession
+                    ? "Twitch creator access is connected"
+                    : hasDiscordProvider
+                      ? "No eligible Discord servers found"
+                      : "Connect Discord to launch a server club"}
                 </h2>
                 <p className="mx-auto mt-3 max-w-xl text-slate-300">
-                  You need Discord administrator access on at least one server
-                  before you can launch a club identity here.
+                  {isTwitchSession
+                    ? "Twitch is ready for live audience loops, creator rituals, and return-driving calls. To create a Discord-backed club, continue with a Discord account that has server admin access."
+                    : hasDiscordProvider
+                      ? "You need Discord administrator access on at least one server before you can launch a club identity here."
+                      : "This dashboard creates clubs from Discord servers. Sign in with Discord when you are ready to connect a community server."}
                 </p>
                 <div className="mx-auto mt-4 max-w-lg rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-slate-400">
-                  This empty state is healthy for demo use: it explains the requirement,
-                  points to the next action, and does not feel like a broken flow.
+                  {isTwitchSession
+                    ? "Best demo path: show Twitch as the creator identity layer, then move into Live Calls, Rewards, and Leaderboard before connecting Discord for club operations."
+                    : hasDiscordProvider
+                      ? "This empty state is healthy for demo use: it explains the requirement, points to the next action, and does not feel like a broken flow."
+                      : "Nothing is broken here. ArenaX needs Discord permissions before it can list servers and create a club shell."}
                 </div>
-                <a
-                  href="https://discord.com/developers/applications"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/24"
-                >
-                  <FaDiscord className="h-5 w-5" />
-                  Manage Discord servers
-                </a>
+                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  {isTwitchSession ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => router.push("/live-calls")}
+                        className="inline-flex items-center gap-2 rounded-full border border-[#a970ff]/35 bg-[#a970ff]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#a970ff]/24"
+                      >
+                        <FaTwitch className="h-5 w-5" />
+                        Open live calls
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSwitchToDiscord}
+                        className="inline-flex items-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/24"
+                      >
+                        <FaDiscord className="h-5 w-5" />
+                        Connect Discord server access
+                      </button>
+                    </>
+                  ) : (
+                    <a
+                      href="https://discord.com/developers/applications"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/24"
+                    >
+                      <FaDiscord className="h-5 w-5" />
+                      Manage Discord servers
+                    </a>
+                  )}
+                </div>
               </div>
             ) : null}
 
