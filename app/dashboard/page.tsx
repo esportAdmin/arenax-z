@@ -40,16 +40,19 @@ export default function Page() {
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState<string | null>(null);
+  const [guildSyncIssue, setGuildSyncIssue] = useState<string | null>(null);
 
   useEffect(() => {
     const loadGuilds = async () => {
       const token = getDiscordAccessToken();
       if (!token) {
+        setGuildSyncIssue(null);
         setLoading(false);
         return;
       }
 
       try {
+        setGuildSyncIssue(null);
         const response = await fetch("/api/discord/guilds", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -57,11 +60,9 @@ export default function Page() {
         });
 
         if (!response.ok) {
-          toast({
-            title: "Discord sync unavailable",
-            description: "We could not load your eligible servers right now.",
-            variant: "destructive",
-          });
+          setGuildSyncIssue(
+            "Discord connected, but eligible server access could not be refreshed. You can continue exploring ArenaX while we retry later.",
+          );
           setLoading(false);
           return;
         }
@@ -69,18 +70,16 @@ export default function Page() {
         const data = await response.json();
         setGuilds(data);
       } catch {
-        toast({
-          title: "Network error",
-          description: "The server list could not be refreshed.",
-          variant: "destructive",
-        });
+        setGuildSyncIssue(
+          "The server list could not be refreshed. This does not block the rest of the dashboard.",
+        );
       } finally {
         setLoading(false);
       }
     };
 
     loadGuilds();
-  }, [getDiscordAccessToken, toast]);
+  }, [getDiscordAccessToken]);
 
   const handleCreateClub = async (guild: Guild) => {
     if (!user) {
@@ -328,6 +327,8 @@ export default function Page() {
                 <div className="mx-auto mt-4 max-w-lg rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-slate-400">
                   {isTwitchSession
                     ? "Best demo path: show Twitch as the creator identity layer, then move into Live Calls, Rewards, and Leaderboard before connecting Discord for club operations."
+                    : guildSyncIssue
+                      ? guildSyncIssue
                     : hasDiscordProvider
                       ? "This empty state is healthy for demo use: it explains the requirement, points to the next action, and does not feel like a broken flow."
                       : "Nothing is broken here. ArenaX needs Discord permissions before it can list servers and create a club shell."}
