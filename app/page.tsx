@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { BellRing, Sparkles, TimerReset } from "lucide-react";
 
 import HeroSection from "@/components/landing/HeroSection";
@@ -59,6 +60,26 @@ const comebackSignals = [
 export default function Page() {
   const dailyReset = getNextUtcMidnight();
   const nextClubDrop = getNextWeeklyReset(5, 20);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const hasOAuthResponse =
+      url.searchParams.has("code") ||
+      url.searchParams.has("error") ||
+      url.searchParams.has("error_description");
+
+    if (!hasOAuthResponse) return;
+
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    for (const [key, value] of url.searchParams.entries()) {
+      callbackUrl.searchParams.set(key, value);
+    }
+    if (!callbackUrl.searchParams.has("next")) {
+      callbackUrl.searchParams.set("next", "/dashboard");
+    }
+
+    window.location.replace(callbackUrl.toString());
+  }, []);
 
   return (
     <main className="min-h-screen overflow-hidden text-white">

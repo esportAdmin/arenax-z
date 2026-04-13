@@ -127,6 +127,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (typeof window === "undefined" || !session?.user) return;
 
+    const currentUrl = new URL(window.location.href);
+    const shouldResumeDashboard =
+      currentUrl.pathname === "/" &&
+      (currentUrl.searchParams.has("code") ||
+        currentUrl.searchParams.has("state") ||
+        currentUrl.hash.includes("access_token"));
+
+    if (shouldResumeDashboard) {
+      window.location.replace("/dashboard");
+      return;
+    }
+
     const { changed, url } = getUrlWithoutAuthArtifacts(window.location.href);
     if (!changed) return;
 
