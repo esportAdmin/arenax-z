@@ -28,7 +28,7 @@ const Auth = () => {
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const twitchAuthEnabled =
-    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
+    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH !== "false";
 
   const { user, loading, signUp, signIn, signInWithDiscord, signInWithTwitch } =
     useAuth();

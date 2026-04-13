@@ -25,7 +25,7 @@ function LoginPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showEmailFallback, setShowEmailFallback] = useState(false);
   const twitchAuthEnabled =
-    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
+    process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH !== "false";
   const searchParams = useSearchParams();
   const { user, loading, signInWithDiscord, signInWithTwitch } = useAuth();
   const navigate = useAppNavigate();

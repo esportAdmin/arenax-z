@@ -15,8 +15,8 @@ const SESSION_COOKIE = process.env.QA_COOKIE ?? "";
 const VERCEL_PROTECTION_BYPASS = process.env.QA_VERCEL_PROTECTION_BYPASS ?? "";
 const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS ?? 45000);
 const TWITCH_AUTH_ENABLED =
-  process.env.QA_ENABLE_TWITCH_AUTH === "true" ||
-  process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH === "true";
+  process.env.QA_ENABLE_TWITCH_AUTH !== "false" &&
+  process.env.NEXT_PUBLIC_ENABLE_TWITCH_AUTH !== "false";
 
 function sleep(ms) {
   return new Promise((resolve) => {
