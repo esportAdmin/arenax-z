@@ -275,22 +275,22 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+              <div className="grid gap-2.5 sm:grid-cols-2 xl:max-w-[260px] xl:grid-cols-1">
                 <button
                   type="button"
                   onClick={() => router.push("/live-calls")}
-                  className="inline-flex min-h-14 items-center justify-center gap-3 whitespace-normal rounded-[1.1rem] bg-cyan-300 px-5 py-4 text-center font-display text-sm font-black uppercase leading-tight tracking-[0.06em] text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.45)] transition-transform hover:-translate-y-0.5 hover:bg-cyan-200"
+                  className="inline-flex min-h-11 items-center justify-center gap-2.5 whitespace-normal rounded-[0.95rem] bg-cyan-300 px-4 py-3 text-center font-display text-xs font-black uppercase leading-tight tracking-[0.05em] text-slate-950 shadow-[0_0_22px_rgba(34,211,238,0.38)] transition-transform hover:-translate-y-0.5 hover:bg-cyan-200 sm:min-h-12"
                 >
                   Start Live Call
-                  <Radio className="h-4 w-4" />
+                  <Radio className="h-3.5 w-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => router.push("/clubs")}
-                  className="inline-flex min-h-14 items-center justify-center gap-3 whitespace-normal rounded-[1.1rem] border border-orange-300/45 bg-orange-500/16 px-5 py-4 text-center font-display text-sm font-black uppercase leading-tight tracking-[0.06em] text-orange-100 shadow-[0_0_28px_rgba(249,115,22,0.2)] transition-transform hover:-translate-y-0.5 hover:bg-orange-500/24"
+                  className="inline-flex min-h-11 items-center justify-center gap-2.5 whitespace-normal rounded-[0.95rem] border border-orange-300/45 bg-orange-500/16 px-4 py-3 text-center font-display text-xs font-black uppercase leading-tight tracking-[0.05em] text-orange-100 shadow-[0_0_20px_rgba(249,115,22,0.18)] transition-transform hover:-translate-y-0.5 hover:bg-orange-500/24 sm:min-h-12"
                 >
                   Open Club Command
-                  <Crown className="h-4 w-4" />
+                  <Crown className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
