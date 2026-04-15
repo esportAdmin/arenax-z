@@ -276,15 +276,15 @@ export default function Page() {
             className="command-frame hero-sheen relative overflow-hidden p-5 sm:p-7 xl:min-h-[230px]"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.16),transparent_34%)]" />
-            <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(250px,310px)] xl:items-center">
+            <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(230px,260px)] xl:items-center">
               <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_45px_rgba(34,211,238,0.22)]">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_45px_rgba(34,211,238,0.22)] sm:h-20 sm:w-20">
                   <User className="h-10 w-10 text-cyan-200" />
                 </div>
-                <div className="min-w-0">
-                  <h1 className="text-balance text-3xl font-display font-black leading-tight text-white md:text-4xl 2xl:text-5xl">
+                <div className="min-w-0 xl:max-w-[420px] 2xl:max-w-[500px]">
+                  <h1 className="max-w-full break-words text-3xl font-display font-black leading-tight text-white md:text-4xl xl:text-[2.45rem] 2xl:text-5xl">
                     Welcome back,{" "}
-                    <span className="bg-gradient-to-r from-cyan-200 to-violet-300 bg-clip-text text-transparent">
+                    <span className="inline-block max-w-full break-all bg-gradient-to-r from-cyan-200 to-violet-300 bg-clip-text text-transparent sm:break-words">
                       {displayName}!
                     </span>
                   </h1>
@@ -308,7 +308,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="grid gap-2.5 sm:grid-cols-2 xl:max-w-[260px] xl:grid-cols-1">
+              <div className="grid gap-2.5 sm:grid-cols-2 xl:w-[250px] xl:grid-cols-1 xl:justify-self-end">
                 <button
                   type="button"
                   onClick={() => router.push("/live-calls")}
@@ -572,57 +572,51 @@ export default function Page() {
             </div>
 
             <div className="dashboard-card overflow-hidden">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="data-pill">War map preview</div>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <div className="data-pill">Live war snapshot</div>
+                  <div className="mt-3 font-display text-xl font-black text-white">
+                    Pressure rooms
+                  </div>
+                </div>
                 <CountdownPill label="Pulse" target={liveCallPulse} tone="amber" />
               </div>
-              <div className="relative overflow-hidden rounded-[1.45rem] border border-cyan-300/25 bg-[radial-gradient(circle_at_30%_35%,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_76%_60%,rgba(249,115,22,0.15),transparent_30%),linear-gradient(180deg,rgba(8,18,31,0.95),rgba(2,6,23,0.78))] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_20px_55px_rgba(0,0,0,0.28)]">
-                <div className="absolute inset-0 opacity-[0.22] [background-image:linear-gradient(rgba(34,211,238,0.32)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.32)_1px,transparent_1px)] [background-size:24px_24px]" />
-                <svg viewBox="0 0 520 210" className="relative h-48 w-full" aria-label="War map preview">
-                  <defs>
-                    <filter id="dashboard-war-glow">
-                      <feGaussianBlur stdDeviation="3.5" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  <path d="M35 110 L128 54 L224 76 L268 130 L198 166 L82 154 Z" fill="rgba(34,211,238,0.16)" stroke="#22d3ee" strokeWidth="4" filter="url(#dashboard-war-glow)" />
-                  <path d="M224 76 L330 54 L468 98 L424 156 L268 130 Z" fill="rgba(168,85,247,0.16)" stroke="#a855f7" strokeWidth="4" filter="url(#dashboard-war-glow)" />
-                  <path d="M198 166 L268 130 L424 156 L354 182 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" filter="url(#dashboard-war-glow)" />
-                  {([
-                    [88, 122, "#22d3ee", "North: 65%"],
-                    [230, 88, "#22d3ee", "Room 1"],
-                    [340, 106, "#a855f7", "East: 65%"],
-                    [390, 154, "#fb923c", "Central: 20%"],
-                  ] as Array<[number, number, string, string]>).map(([cx, cy, color, label]) => (
-                    <g key={`${cx}-${cy}`}>
-                      <circle cx={cx} cy={cy} r="20" fill={`${color}22`} filter="url(#dashboard-war-glow)" />
-                      <circle cx={cx} cy={cy} r="7" fill={color} />
-                      <text
-                        x={Number(cx) + 16}
-                        y={Number(cy) - 10}
-                        fill="#e2e8f0"
-                        fontSize="16"
-                        fontWeight="700"
-                      >
-                        {label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-                <div className="relative -mt-2 grid grid-cols-3 gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-300">
-                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-1 text-cyan-200">
-                    North 65%
-                  </span>
-                  <span className="rounded-full border border-violet-300/20 bg-violet-300/10 px-2 py-1 text-violet-200">
-                    East 65%
-                  </span>
-                  <span className="rounded-full border border-orange-300/25 bg-orange-400/10 px-2 py-1 text-orange-200">
-                    Central 20%
-                  </span>
-                </div>
+              <div className="space-y-3">
+                {territorySignals.map((signal, index) => (
+                  <button
+                    key={`snapshot-${signal.zone}`}
+                    type="button"
+                    onClick={() => router.push(index === 2 ? "/war-map" : "/live-calls")}
+                    className={`group w-full rounded-2xl border p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_14px_34px_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-0.5 ${signal.cardClass}`}
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${signal.dotClass}`} />
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-black text-white">
+                            {signal.zone}
+                          </div>
+                          <div className="text-xs text-slate-400">
+                            {signal.status}
+                          </div>
+                        </div>
+                      </div>
+                      <ArrowRight className={`h-4 w-4 opacity-70 transition-transform group-hover:translate-x-1 ${signal.textClass}`} />
+                    </div>
+                    <div className="mb-2 flex items-center justify-between text-xs">
+                      <span className="text-slate-400">Community pressure</span>
+                      <span className={`font-black ${signal.textClass}`}>
+                        {signal.control}%
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className={`h-full rounded-full ${signal.barClass}`}
+                        style={{ width: `${signal.control}%` }}
+                      />
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </motion.section>
