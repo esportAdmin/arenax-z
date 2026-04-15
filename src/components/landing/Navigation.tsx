@@ -35,16 +35,16 @@ export default function Navigation() {
         <Link href="/" className="flex items-center gap-3">
           <div className="hero-sheen relative flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/18 via-sky-500/18 to-transparent">
             <span className="text-sm font-black tracking-[0.22em] text-white">
-              AX
+              RG
             </span>
           </div>
 
           <div className="flex flex-col">
             <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-primary/80">
-              Competitive fandom
+              by ArenaX-Z
             </span>
             <span className="font-display text-lg font-bold tracking-[0.16em] text-white">
-              ArenaX-Z
+              RallyGuild
             </span>
           </div>
         </Link>

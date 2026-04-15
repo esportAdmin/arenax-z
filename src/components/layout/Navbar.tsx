@@ -138,11 +138,15 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <AppLink href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-lg shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-              AX
+              RG
             </div>
-            <span className="font-display font-bold text-xl hidden sm:block tracking-tight">
-              <span className="text-white">Arena</span>
-              <span className="gradient-text-primary">X</span>
+            <span className="hidden sm:flex flex-col leading-none">
+              <span className="font-display text-xl font-bold tracking-tight text-white">
+                RallyGuild
+              </span>
+              <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/80">
+                by ArenaX-Z
+              </span>
             </span>
           </AppLink>
 

@@ -95,7 +95,7 @@ export default function Page() {
                   New players should know exactly what to do next
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:text-base">
-                  The fastest path into ArenaX-Z is simple: pick a side, make a
+                  The fastest path into RallyGuild is simple: pick a side, make a
                   first live call, then watch your status move before reset.
                 </p>
               </div>

@@ -45,7 +45,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                 Launch-ready signal
               </div>
               <div className="mt-1 text-base font-semibold text-white">
-                ArenaX-Z is built around return pressure, prestige, and visible progression.
+                RallyGuild is built around return pressure, prestige, and visible progression.
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -60,11 +60,15 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           <div className="col-span-2 md:col-span-1">
             <AppLink href="/" className="mb-4 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-lg font-display font-bold text-primary-foreground">
-                AX
+                RG
               </div>
-              <span className="text-xl font-display font-bold">
-                <span className="text-foreground">ArenaX</span>
-                <span className="gradient-text-primary">-Z</span>
+              <span className="flex flex-col leading-none">
+                <span className="text-xl font-display font-bold text-foreground">
+                  RallyGuild
+                </span>
+                <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/80">
+                  by ArenaX-Z
+                </span>
               </span>
             </AppLink>
 
@@ -164,13 +168,13 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
         <div className="mt-10 border-t border-border/50 pt-8">
           <p className="mx-auto mb-6 max-w-3xl text-center text-xs text-muted-foreground/60">
             Arena Points are virtual gaming units with no monetary value.
-            ArenaX-Z is an entertainment and competitive engagement platform.
+            RallyGuild by ArenaX-Z is an entertainment and competitive engagement platform.
             No cash value or financial return is offered through platform play.
           </p>
 
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-sm text-muted-foreground">
-              Copyright 2026 ArenaX-Z. All rights reserved.
+              Copyright 2026 RallyGuild by ArenaX-Z. All rights reserved.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="h-2 w-2 animate-pulse rounded-full bg-success" />
