@@ -27,9 +27,9 @@ interface Guild {
 }
 
 const launchSteps = [
-  "Pick the Discord server where you want your competitive identity to live.",
-  "Create the club shell and lock in its home base inside ArenaX-Z.",
-  "Bring in members, define your strategy, and start fighting for territory.",
+  "Choose the community home you want to activate first: Discord operations or Twitch live rituals.",
+  "Create the club shell, live-call loop, and prestige path that make returning feel natural.",
+  "Bring in members, define the weekly rhythm, and turn attention into territory momentum.",
 ];
 
 export default function Page() {
@@ -134,6 +134,11 @@ export default function Page() {
     router.push("/login?redirect=/dashboard");
   };
 
+  const handleSwitchToTwitch = async () => {
+    await signOut();
+    router.push("/login?redirect=/dashboard");
+  };
+
   const nextClubPulse = getHoursFromNow(4);
   const dailyReset = getNextUtcMidnight();
   const sessionProvider = String(session?.user?.app_metadata?.provider ?? "");
@@ -154,7 +159,7 @@ export default function Page() {
           <div className="flex items-center gap-3">
             <div className="hero-sheen flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12">
               <span className="font-display text-sm font-bold tracking-[0.18em] text-white">
-                AX
+                RG
               </span>
             </div>
 
@@ -163,7 +168,7 @@ export default function Page() {
                 Club command center
               </div>
               <div className="text-xl font-display font-bold text-white">
-                ArenaX-Z Dashboard
+                RallyGuild Dashboard
               </div>
             </div>
           </div>
@@ -203,9 +208,10 @@ export default function Page() {
                 <span className="gradient-text-primary"> worth coming back to</span>
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
-                The best retention engine in ArenaX-Z is social pressure. Pick
-                your Discord server, create your club, and turn a group chat
-                into a competitive home base.
+                The best retention engine in RallyGuild is community pressure.
+                Start with Discord for server operations or Twitch for live
+                audience rituals, then turn attention into a competitive home
+                base.
               </p>
             </div>
 
@@ -218,8 +224,8 @@ export default function Page() {
                   Native community layer
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Your existing server becomes the starting point, so onboarding
-                  feels immediate instead of forced.
+                  Discord and Twitch become the starting points, so onboarding
+                  feels familiar instead of administrative.
                 </p>
               </div>
               <div className="surface-panel p-4">
@@ -302,7 +308,7 @@ export default function Page() {
             ) : null}
 
             {!loading && guilds.length === 0 ? (
-              <div className="section-shell text-center">
+              <div className="section-shell">
                 <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.6rem] border border-amber-400/18 bg-amber-400/10">
                   {isTwitchSession ? (
                     <FaTwitch className="h-10 w-10 text-[#a970ff]" />
@@ -310,60 +316,105 @@ export default function Page() {
                     <Shield className="h-10 w-10 text-amber-300" />
                   )}
                 </div>
-                <h2 className="text-2xl font-display font-bold text-white">
+                <h2 className="text-center text-2xl font-display font-bold text-white">
                   {isTwitchSession
                     ? "Twitch creator access is connected"
                     : hasDiscordProvider
-                      ? "No eligible Discord servers found"
-                      : "Connect Discord to launch a server club"}
+                      ? "Discord is connected. Choose your next setup step."
+                      : "Choose how this community should start"}
                 </h2>
-                <p className="mx-auto mt-3 max-w-xl text-slate-300">
+                <p className="mx-auto mt-3 max-w-xl text-center text-slate-300">
                   {isTwitchSession
-                    ? "Twitch is ready for live audience loops, creator rituals, and return-driving calls. To create a Discord-backed club, continue with a Discord account that has server admin access."
+                    ? "Twitch is ready for live audience loops, creator rituals, and return-driving calls. Discord can be connected later when you want server-backed club operations."
                     : hasDiscordProvider
-                      ? "You need Discord administrator access on at least one server before you can launch a club identity here."
-                      : "This dashboard creates clubs from Discord servers. Sign in with Discord when you are ready to connect a community server."}
+                      ? "We did not find a Discord server where this account can launch a club yet. You can reconnect with server admin access or continue with Twitch-style live activation."
+                      : "RallyGuild works best when the first action is obvious: connect a Discord server or start with Twitch live-community momentum."}
                 </p>
-                <div className="mx-auto mt-4 max-w-lg rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-slate-400">
+                <div className="mx-auto mt-4 max-w-lg rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-center text-sm leading-6 text-slate-400">
                   {isTwitchSession
-                    ? "Best demo path: show Twitch as the creator identity layer, then move into Live Calls, Rewards, and Leaderboard before connecting Discord for club operations."
+                    ? "Recommended path: open Live Calls, show the daily ritual loop, then connect Discord when the community is ready for structured club operations."
                     : guildSyncIssue
                       ? guildSyncIssue
                     : hasDiscordProvider
-                      ? "This empty state is healthy for demo use: it explains the requirement, points to the next action, and does not feel like a broken flow."
-                      : "Nothing is broken here. ArenaX needs Discord permissions before it can list servers and create a club shell."}
+                      ? "Nothing is broken. This account is signed in, but it needs server admin access before RallyGuild can create a Discord-backed club."
+                      : "You can start from either side. Discord is best for server admins; Twitch is best for creators and live-audience operators."}
                 </div>
-                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  {isTwitchSession ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => router.push("/live-calls")}
-                        className="inline-flex items-center gap-2 rounded-full border border-[#a970ff]/35 bg-[#a970ff]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#a970ff]/24"
-                      >
-                        <FaTwitch className="h-5 w-5" />
-                        Open live calls
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSwitchToDiscord}
-                        className="inline-flex items-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/24"
-                      >
-                        <FaDiscord className="h-5 w-5" />
-                        Connect Discord server access
-                      </button>
-                    </>
-                  ) : (
-                    <a
-                      href="https://discord.com/developers/applications"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/18 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/24"
+
+                <div className="mt-7 grid gap-4 lg:grid-cols-2">
+                  <div className="rounded-[1.5rem] border border-[#7289DA]/25 bg-[#7289DA]/10 p-5 text-left shadow-[0_0_35px_rgba(114,137,218,0.08)]">
+                    <div className="mb-4 inline-flex rounded-2xl border border-[#7289DA]/25 bg-[#7289DA]/15 p-3">
+                      <FaDiscord className="h-6 w-6 text-[#8ea1ff]" />
+                    </div>
+                    <div className="text-lg font-display font-bold text-white">
+                      Set up a Discord server
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      Best for admins who want club identity, roles, territory
+                      pressure, and a structured home base for members.
+                    </p>
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-5 text-slate-400">
+                      Required: sign in with a Discord account that can manage
+                      at least one server.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSwitchToDiscord}
+                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/20 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/28"
                     >
                       <FaDiscord className="h-5 w-5" />
-                      Manage Discord servers
-                    </a>
-                  )}
+                      Reconnect Discord access
+                    </button>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-[#a970ff]/25 bg-[#a970ff]/10 p-5 text-left shadow-[0_0_35px_rgba(169,112,255,0.08)]">
+                    <div className="mb-4 inline-flex rounded-2xl border border-[#a970ff]/25 bg-[#a970ff]/15 p-3">
+                      <FaTwitch className="h-6 w-6 text-[#c79cff]" />
+                    </div>
+                    <div className="text-lg font-display font-bold text-white">
+                      Start with Twitch community
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      Best for creator-led audiences where the first habit is a
+                      live call, reward chase, and daily comeback moment.
+                    </p>
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-5 text-slate-400">
+                      Works even before a Discord server is ready. Discord can
+                      be added later for deeper club operations.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={
+                        isTwitchSession
+                          ? () => router.push("/live-calls")
+                          : handleSwitchToTwitch
+                      }
+                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a970ff]/35 bg-[#a970ff]/20 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#a970ff]/28"
+                    >
+                      <FaTwitch className="h-5 w-5" />
+                      {isTwitchSession
+                        ? "Open live calls"
+                        : "Connect Twitch access"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/leaderboard")}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
+                  >
+                    Preview rankings
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/rewards")}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
+                  >
+                    Preview rewards
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ) : null}
