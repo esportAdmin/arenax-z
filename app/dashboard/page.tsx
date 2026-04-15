@@ -62,6 +62,39 @@ const schedule = [
   { day: "Friday", title: "Community raid", time: "7:00 PM EST" },
 ];
 
+const territorySignals = [
+  {
+    zone: "North Gate",
+    status: "Stable rally",
+    control: 65,
+    members: "8 active",
+    cardClass: "border-cyan-300/20 bg-cyan-300/10",
+    dotClass: "bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.8)]",
+    barClass: "bg-cyan-300",
+    textClass: "text-cyan-200",
+  },
+  {
+    zone: "East Reach",
+    status: "Rival pressure",
+    control: 72,
+    members: "11 active",
+    cardClass: "border-violet-300/20 bg-violet-400/10",
+    dotClass: "bg-violet-300 shadow-[0_0_18px_rgba(168,85,247,0.8)]",
+    barClass: "bg-violet-300",
+    textClass: "text-violet-200",
+  },
+  {
+    zone: "War Zone 7",
+    status: "Critical window",
+    control: 87,
+    members: "Rally now",
+    cardClass: "border-orange-300/25 bg-orange-500/12",
+    dotClass: "bg-orange-300 shadow-[0_0_18px_rgba(251,146,60,0.85)]",
+    barClass: "bg-orange-300",
+    textClass: "text-orange-200",
+  },
+];
+
 export default function Page() {
   const { getDiscordAccessToken, session, user, signOut } = useAuth();
   const router = useRouter();
@@ -352,42 +385,74 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="relative mb-5 overflow-hidden rounded-[1.5rem] border border-cyan-300/25 bg-[radial-gradient(circle_at_24%_28%,rgba(34,211,238,0.18),transparent_26%),radial-gradient(circle_at_76%_62%,rgba(249,115,22,0.14),transparent_28%),linear-gradient(180deg,rgba(8,20,34,0.92),rgba(2,6,23,0.72))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_46px_rgba(0,0,0,0.28)]">
+            <div className="relative mb-5 overflow-hidden rounded-[1.5rem] border border-cyan-300/25 bg-[radial-gradient(circle_at_18%_0%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_90%_82%,rgba(249,115,22,0.15),transparent_34%),linear-gradient(180deg,rgba(8,20,34,0.92),rgba(2,6,23,0.74))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_46px_rgba(0,0,0,0.28)]">
               <div className="absolute inset-0 opacity-[0.22] [background-image:linear-gradient(rgba(34,211,238,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:28px_28px]" />
-              <svg viewBox="0 0 520 250" className="h-52 w-full" role="img" aria-label="Territory control map">
-                <defs>
-                  <filter id="dashboard-territory-glow">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                <path d="M48 88 L128 42 L225 68 L270 128 L205 190 L98 178 L34 136 Z" fill="rgba(34,211,238,0.17)" stroke="#22d3ee" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
-                <path d="M225 68 L340 44 L462 86 L478 162 L382 210 L270 128 Z" fill="rgba(168,85,247,0.18)" stroke="#a855f7" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
-                <path d="M205 190 L270 128 L382 210 L298 235 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
-                <path d="M128 42 L225 68 L340 44" fill="none" stroke="#67e8f9" strokeWidth="2" strokeDasharray="6 9" opacity="0.65" />
-                <path d="M270 128 L478 162" fill="none" stroke="#fb923c" strokeWidth="2" strokeDasharray="6 9" opacity="0.65" />
-                {([
-                  [110, 112, "#22d3ee"],
-                  [210, 120, "#22d3ee"],
-                  [346, 104, "#a855f7"],
-                  [418, 156, "#fb923c"],
-                ] as Array<[number, number, string]>).map(([cx, cy, color]) => (
-                  <g key={`${cx}-${cy}`}>
-                    <circle cx={cx} cy={cy} r="17" fill={`${color}25`} />
-                    <circle cx={cx} cy={cy} r="7" fill={color} />
-                  </g>
-                ))}
-              </svg>
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="text-slate-300">Territory pressure</span>
-                  <span className="font-bold text-orange-200">War Zone 7 - 87%</span>
+              <div className="relative">
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                      Territory control board
+                    </div>
+                    <div className="mt-1 font-display text-xl font-black text-white">
+                      War Zone 7 is heating up
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-orange-300/25 bg-orange-500/12 px-3 py-2 text-right">
+                    <div className="font-display text-2xl font-black text-orange-200">
+                      87%
+                    </div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-orange-100/70">
+                      pressure
+                    </div>
+                  </div>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[87%] rounded-full bg-gradient-to-r from-cyan-300 via-violet-400 to-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.45)]" />
+
+                <div className="space-y-3">
+                  {territorySignals.map((signal) => (
+                    <div
+                      key={signal.zone}
+                      className={`rounded-2xl border p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ${signal.cardClass}`}
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${signal.dotClass}`} />
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-black text-white">
+                              {signal.zone}
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {signal.status}
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`text-right text-xs font-black ${signal.textClass}`}>
+                          {signal.control}%
+                          <div className="text-[10px] font-semibold text-slate-500">
+                            {signal.members}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className={`h-full rounded-full ${signal.barClass}`}
+                          style={{ width: `${signal.control}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-bold text-white">Next best action</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-300">
+                      Daily ritual
+                    </span>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">
+                    Start a live call to turn passive members into visible
+                    momentum before the pressure window closes.
+                  </p>
                 </div>
               </div>
             </div>
