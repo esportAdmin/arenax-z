@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Bell,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Crown,
+  Flame,
+  Gift,
   Loader2,
   LogOut,
+  Radio,
   Shield,
-  Sparkles,
-  Sword,
+  Trophy,
   User,
-  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FaDiscord, FaTwitch } from "react-icons/fa";
@@ -26,10 +32,34 @@ interface Guild {
   icon: string | null;
 }
 
-const launchSteps = [
-  "Choose the community home you want to activate first: Discord operations or Twitch live rituals.",
-  "Create the club shell, live-call loop, and prestige path that make returning feel natural.",
-  "Bring in members, define the weekly rhythm, and turn attention into territory momentum.",
+const notifications = [
+  {
+    title: "Member unlocked new badge",
+    body: "A club member reached Vanguard status.",
+    tone: "border-cyan-300/20 bg-cyan-300/10",
+    icon: Trophy,
+    action: "View",
+  },
+  {
+    title: "War zone approaching critical",
+    body: "Pressure window opens soon. Rally action recommended.",
+    tone: "border-rose-300/20 bg-rose-300/10",
+    icon: Flame,
+    action: "Open map",
+  },
+  {
+    title: "Reward claim available",
+    body: "Your weekly momentum reward is ready.",
+    tone: "border-amber-300/20 bg-amber-300/10",
+    icon: Gift,
+    action: "Claim",
+  },
+];
+
+const schedule = [
+  { day: "Today", title: "Daily live ritual", time: "3:00 PM EST" },
+  { day: "Tomorrow", title: "Strategy session", time: "5:00 PM EST" },
+  { day: "Friday", title: "Community raid", time: "7:00 PM EST" },
 ];
 
 export default function Page() {
@@ -61,7 +91,7 @@ export default function Page() {
 
         if (!response.ok) {
           setGuildSyncIssue(
-            "Discord connected, but eligible server access could not be refreshed. You can continue exploring ArenaX while we retry later.",
+            "Discord is connected, but server access could not be refreshed yet. You can keep using the cockpit while we retry later.",
           );
           setLoading(false);
           return;
@@ -82,9 +112,7 @@ export default function Page() {
   }, [getDiscordAccessToken]);
 
   const handleCreateClub = async (guild: Guild) => {
-    if (!user) {
-      return;
-    }
+    if (!user) return;
 
     setCreating(guild.id);
 
@@ -129,59 +157,76 @@ export default function Page() {
     router.push("/login");
   };
 
-  const handleSwitchToDiscord = async () => {
+  const handleSwitchProvider = async () => {
     await signOut();
     router.push("/login?redirect=/dashboard");
   };
 
-  const handleSwitchToTwitch = async () => {
-    await signOut();
-    router.push("/login?redirect=/dashboard");
-  };
-
-  const nextClubPulse = getHoursFromNow(4);
   const dailyReset = getNextUtcMidnight();
+  const liveCallPulse = getHoursFromNow(2);
   const sessionProvider = String(session?.user?.app_metadata?.provider ?? "");
   const isTwitchSession = sessionProvider === "twitch";
   const hasDiscordProvider = sessionProvider === "discord";
+  const displayName = useMemo(() => {
+    const name =
+      session?.user?.user_metadata?.full_name ||
+      session?.user?.user_metadata?.name ||
+      session?.user?.user_metadata?.preferred_username ||
+      user?.email?.split("@")[0] ||
+      "Commander";
+
+    return String(name).split(/[_.-]/)[0] || "Commander";
+  }, [session, user]);
+  const activeClubName = guilds[0]?.name || "Raiders of the Realm";
+  const missionProgress = guilds.length > 0 ? 75 : isTwitchSession ? 52 : 18;
 
   return (
     <div className="min-h-screen text-white">
       <Navigation />
+
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute right-0 top-0 h-[520px] w-[520px] rounded-full bg-cyan-500/10 blur-[140px]" />
-        <div className="absolute bottom-0 left-0 h-[520px] w-[520px] rounded-full bg-indigo-500/12 blur-[150px]" />
-        <div className="absolute left-1/2 top-1/3 h-[360px] w-[360px] rounded-full bg-amber-400/7 blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(rgba(34,211,238,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div className="absolute left-1/2 top-16 h-[560px] w-[760px] -translate-x-1/2 rounded-full bg-cyan-400/12 blur-[155px]" />
+        <div className="absolute right-[-12rem] top-64 h-[520px] w-[520px] rounded-full bg-violet-500/12 blur-[150px]" />
+        <div className="absolute bottom-0 left-0 h-[460px] w-[460px] rounded-full bg-amber-400/8 blur-[150px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-8 pt-28 sm:px-5 md:px-8 md:pb-10 md:pt-32">
-        <div className="surface-panel mb-8 flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-6 flex flex-col gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.045] px-4 py-3 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="hero-sheen flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12">
-              <span className="font-display text-sm font-bold tracking-[0.18em] text-white">
-                RG
-              </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/25 bg-cyan-300/10 font-display text-sm font-black text-cyan-100 shadow-[0_0_22px_rgba(34,211,238,0.18)]">
+              RG
             </div>
-
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/80">
-                Club command center
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">
+                Daily command center
               </div>
-              <div className="text-xl font-display font-bold text-white">
+              <div className="font-display text-lg font-black text-white">
                 RallyGuild Dashboard
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {user ? (
               <div className="metal-chip">
                 <User className="h-4 w-4 text-primary" />
                 {user.email}
               </div>
             ) : null}
-
             <button
+              type="button"
+              onClick={() => router.push("/rewards")}
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200 transition-colors hover:bg-white/10"
+              aria-label="Open rewards"
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white">
+                3
+              </span>
+            </button>
+            <button
+              type="button"
               onClick={handleSignOut}
               className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition-colors hover:bg-red-500/16"
             >
@@ -191,240 +236,337 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-          <motion.div
+        <div className="mb-6 grid gap-6 lg:grid-cols-[1fr_360px]">
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="command-frame hero-sheen relative overflow-hidden p-5 sm:p-7"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(139,92,246,0.14),transparent_34%)]" />
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_45px_rgba(34,211,238,0.22)]">
+                  <User className="h-10 w-10 text-cyan-200" />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="text-balance text-4xl font-display font-black leading-tight text-white md:text-5xl">
+                    Welcome back,{" "}
+                    <span className="bg-gradient-to-r from-cyan-200 to-violet-300 bg-clip-text text-transparent">
+                      {displayName}!
+                    </span>
+                  </h1>
+                  <div className="mt-5 max-w-xl">
+                    <div className="mb-2 flex items-center justify-between text-sm text-slate-300">
+                      <span>
+                        Today&apos;s mission:{" "}
+                        <strong className="text-white">Start today&apos;s live call</strong>
+                      </span>
+                      <span className="font-bold text-cyan-300">
+                        {missionProgress}% complete
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 shadow-[0_0_18px_rgba(34,211,238,0.55)]"
+                        style={{ width: `${missionProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                <button
+                  type="button"
+                  onClick={() => router.push("/live-calls")}
+                  className="inline-flex items-center justify-center gap-3 rounded-[1.1rem] bg-cyan-300 px-6 py-4 font-display text-sm font-black uppercase tracking-[0.08em] text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.45)] transition-transform hover:-translate-y-0.5 hover:bg-cyan-200"
+                >
+                  Start Live Call
+                  <Radio className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/clubs")}
+                  className="inline-flex items-center justify-center gap-3 rounded-[1.1rem] border border-amber-300/35 bg-amber-400/14 px-6 py-4 font-display text-sm font-black uppercase tracking-[0.08em] text-amber-100 shadow-[0_0_24px_rgba(250,204,21,0.16)] transition-transform hover:-translate-y-0.5 hover:bg-amber-400/22"
+                >
+                  Open Club Command
+                  <Crown className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </motion.section>
+
+          <motion.aside
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.06 }}
+            className="relative overflow-hidden rounded-[1.35rem] border border-cyan-300/30 bg-cyan-300/8 p-5 shadow-[0_0_35px_rgba(34,211,238,0.12)]"
+          >
+            <div className="absolute right-[-2rem] top-[-2rem] h-32 w-32 rounded-full bg-cyan-300/15 blur-3xl" />
+            <div className="relative">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                Streak card
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[1.2rem] border border-amber-300/25 bg-amber-400/12">
+                  <Flame className="h-8 w-8 text-amber-300" />
+                </div>
+                <div>
+                  <div className="font-display text-3xl font-black text-white">
+                    14-Day{" "}
+                    <span className="bg-gradient-to-r from-amber-200 to-cyan-200 bg-clip-text text-transparent">
+                      Streak
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm text-slate-300">
+                    Next reward:{" "}
+                    <span className="font-bold text-amber-200">
+                      Unlock Elite Badge
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5">
+                <CountdownPill label="Reset" target={dailyReset} tone="cyan" />
+              </div>
+            </div>
+          </motion.aside>
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr_0.95fr]">
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
             className="section-shell"
           >
-            <div className="eyebrow-badge">
-              <Sparkles className="h-4 w-4 text-primary" />
-              Build a club people rally behind
-            </div>
-
-            <div className="mt-6 max-w-3xl">
-              <h1 className="text-balance text-4xl font-display font-black leading-tight text-white md:text-5xl">
-                Launch a club identity
-                <span className="gradient-text-primary"> worth coming back to</span>
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
-                The best retention engine in RallyGuild is community pressure.
-                Start with Discord for server operations or Twitch for live
-                audience rituals, then turn attention into a competitive home
-                base.
-              </p>
-            </div>
-
-            <div className="mt-8 grid gap-3 md:grid-cols-3">
-              <div className="surface-panel p-4">
-                <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/5 p-2.5">
-                  <FaDiscord className="h-4 w-4 text-[#7289DA]" />
-                </div>
-                <div className="text-sm font-display font-bold uppercase tracking-[0.14em] text-white">
-                  Native community layer
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Discord and Twitch become the starting points, so onboarding
-                  feels familiar instead of administrative.
-                </p>
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <div className="data-pill">Club momentum panel</div>
+                <h2 className="mt-3 text-2xl font-display font-black text-white">
+                  {activeClubName}
+                </h2>
               </div>
-              <div className="surface-panel p-4">
-                <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/5 p-2.5">
-                  <Shield className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-sm font-display font-bold uppercase tracking-[0.14em] text-white">
-                  Territory ownership
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Clubs are not just labels. They compete, defend, and build map
-                  presence people can monitor.
-                </p>
-              </div>
-              <div className="surface-panel p-4">
-                <div className="mb-3 inline-flex rounded-2xl border border-white/10 bg-white/5 p-2.5">
-                  <Users className="h-4 w-4 text-accent" />
-                </div>
-                <div className="text-sm font-display font-bold uppercase tracking-[0.14em] text-white">
-                  Return-driving social pull
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Once members have status to defend together, churn drops and
-                  habit starts to form.
-                </p>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/10 text-lg font-display font-black text-cyan-200">
+                {guilds.length > 0 ? "80%" : "12%"}
               </div>
             </div>
 
-            <div className="mt-8 command-frame p-5">
-              <div className="mb-4 flex items-center gap-3">
-                <Sword className="h-5 w-5 text-primary" />
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                    Launch sequence
-                  </div>
-                  <div className="text-xl font-display font-bold text-white">
-                    How to bring your club online
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {launchSteps.map((step, index) => (
-                  <div
-                    key={step}
-                    className="flex gap-4 rounded-2xl border border-white/8 bg-white/5 p-4"
-                  >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-sm font-display font-bold text-primary">
-                      0{index + 1}
-                    </div>
-                    <p className="text-sm leading-6 text-slate-300">{step}</p>
-                  </div>
+            <div className="relative mb-5 overflow-hidden rounded-[1.35rem] border border-cyan-300/15 bg-black/25 p-4">
+              <svg viewBox="0 0 520 220" className="h-44 w-full" role="img">
+                <path
+                  d="M55 75 L164 38 L278 72 L406 44 L472 118 L382 174 L244 154 L132 188 L64 140 Z"
+                  fill="rgba(34,211,238,0.12)"
+                  stroke="#22d3ee"
+                  strokeWidth="4"
+                />
+                <path
+                  d="M278 72 L406 44 L472 118 L382 174 L244 154 Z"
+                  fill="rgba(139,92,246,0.16)"
+                  stroke="#a855f7"
+                  strokeWidth="3"
+                />
+                {[90, 200, 310, 420].map((cx, index) => (
+                  <circle
+                    key={cx}
+                    cx={cx}
+                    cy={[118, 82, 146, 94][index]}
+                    r="9"
+                    fill={index === 2 ? "#a855f7" : "#22d3ee"}
+                    opacity="0.95"
+                  />
                 ))}
-              </div>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                <CountdownPill label="Club pulse" target={nextClubPulse} tone="cyan" />
-                <CountdownPill label="Daily reset" target={dailyReset} tone="amber" />
+              </svg>
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span className="text-slate-300">Territory pressure</span>
+                  <span className="font-bold text-cyan-200">War Zone 7 - 87%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[87%] rounded-full bg-gradient-to-r from-cyan-300 to-violet-400 shadow-[0_0_18px_rgba(34,211,238,0.5)]" />
+                </div>
               </div>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            <button
+              type="button"
+              onClick={() => router.push("/live-calls")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-[1.1rem] bg-cyan-300 px-5 py-4 font-display font-black text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.35)] transition-transform hover:-translate-y-0.5"
+            >
+              Schedule daily ritual
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </motion.section>
+
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.12 }}
+            className="section-shell"
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="data-pill">Live calls panel</div>
+                <h2 className="mt-3 text-2xl font-display font-black text-white">
+                  Today&apos;s live call
+                </h2>
+              </div>
+              <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+                Active
+              </span>
+            </div>
+
+            <div className="rounded-[1.25rem] border border-blue-300/20 bg-blue-400/10 p-4">
+              <div className="text-lg font-display font-black text-white">
+                Daily Live Call - 3:00 PM EST
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-cyan-300">
+                <span className="h-px flex-1 bg-cyan-300/25" />
+                <Radio className="h-5 w-5" />
+                <span className="h-px flex-1 bg-cyan-300/25" />
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => router.push("/live-calls")}
+                  className="rounded-xl border border-cyan-300/25 bg-cyan-300/12 px-4 py-3 text-sm font-bold text-cyan-100 transition-colors hover:bg-cyan-300/20"
+                >
+                  Create first live call
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/live-calls")}
+                  className="rounded-xl bg-cyan-300 px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-200"
+                >
+                  Join live call
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {schedule.map((item) => (
+                <div
+                  key={`${item.day}-${item.time}`}
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3"
+                >
+                  <div>
+                    <div className="text-sm font-bold text-white">
+                      {item.time} - {item.title}
+                    </div>
+                    <div className="mt-1 text-xs uppercase tracking-[0.14em] text-slate-500">
+                      {item.day}
+                    </div>
+                  </div>
+                  <CalendarDays className="h-4 w-4 text-cyan-300" />
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
             className="space-y-5"
           >
+            <div className="section-shell">
+              <div className="data-pill">Notifications panel</div>
+              <div className="mt-4 space-y-3">
+                {notifications.map(({ title, body, tone, icon: Icon, action }) => (
+                  <button
+                    key={title}
+                    type="button"
+                    onClick={() =>
+                      action === "Open map"
+                        ? router.push("/war-map")
+                        : action === "Claim"
+                          ? router.push("/rewards")
+                          : router.push("/profile")
+                    }
+                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5 ${tone}`}
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/20">
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-white">{title}</div>
+                      <div className="mt-1 text-xs leading-5 text-slate-300">
+                        {body}
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-cyan-200">
+                      {action}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="section-shell overflow-hidden">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="data-pill">War map preview</div>
+                <CountdownPill label="Pulse" target={liveCallPulse} tone="amber" />
+              </div>
+              <div className="relative overflow-hidden rounded-[1.25rem] border border-cyan-300/15 bg-black/25 p-3">
+                <svg viewBox="0 0 520 190" className="h-40 w-full">
+                  <path
+                    d="M20 112 C92 48 148 70 206 40 S322 36 392 84 470 72 500 122"
+                    fill="none"
+                    stroke="#22d3ee"
+                    strokeWidth="4"
+                    strokeDasharray="8 10"
+                  />
+                  <path
+                    d="M62 145 C130 164 210 118 270 142 S378 168 482 118"
+                    fill="none"
+                    stroke="#a855f7"
+                    strokeWidth="3"
+                    strokeDasharray="6 10"
+                  />
+                  {([
+                    [58, 112, "#22d3ee", "Zone A: 65%"],
+                    [208, 40, "#22d3ee", "War Room 1"],
+                    [322, 78, "#a855f7", "Zone B: 65%"],
+                    [430, 132, "#f97316", "Zone B: 20%"],
+                  ] as Array<[number, number, string, string]>).map(([cx, cy, color, label]) => (
+                    <g key={`${cx}-${cy}`}>
+                      <circle cx={cx} cy={cy} r="16" fill={`${color}22`} />
+                      <circle cx={cx} cy={cy} r="7" fill={color} />
+                      <text
+                        x={Number(cx) + 16}
+                        y={Number(cy) - 10}
+                        fill="#e2e8f0"
+                        fontSize="16"
+                        fontWeight="700"
+                      >
+                        {label}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            </div>
+          </motion.section>
+        </div>
+
+        <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_1.1fr]">
+          <section className="section-shell">
             {loading ? (
-              <div className="section-shell flex min-h-[480px] flex-col items-center justify-center text-center">
-                <Loader2 className="mb-4 h-12 w-12 animate-spin text-primary" />
+              <div className="flex min-h-[260px] flex-col items-center justify-center text-center">
+                <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
                 <p className="text-lg font-semibold text-white">
                   Pulling in your Discord servers
                 </p>
                 <p className="mt-2 max-w-md text-slate-400">
-                  We are checking where you already have the authority to launch
-                  a club.
+                  We are checking where you can launch a club.
                 </p>
               </div>
-            ) : null}
-
-            {!loading && guilds.length === 0 ? (
-              <div className="section-shell">
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.6rem] border border-amber-400/18 bg-amber-400/10">
-                  {isTwitchSession ? (
-                    <FaTwitch className="h-10 w-10 text-[#a970ff]" />
-                  ) : (
-                    <Shield className="h-10 w-10 text-amber-300" />
-                  )}
-                </div>
-                <h2 className="text-center text-2xl font-display font-bold text-white">
-                  {isTwitchSession
-                    ? "Twitch creator access is connected"
-                    : hasDiscordProvider
-                      ? "Discord is connected. Choose your next setup step."
-                      : "Choose how this community should start"}
-                </h2>
-                <p className="mx-auto mt-3 max-w-xl text-center text-slate-300">
-                  {isTwitchSession
-                    ? "Twitch is ready for live audience loops, creator rituals, and return-driving calls. Discord can be connected later when you want server-backed club operations."
-                    : hasDiscordProvider
-                      ? "We did not find a Discord server where this account can launch a club yet. You can reconnect with server admin access or continue with Twitch-style live activation."
-                      : "RallyGuild works best when the first action is obvious: connect a Discord server or start with Twitch live-community momentum."}
-                </p>
-                <div className="mx-auto mt-4 max-w-lg rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-center text-sm leading-6 text-slate-400">
-                  {isTwitchSession
-                    ? "Recommended path: open Live Calls, show the daily ritual loop, then connect Discord when the community is ready for structured club operations."
-                    : guildSyncIssue
-                      ? guildSyncIssue
-                    : hasDiscordProvider
-                      ? "Nothing is broken. This account is signed in, but it needs server admin access before RallyGuild can create a Discord-backed club."
-                      : "You can start from either side. Discord is best for server admins; Twitch is best for creators and live-audience operators."}
-                </div>
-
-                <div className="mt-7 grid gap-4 lg:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-[#7289DA]/25 bg-[#7289DA]/10 p-5 text-left shadow-[0_0_35px_rgba(114,137,218,0.08)]">
-                    <div className="mb-4 inline-flex rounded-2xl border border-[#7289DA]/25 bg-[#7289DA]/15 p-3">
-                      <FaDiscord className="h-6 w-6 text-[#8ea1ff]" />
-                    </div>
-                    <div className="text-lg font-display font-bold text-white">
-                      Set up a Discord server
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      Best for admins who want club identity, roles, territory
-                      pressure, and a structured home base for members.
-                    </p>
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-5 text-slate-400">
-                      Required: sign in with a Discord account that can manage
-                      at least one server.
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleSwitchToDiscord}
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#7289DA]/35 bg-[#7289DA]/20 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#7289DA]/28"
-                    >
-                      <FaDiscord className="h-5 w-5" />
-                      Reconnect Discord access
-                    </button>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-[#a970ff]/25 bg-[#a970ff]/10 p-5 text-left shadow-[0_0_35px_rgba(169,112,255,0.08)]">
-                    <div className="mb-4 inline-flex rounded-2xl border border-[#a970ff]/25 bg-[#a970ff]/15 p-3">
-                      <FaTwitch className="h-6 w-6 text-[#c79cff]" />
-                    </div>
-                    <div className="text-lg font-display font-bold text-white">
-                      Start with Twitch community
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">
-                      Best for creator-led audiences where the first habit is a
-                      live call, reward chase, and daily comeback moment.
-                    </p>
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs leading-5 text-slate-400">
-                      Works even before a Discord server is ready. Discord can
-                      be added later for deeper club operations.
-                    </div>
-                    <button
-                      type="button"
-                      onClick={
-                        isTwitchSession
-                          ? () => router.push("/live-calls")
-                          : handleSwitchToTwitch
-                      }
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#a970ff]/35 bg-[#a970ff]/20 px-5 py-3 font-semibold text-white transition-colors hover:bg-[#a970ff]/28"
-                    >
-                      <FaTwitch className="h-5 w-5" />
-                      {isTwitchSession
-                        ? "Open live calls"
-                        : "Connect Twitch access"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/leaderboard")}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
-                  >
-                    Preview rankings
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => router.push("/rewards")}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10"
-                  >
-                    Preview rewards
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {!loading && guilds.length > 0 ? (
-              <div className="section-shell">
+            ) : guilds.length > 0 ? (
+              <>
                 <div className="mb-5 flex items-center justify-between gap-4">
                   <div>
                     <div className="data-pill">Eligible servers</div>
-                    <h2 className="mt-3 text-2xl font-display font-bold text-white">
+                    <h2 className="mt-3 text-2xl font-display font-black text-white">
                       Choose your launchpad
                     </h2>
                   </div>
@@ -432,39 +574,36 @@ export default function Page() {
                     {guilds.length} server{guilds.length > 1 ? "s" : ""} ready
                   </div>
                 </div>
-
-                <div className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-2">
                   {guilds.map((guild, index) => (
                     <motion.div
                       key={guild.id}
                       initial={{ opacity: 0, x: -18 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.06 }}
-                      className="surface-panel flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between"
+                      className="surface-panel flex flex-col gap-4 p-4"
                     >
                       <div className="flex items-center gap-4">
                         {guild.icon ? (
                           <img
                             src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
                             alt={guild.name}
-                            className="h-16 w-16 rounded-[1.25rem] border border-white/10 object-cover"
+                            className="h-14 w-14 rounded-[1.1rem] border border-white/10 object-cover"
                           />
                         ) : (
-                          <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] border border-white/10 bg-gradient-to-br from-primary/20 to-secondary/20 text-2xl font-display font-bold text-white">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-[1.1rem] border border-cyan-300/20 bg-cyan-300/10 text-xl font-display font-black text-cyan-100">
                             {guild.name[0]}
                           </div>
                         )}
-
-                        <div>
-                          <div className="text-lg font-semibold text-white">
+                        <div className="min-w-0">
+                          <div className="truncate text-lg font-semibold text-white">
                             {guild.name}
                           </div>
-                          <div className="mt-1 text-sm text-slate-400">
+                          <div className="mt-1 text-xs text-slate-500">
                             Discord ID: {guild.id}
                           </div>
                         </div>
                       </div>
-
                       <button
                         onClick={() => handleCreateClub(guild)}
                         disabled={creating === guild.id}
@@ -485,13 +624,90 @@ export default function Page() {
                     </motion.div>
                   ))}
                 </div>
+              </>
+            ) : (
+              <div>
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.5rem] border border-amber-400/18 bg-amber-400/10">
+                  {isTwitchSession ? (
+                    <FaTwitch className="h-9 w-9 text-[#a970ff]" />
+                  ) : (
+                    <Shield className="h-9 w-9 text-amber-300" />
+                  )}
+                </div>
+                <h2 className="text-center text-2xl font-display font-black text-white">
+                  {isTwitchSession
+                    ? "Twitch creator access is connected"
+                    : hasDiscordProvider
+                      ? "Discord is connected. Choose your next setup step."
+                      : "Choose how this community should start"}
+                </h2>
+                <p className="mx-auto mt-3 max-w-xl text-center text-slate-300">
+                  {guildSyncIssue ||
+                    "Start with Discord server operations or Twitch live-community momentum. Nothing is broken; this is your setup runway."}
+                </p>
 
-                <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-slate-300">
-                  Launching from an existing Discord server lowers friction and makes the first club session feel immediate instead of administrative.
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={handleSwitchProvider}
+                    className="rounded-[1.25rem] border border-[#7289DA]/25 bg-[#7289DA]/12 p-5 text-left transition-colors hover:bg-[#7289DA]/20"
+                  >
+                    <FaDiscord className="mb-4 h-6 w-6 text-[#8ea1ff]" />
+                    <div className="font-display text-lg font-bold text-white">
+                      Set up Discord
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      Best for server admins, roles, and structured club
+                      operations.
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={
+                      isTwitchSession
+                        ? () => router.push("/live-calls")
+                        : handleSwitchProvider
+                    }
+                    className="rounded-[1.25rem] border border-[#a970ff]/25 bg-[#a970ff]/12 p-5 text-left transition-colors hover:bg-[#a970ff]/20"
+                  >
+                    <FaTwitch className="mb-4 h-6 w-6 text-[#c79cff]" />
+                    <div className="font-display text-lg font-bold text-white">
+                      Start with Twitch
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      Best for creator-led live rituals and audience return
+                      loops.
+                    </p>
+                  </button>
                 </div>
               </div>
-            ) : null}
-          </motion.div>
+            )}
+          </section>
+
+          <section className="rounded-[1.25rem] border border-cyan-300/18 bg-white/[0.045] px-5 py-4 text-sm text-slate-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="mr-3 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-300">
+                  Trust strip
+                </span>
+                Virtual engagement only. No cash value. No financial return.
+              </div>
+              <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+                <span className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-cyan-300" />
+                  Secure data
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-cyan-300" />
+                  Privacy protected
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Clock3 className="h-4 w-4 text-cyan-300" />
+                  Daily rituals
+                </span>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
