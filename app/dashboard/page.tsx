@@ -43,7 +43,7 @@ const notifications = [
   {
     title: "War zone approaching critical",
     body: "Pressure window opens soon. Rally action recommended.",
-    tone: "border-rose-300/20 bg-rose-300/10",
+    tone: "border-orange-300/24 bg-orange-500/12",
     icon: Flame,
     action: "Open map",
   },
@@ -240,16 +240,16 @@ export default function Page() {
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="command-frame hero-sheen relative overflow-hidden p-5 sm:p-7"
+            className="command-frame hero-sheen relative overflow-hidden p-5 sm:p-7 xl:min-h-[230px]"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(139,92,246,0.14),transparent_34%)]" />
-            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.16),transparent_34%)]" />
+            <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(250px,310px)] xl:items-center">
+              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
                 <div className="flex h-20 w-20 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_45px_rgba(34,211,238,0.22)]">
                   <User className="h-10 w-10 text-cyan-200" />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-balance text-4xl font-display font-black leading-tight text-white md:text-5xl">
+                  <h1 className="text-balance text-3xl font-display font-black leading-tight text-white md:text-4xl 2xl:text-5xl">
                     Welcome back,{" "}
                     <span className="bg-gradient-to-r from-cyan-200 to-violet-300 bg-clip-text text-transparent">
                       {displayName}!
@@ -275,11 +275,11 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <button
                   type="button"
                   onClick={() => router.push("/live-calls")}
-                  className="inline-flex items-center justify-center gap-3 rounded-[1.1rem] bg-cyan-300 px-6 py-4 font-display text-sm font-black uppercase tracking-[0.08em] text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.45)] transition-transform hover:-translate-y-0.5 hover:bg-cyan-200"
+                  className="inline-flex min-h-14 items-center justify-center gap-3 whitespace-normal rounded-[1.1rem] bg-cyan-300 px-5 py-4 text-center font-display text-sm font-black uppercase leading-tight tracking-[0.06em] text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.45)] transition-transform hover:-translate-y-0.5 hover:bg-cyan-200"
                 >
                   Start Live Call
                   <Radio className="h-4 w-4" />
@@ -287,7 +287,7 @@ export default function Page() {
                 <button
                   type="button"
                   onClick={() => router.push("/clubs")}
-                  className="inline-flex items-center justify-center gap-3 rounded-[1.1rem] border border-amber-300/35 bg-amber-400/14 px-6 py-4 font-display text-sm font-black uppercase tracking-[0.08em] text-amber-100 shadow-[0_0_24px_rgba(250,204,21,0.16)] transition-transform hover:-translate-y-0.5 hover:bg-amber-400/22"
+                  className="inline-flex min-h-14 items-center justify-center gap-3 whitespace-normal rounded-[1.1rem] border border-orange-300/45 bg-orange-500/16 px-5 py-4 text-center font-display text-sm font-black uppercase leading-tight tracking-[0.06em] text-orange-100 shadow-[0_0_28px_rgba(249,115,22,0.2)] transition-transform hover:-translate-y-0.5 hover:bg-orange-500/24"
                 >
                   Open Club Command
                   <Crown className="h-4 w-4" />
@@ -300,27 +300,27 @@ export default function Page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06 }}
-            className="relative overflow-hidden rounded-[1.35rem] border border-cyan-300/30 bg-cyan-300/8 p-5 shadow-[0_0_35px_rgba(34,211,238,0.12)]"
+            className="relative overflow-hidden rounded-[1.35rem] border border-orange-300/30 bg-gradient-to-br from-orange-500/12 via-cyan-300/8 to-slate-950/80 p-5 shadow-[0_0_35px_rgba(249,115,22,0.12)]"
           >
-            <div className="absolute right-[-2rem] top-[-2rem] h-32 w-32 rounded-full bg-cyan-300/15 blur-3xl" />
+            <div className="absolute right-[-2rem] top-[-2rem] h-32 w-32 rounded-full bg-orange-300/18 blur-3xl" />
             <div className="relative">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 Streak card
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-[1.2rem] border border-amber-300/25 bg-amber-400/12">
-                  <Flame className="h-8 w-8 text-amber-300" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-[1.2rem] border border-orange-300/30 bg-orange-500/16">
+                  <Flame className="h-8 w-8 text-orange-300" />
                 </div>
                 <div>
                   <div className="font-display text-3xl font-black text-white">
                     14-Day{" "}
-                    <span className="bg-gradient-to-r from-amber-200 to-cyan-200 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-orange-200 to-cyan-200 bg-clip-text text-transparent">
                       Streak
                     </span>
                   </div>
                   <div className="mt-1 text-sm text-slate-300">
                     Next reward:{" "}
-                    <span className="font-bold text-amber-200">
+                    <span className="font-bold text-orange-200">
                       Unlock Elite Badge
                     </span>
                   </div>
@@ -347,43 +347,46 @@ export default function Page() {
                   {activeClubName}
                 </h2>
               </div>
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/10 text-lg font-display font-black text-cyan-200">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-orange-300/25 bg-orange-500/12 text-lg font-display font-black text-orange-200">
                 {guilds.length > 0 ? "80%" : "12%"}
               </div>
             </div>
 
             <div className="relative mb-5 overflow-hidden rounded-[1.35rem] border border-cyan-300/15 bg-black/25 p-4">
-              <svg viewBox="0 0 520 220" className="h-44 w-full" role="img">
-                <path
-                  d="M55 75 L164 38 L278 72 L406 44 L472 118 L382 174 L244 154 L132 188 L64 140 Z"
-                  fill="rgba(34,211,238,0.12)"
-                  stroke="#22d3ee"
-                  strokeWidth="4"
-                />
-                <path
-                  d="M278 72 L406 44 L472 118 L382 174 L244 154 Z"
-                  fill="rgba(139,92,246,0.16)"
-                  stroke="#a855f7"
-                  strokeWidth="3"
-                />
-                {[90, 200, 310, 420].map((cx, index) => (
-                  <circle
-                    key={cx}
-                    cx={cx}
-                    cy={[118, 82, 146, 94][index]}
-                    r="9"
-                    fill={index === 2 ? "#a855f7" : "#22d3ee"}
-                    opacity="0.95"
-                  />
+              <svg viewBox="0 0 520 250" className="h-52 w-full" role="img" aria-label="Territory control map">
+                <defs>
+                  <filter id="dashboard-territory-glow">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <path d="M48 88 L128 42 L225 68 L270 128 L205 190 L98 178 L34 136 Z" fill="rgba(34,211,238,0.17)" stroke="#22d3ee" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
+                <path d="M225 68 L340 44 L462 86 L478 162 L382 210 L270 128 Z" fill="rgba(168,85,247,0.18)" stroke="#a855f7" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
+                <path d="M205 190 L270 128 L382 210 L298 235 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" filter="url(#dashboard-territory-glow)" />
+                <path d="M128 42 L225 68 L340 44" fill="none" stroke="#67e8f9" strokeWidth="2" strokeDasharray="6 9" opacity="0.65" />
+                <path d="M270 128 L478 162" fill="none" stroke="#fb923c" strokeWidth="2" strokeDasharray="6 9" opacity="0.65" />
+                {([
+                  [110, 112, "#22d3ee"],
+                  [210, 120, "#22d3ee"],
+                  [346, 104, "#a855f7"],
+                  [418, 156, "#fb923c"],
+                ] as Array<[number, number, string]>).map(([cx, cy, color]) => (
+                  <g key={`${cx}-${cy}`}>
+                    <circle cx={cx} cy={cy} r="17" fill={`${color}25`} />
+                    <circle cx={cx} cy={cy} r="7" fill={color} />
+                  </g>
                 ))}
               </svg>
               <div className="absolute bottom-4 left-4 right-4">
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="text-slate-300">Territory pressure</span>
-                  <span className="font-bold text-cyan-200">War Zone 7 - 87%</span>
+                  <span className="font-bold text-orange-200">War Zone 7 - 87%</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[87%] rounded-full bg-gradient-to-r from-cyan-300 to-violet-400 shadow-[0_0_18px_rgba(34,211,238,0.5)]" />
+                  <div className="h-full w-[87%] rounded-full bg-gradient-to-r from-cyan-300 via-violet-400 to-orange-400 shadow-[0_0_18px_rgba(249,115,22,0.45)]" />
                 </div>
               </div>
             </div>
@@ -508,26 +511,15 @@ export default function Page() {
                 <CountdownPill label="Pulse" target={liveCallPulse} tone="amber" />
               </div>
               <div className="relative overflow-hidden rounded-[1.25rem] border border-cyan-300/15 bg-black/25 p-3">
-                <svg viewBox="0 0 520 190" className="h-40 w-full">
-                  <path
-                    d="M20 112 C92 48 148 70 206 40 S322 36 392 84 470 72 500 122"
-                    fill="none"
-                    stroke="#22d3ee"
-                    strokeWidth="4"
-                    strokeDasharray="8 10"
-                  />
-                  <path
-                    d="M62 145 C130 164 210 118 270 142 S378 168 482 118"
-                    fill="none"
-                    stroke="#a855f7"
-                    strokeWidth="3"
-                    strokeDasharray="6 10"
-                  />
+                <svg viewBox="0 0 520 190" className="h-40 w-full" aria-label="War map preview">
+                  <path d="M35 110 L128 54 L224 76 L268 130 L198 166 L82 154 Z" fill="rgba(34,211,238,0.16)" stroke="#22d3ee" strokeWidth="4" />
+                  <path d="M224 76 L330 54 L468 98 L424 156 L268 130 Z" fill="rgba(168,85,247,0.16)" stroke="#a855f7" strokeWidth="4" />
+                  <path d="M198 166 L268 130 L424 156 L354 182 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" />
                   {([
-                    [58, 112, "#22d3ee", "Zone A: 65%"],
-                    [208, 40, "#22d3ee", "War Room 1"],
-                    [322, 78, "#a855f7", "Zone B: 65%"],
-                    [430, 132, "#f97316", "Zone B: 20%"],
+                    [88, 122, "#22d3ee", "North: 65%"],
+                    [230, 88, "#22d3ee", "Room 1"],
+                    [340, 106, "#a855f7", "East: 65%"],
+                    [390, 154, "#fb923c", "Central: 20%"],
                   ] as Array<[number, number, string, string]>).map(([cx, cy, color, label]) => (
                     <g key={`${cx}-${cy}`}>
                       <circle cx={cx} cy={cy} r="16" fill={`${color}22`} />
