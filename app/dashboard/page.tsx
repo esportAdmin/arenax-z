@@ -43,7 +43,7 @@ const notifications = [
   {
     title: "War zone approaching critical",
     body: "Pressure window opens soon. Rally action recommended.",
-    tone: "border-orange-300/24 bg-orange-500/12",
+    tone: "border-orange-300/25 bg-orange-500/10",
     icon: Flame,
     action: "Open map",
   },
@@ -333,12 +333,12 @@ export default function Page() {
           </motion.aside>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr_0.95fr]">
+        <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr_0.95fr]">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="section-shell"
+            className="dashboard-card"
           >
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
@@ -352,7 +352,8 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="relative mb-5 overflow-hidden rounded-[1.35rem] border border-cyan-300/15 bg-black/25 p-4">
+            <div className="relative mb-5 overflow-hidden rounded-[1.5rem] border border-cyan-300/25 bg-[radial-gradient(circle_at_24%_28%,rgba(34,211,238,0.18),transparent_26%),radial-gradient(circle_at_76%_62%,rgba(249,115,22,0.14),transparent_28%),linear-gradient(180deg,rgba(8,20,34,0.92),rgba(2,6,23,0.72))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_46px_rgba(0,0,0,0.28)]">
+              <div className="absolute inset-0 opacity-[0.22] [background-image:linear-gradient(rgba(34,211,238,0.35)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:28px_28px]" />
               <svg viewBox="0 0 520 250" className="h-52 w-full" role="img" aria-label="Territory control map">
                 <defs>
                   <filter id="dashboard-territory-glow">
@@ -405,7 +406,7 @@ export default function Page() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
-            className="section-shell"
+            className="dashboard-card"
           >
             <div className="mb-5 flex items-center justify-between">
               <div>
@@ -419,7 +420,7 @@ export default function Page() {
               </span>
             </div>
 
-            <div className="rounded-[1.25rem] border border-blue-300/20 bg-blue-400/10 p-4">
+            <div className="rounded-[1.35rem] border border-blue-300/25 bg-[linear-gradient(145deg,rgba(59,130,246,0.16),rgba(34,211,238,0.07),rgba(2,6,23,0.4))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_16px_42px_rgba(37,99,235,0.14)]">
               <div className="text-lg font-display font-black text-white">
                 Daily Live Call - 3:00 PM EST
               </div>
@@ -450,7 +451,7 @@ export default function Page() {
               {schedule.map((item) => (
                 <div
                   key={`${item.day}-${item.time}`}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
                 >
                   <div>
                     <div className="text-sm font-bold text-white">
@@ -472,7 +473,7 @@ export default function Page() {
             transition={{ delay: 0.16 }}
             className="space-y-5"
           >
-            <div className="section-shell">
+            <div className="dashboard-card">
               <div className="data-pill">Notifications panel</div>
               <div className="mt-4 space-y-3">
                 {notifications.map(({ title, body, tone, icon: Icon, action }) => (
@@ -486,7 +487,7 @@ export default function Page() {
                           ? router.push("/rewards")
                           : router.push("/profile")
                     }
-                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5 ${tone}`}
+                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_12px_32px_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-0.5 ${tone}`}
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/20">
                       <Icon className="h-5 w-5 text-white" />
@@ -505,16 +506,26 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="section-shell overflow-hidden">
+            <div className="dashboard-card overflow-hidden">
               <div className="mb-4 flex items-center justify-between">
                 <div className="data-pill">War map preview</div>
                 <CountdownPill label="Pulse" target={liveCallPulse} tone="amber" />
               </div>
-              <div className="relative overflow-hidden rounded-[1.25rem] border border-cyan-300/15 bg-black/25 p-3">
-                <svg viewBox="0 0 520 190" className="h-40 w-full" aria-label="War map preview">
-                  <path d="M35 110 L128 54 L224 76 L268 130 L198 166 L82 154 Z" fill="rgba(34,211,238,0.16)" stroke="#22d3ee" strokeWidth="4" />
-                  <path d="M224 76 L330 54 L468 98 L424 156 L268 130 Z" fill="rgba(168,85,247,0.16)" stroke="#a855f7" strokeWidth="4" />
-                  <path d="M198 166 L268 130 L424 156 L354 182 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" />
+              <div className="relative overflow-hidden rounded-[1.45rem] border border-cyan-300/25 bg-[radial-gradient(circle_at_30%_35%,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_76%_60%,rgba(249,115,22,0.15),transparent_30%),linear-gradient(180deg,rgba(8,18,31,0.95),rgba(2,6,23,0.78))] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_20px_55px_rgba(0,0,0,0.28)]">
+                <div className="absolute inset-0 opacity-[0.22] [background-image:linear-gradient(rgba(34,211,238,0.32)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.32)_1px,transparent_1px)] [background-size:24px_24px]" />
+                <svg viewBox="0 0 520 210" className="relative h-48 w-full" aria-label="War map preview">
+                  <defs>
+                    <filter id="dashboard-war-glow">
+                      <feGaussianBlur stdDeviation="3.5" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <path d="M35 110 L128 54 L224 76 L268 130 L198 166 L82 154 Z" fill="rgba(34,211,238,0.16)" stroke="#22d3ee" strokeWidth="4" filter="url(#dashboard-war-glow)" />
+                  <path d="M224 76 L330 54 L468 98 L424 156 L268 130 Z" fill="rgba(168,85,247,0.16)" stroke="#a855f7" strokeWidth="4" filter="url(#dashboard-war-glow)" />
+                  <path d="M198 166 L268 130 L424 156 L354 182 Z" fill="rgba(249,115,22,0.18)" stroke="#fb923c" strokeWidth="4" filter="url(#dashboard-war-glow)" />
                   {([
                     [88, 122, "#22d3ee", "North: 65%"],
                     [230, 88, "#22d3ee", "Room 1"],
@@ -522,7 +533,7 @@ export default function Page() {
                     [390, 154, "#fb923c", "Central: 20%"],
                   ] as Array<[number, number, string, string]>).map(([cx, cy, color, label]) => (
                     <g key={`${cx}-${cy}`}>
-                      <circle cx={cx} cy={cy} r="16" fill={`${color}22`} />
+                      <circle cx={cx} cy={cy} r="20" fill={`${color}22`} filter="url(#dashboard-war-glow)" />
                       <circle cx={cx} cy={cy} r="7" fill={color} />
                       <text
                         x={Number(cx) + 16}
@@ -536,13 +547,24 @@ export default function Page() {
                     </g>
                   ))}
                 </svg>
+                <div className="relative -mt-2 grid grid-cols-3 gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-300">
+                  <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-1 text-cyan-200">
+                    North 65%
+                  </span>
+                  <span className="rounded-full border border-violet-300/20 bg-violet-300/10 px-2 py-1 text-violet-200">
+                    East 65%
+                  </span>
+                  <span className="rounded-full border border-orange-300/25 bg-orange-400/10 px-2 py-1 text-orange-200">
+                    Central 20%
+                  </span>
+                </div>
               </div>
             </div>
           </motion.section>
         </div>
 
-        <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_1.1fr]">
-          <section className="section-shell">
+        <div className="mt-5 grid items-start gap-5 xl:grid-cols-[1fr_1.1fr]">
+          <section className="dashboard-card">
             {loading ? (
               <div className="flex min-h-[260px] flex-col items-center justify-center text-center">
                 <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
@@ -573,7 +595,7 @@ export default function Page() {
                       initial={{ opacity: 0, x: -18 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.06 }}
-                      className="surface-panel flex flex-col gap-4 p-4"
+                      className="surface-panel flex flex-col gap-4 border-cyan-300/15 bg-[linear-gradient(145deg,rgba(34,211,238,0.09),rgba(15,23,42,0.72))] p-4"
                     >
                       <div className="flex items-center gap-4">
                         {guild.icon ? (
@@ -676,7 +698,7 @@ export default function Page() {
             )}
           </section>
 
-          <section className="rounded-[1.25rem] border border-cyan-300/18 bg-white/[0.045] px-5 py-4 text-sm text-slate-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+          <section className="dashboard-card px-5 py-4 text-sm text-slate-300">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <span className="mr-3 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-300">
