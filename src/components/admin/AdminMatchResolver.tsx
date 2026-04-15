@@ -122,7 +122,7 @@ export const AdminMatchResolver = () => {
           ) : (
             <>
               <Trophy className="h-4 w-4 mr-2" />
-              Resolve and Payout
+              Resolve and distribute rewards
             </>
           )}
         </Button>
@@ -139,8 +139,8 @@ export const AdminMatchResolver = () => {
                   <p>Match ID: {lastResult.match_id}</p>
                   <p>Winning team: {lastResult.winning_team}</p>
               <p>Live calls processed: {lastResult.resolved_count}</p>
-                  <p className="text-green-600">✓ Winners: {lastResult.won_count}</p>
-                  <p className="text-red-600">✗ Losers: {lastResult.lost_count}</p>
+                  <p className="text-green-600">Winners: {lastResult.won_count}</p>
+                  <p className="text-red-600">Losses recorded: {lastResult.lost_count}</p>
                 </div>
               ) : (
                 <p>{lastResult.error}</p>

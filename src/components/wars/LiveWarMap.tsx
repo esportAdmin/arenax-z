@@ -3,8 +3,8 @@ import dynamic from "next/dynamic";
 const LiveWarMapInner = dynamic(() => import("./LiveWarMapInner"), {
   ssr: false,
   loading: () => (
-    <div className="relative w-full h-[400px] bg-gradient-to-br from-[#0a1628]/90 to-[#0a1628]/60 backdrop-blur-sm border border-red-500/20 rounded-xl overflow-hidden flex items-center justify-center">
-      <span className="text-gray-500 text-sm tracking-widest">Loading map…</span>
+    <div className="relative flex h-[400px] w-full items-center justify-center overflow-hidden rounded-xl border border-orange-500/20 bg-gradient-to-br from-[#0a1628]/90 to-[#0a1628]/60 backdrop-blur-sm">
+      <span className="text-sm tracking-widest text-gray-500">Loading map...</span>
     </div>
   ),
 });
@@ -12,11 +12,11 @@ const LiveWarMapInner = dynamic(() => import("./LiveWarMapInner"), {
 export default function LiveWarMap() {
   return (
     <div className="mb-12">
-      <div className="text-center mb-6">
-        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 mb-2">
-          🌍 GLOBAL WAR MAP
+      <div className="mb-6 text-center">
+        <h2 className="mb-2 bg-gradient-to-r from-orange-300 to-cyan-300 bg-clip-text text-3xl font-bold text-transparent">
+          Global war map
         </h2>
-        <p className="text-gray-400">Real-time battle locations</p>
+        <p className="text-gray-400">Real-time territory pressure and rally locations.</p>
       </div>
 
       <LiveWarMapInner />

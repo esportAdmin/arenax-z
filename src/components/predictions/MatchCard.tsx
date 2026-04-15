@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TeamLogo } from "@/components/ui/team-logo";
 
 interface Team {
   name: string;
@@ -151,9 +152,14 @@ export const MatchCard = ({
             }`}
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-4xl transition-transform group-hover:scale-105">
-                {match.teamA.logo}
-              </div>
+              <TeamLogo
+                name={match.teamA.name}
+                logo={match.teamA.logo}
+                size={64}
+                shape="lg"
+                fit="contain"
+                className="rounded-2xl border border-white/10 bg-white/5 p-1.5 transition-transform group-hover:scale-105"
+              />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xl font-black text-white">
                   {match.teamA.name}
@@ -197,9 +203,14 @@ export const MatchCard = ({
             }`}
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-4xl transition-transform group-hover:scale-105">
-                {match.teamB.logo}
-              </div>
+              <TeamLogo
+                name={match.teamB.name}
+                logo={match.teamB.logo}
+                size={64}
+                shape="lg"
+                fit="contain"
+                className="rounded-2xl border border-white/10 bg-white/5 p-1.5 transition-transform group-hover:scale-105"
+              />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xl font-black text-white">
                   {match.teamB.name}

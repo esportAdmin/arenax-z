@@ -64,9 +64,6 @@ export default function WarFilters({
                     : "bg-[#0a1628]/60 text-gray-400 border border-orange-500/20 hover:border-orange-500/40"
                 }`}
               >
-                {status === "live" && "🔴 "}
-                {status === "upcoming" && "🟡 "}
-                {status === "ended" && "⚫ "}
                 {status}
               </button>
             ))}
