@@ -7,16 +7,19 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
+  CalendarDays,
   CheckCircle2,
   Crown,
   Eye,
   Flame,
+  Lock,
   Zap,
   Map,
   Radio,
   Shield,
   Trophy,
   UserPlus,
+  Users,
   Loader2,
   Swords,
 } from "lucide-react";
@@ -106,6 +109,49 @@ export default function ClubDetail({ slug }: Props) {
       icon: Eye,
       tone: "text-emerald-300",
       bar: Math.max(callAccuracy, 7),
+    },
+  ];
+
+  const launchSteps = [
+    {
+      step: "01",
+      title: "Run first live call",
+      body: "Establish your presence with one voice or video session.",
+      action: "Schedule call now",
+      icon: Radio,
+      tone: "cyan",
+      progress: 64,
+      onClick: () => router.push("/live-calls"),
+    },
+    {
+      step: "02",
+      title: "Invite founding members",
+      body: "Bring your first leaders into the command center.",
+      action: "Send invites",
+      icon: UserPlus,
+      tone: "orange",
+      progress: Math.min(Math.max(members.length * 20, 18), 76),
+      onClick: () => router.push("/clubs"),
+    },
+    {
+      step: "03",
+      title: "Pick rivalry",
+      body: "Choose a friendly competitive target to create return pressure.",
+      action: "Choose rivalry",
+      icon: Swords,
+      tone: "blue",
+      progress: activeWar ? 82 : 42,
+      onClick: () => router.push("/war-map"),
+    },
+    {
+      step: "04",
+      title: "Unlock prestige badge",
+      body: "Reward early members with a launch-era status marker.",
+      action: "Claim badges",
+      icon: Lock,
+      tone: "violet",
+      progress: callAccuracy > 0 ? Math.min(callAccuracy + 20, 92) : 26,
+      onClick: () => router.push("/rewards"),
     },
   ];
 
@@ -239,16 +285,16 @@ export default function ClubDetail({ slug }: Props) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="command-frame hero-sheen relative mb-5 overflow-hidden p-5 sm:p-7 lg:p-9"
+            className="command-frame hero-sheen relative mb-6 overflow-hidden border-cyan-300/20 p-5 shadow-[0_0_70px_rgba(34,211,238,0.12)] sm:p-7 lg:p-9"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(250,204,21,0.1),transparent_30%)]" />
             <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/10 blur-[70px]" />
 
             <div className="relative flex flex-col items-center gap-7 text-center lg:flex-row lg:text-left">
-              <div className="relative flex h-32 w-32 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/8 shadow-[0_0_55px_rgba(34,211,238,0.25)] sm:h-36 sm:w-36">
+              <div className="relative flex h-36 w-36 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/8 shadow-[0_0_60px_rgba(34,211,238,0.28)] sm:h-44 sm:w-44">
                 <div className="absolute inset-3 rounded-full border border-cyan-300/20" />
                 <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_140deg,rgba(34,211,238,0.35),rgba(139,92,246,0.28),rgba(250,204,21,0.22),rgba(34,211,238,0.35))] opacity-80 blur-[1px]" />
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-white/15 bg-slate-950 text-5xl font-display font-black text-cyan-200 sm:h-28 sm:w-28">
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-white/15 bg-slate-950 text-5xl font-display font-black text-cyan-200 sm:h-32 sm:w-32 sm:text-6xl">
                   {club.name.charAt(0).toUpperCase()}
                 </div>
               </div>
@@ -266,7 +312,7 @@ export default function ClubDetail({ slug }: Props) {
                   </span>
                 </div>
 
-                <h1 className="text-balance text-4xl font-display font-black leading-tight text-white md:text-5xl">
+                <h1 className="break-words text-4xl font-display font-black leading-tight text-white md:text-5xl xl:text-6xl">
                   {club.name}
                 </h1>
                 <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-300 lg:mx-0">
@@ -274,44 +320,42 @@ export default function ClubDetail({ slug }: Props) {
                     "Your community command center is live. Rally the first members, create the first live call, and turn this fresh club into a daily return ritual."}
                 </p>
 
-                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap lg:justify-start">
+                <div className="mt-7 grid gap-3 sm:grid-cols-3">
                   <Button
-                    className="h-12 justify-center gap-3 rounded-full bg-cyan-300 px-6 font-bold text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.45)] hover:bg-cyan-200"
+                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] bg-cyan-300 px-5 font-display font-black text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.48)] hover:bg-cyan-200"
                     onClick={() => router.push("/live-calls")}
                   >
-                    Create first live call
                     <Radio className="h-4 w-4" />
+                    Create first live call
                   </Button>
 
                   <Button
                     variant="outline"
-                    className="h-12 justify-center gap-3 rounded-full border-cyan-300/35 px-6 text-cyan-100 hover:bg-cyan-300/10"
+                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] border-blue-300/40 bg-blue-500/10 px-5 font-display font-black text-blue-100 shadow-[0_0_24px_rgba(59,130,246,0.18)] hover:bg-blue-400/15"
                     onClick={() => router.push("/war-map")}
                   >
-                    Open war map
                     <Map className="h-4 w-4" />
+                    Open war room
                   </Button>
 
-                  {isAdmin && !activeWar ? (
-                    <Button
-                      onClick={handleCreateWar}
-                      disabled={creatingWar}
-                      className="h-12 justify-center gap-3 rounded-full border border-amber-300/45 bg-amber-400/14 px-6 font-bold text-amber-100 shadow-[0_0_24px_rgba(250,204,21,0.18)] hover:bg-amber-400/22"
-                    >
-                      {creatingWar ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Swords className="h-4 w-4" />
-                      )}
-                      Start first war
-                    </Button>
-                  ) : null}
+                  <Button
+                    onClick={isAdmin && !activeWar ? handleCreateWar : () => router.push("/clubs")}
+                    disabled={isAdmin && !activeWar ? creatingWar : false}
+                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] border border-orange-300/45 bg-orange-500/14 px-5 font-display font-black text-orange-100 shadow-[0_0_24px_rgba(249,115,22,0.22)] hover:bg-orange-500/22"
+                  >
+                    {creatingWar ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <UserPlus className="h-4 w-4" />
+                    )}
+                    {isAdmin && !activeWar ? "Start first war" : "Invite members"}
+                  </Button>
 
                   {user && !myMembership ? (
                     <Button
                       onClick={handleJoin}
                       disabled={joining}
-                      className="h-12 justify-center gap-3 rounded-full px-6"
+                      className="h-[3.25rem] justify-center gap-3 rounded-[1rem] px-5 sm:col-span-3"
                     >
                       {joining ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -326,109 +370,167 @@ export default function ClubDetail({ slug }: Props) {
             </div>
           </motion.div>
 
-          <motion.div
+          <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06 }}
-            className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            className="dashboard-card mb-6 border-cyan-300/25 p-5 shadow-[0_0_65px_rgba(34,211,238,0.12)] sm:p-7"
           >
-            {statCards.map(({ label, value, icon: Icon, tone, bar }) => (
-              <div
-                key={label}
-                className="group relative overflow-hidden rounded-[1.35rem] border border-cyan-300/18 bg-white/[0.055] p-5 shadow-[0_0_28px_rgba(34,211,238,0.08),inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur transition-all hover:-translate-y-1 hover:border-cyan-300/35 hover:bg-cyan-300/8"
-              >
-                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-300/10 blur-2xl transition-opacity group-hover:opacity-100" />
-                <div className="relative flex items-center justify-between">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                    {label}
-                  </span>
-                  <Icon className={`h-6 w-6 ${tone}`} />
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="eyebrow-badge border-cyan-300/25 bg-cyan-300/10 text-cyan-200">
+                  <Crown className="h-4 w-4 text-cyan-300" />
+                  Launch sequence
                 </div>
-                <div className="relative mt-5 text-3xl font-display font-black text-white">
-                  {value}
-                </div>
-                <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 shadow-[0_0_18px_rgba(34,211,238,0.55)]"
-                    style={{ width: `${Math.min(bar, 100)}%` }}
-                  />
-                </div>
+                <h2 className="mt-4 text-2xl font-display font-black text-white md:text-3xl">
+                  Bring the club online in four visible moves
+                </h2>
               </div>
-            ))}
-          </motion.div>
-
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="section-shell"
-            >
-              <div className="eyebrow-badge">
-                <Crown className="h-4 w-4 text-amber-300" />
-                Launch sequence
-              </div>
-
-              <h2 className="mt-5 text-2xl font-display font-black text-white">
-                Turn this new club into a habit loop
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-slate-300">
-                A blank club should still feel alive. Use these first actions
-                to create momentum before members arrive.
+              <p className="max-w-md text-sm leading-6 text-slate-300">
+                Every step should create a reason for members to return, react,
+                and see progress.
               </p>
+            </div>
 
-              <div className="relative mt-7 space-y-0 pl-7 before:absolute before:left-[0.9rem] before:top-3 before:h-[calc(100%-1.5rem)] before:w-px before:bg-gradient-to-b before:from-amber-300 before:via-cyan-300 before:to-white/15">
-                {[
-                  {
-                    icon: Radio,
-                    title: "Run the first live call",
-                    body: "Give members one obvious ritual to join today.",
-                    action: "Open live calls",
-                    onClick: () => router.push("/live-calls"),
-                  },
-                  {
-                    icon: Shield,
-                    title: "Pick a territory story",
-                    body: "Use the map as the visible reason to come back.",
-                    action: "Open war map",
-                    onClick: () => router.push("/war-map"),
-                  },
-                  {
-                    icon: Trophy,
-                    title: "Create prestige pressure",
-                    body: "Show rankings and rewards before the first push.",
-                    action: "Preview leaderboard",
-                    onClick: () => router.push("/leaderboard"),
-                  },
-                ].map(({ icon: Icon, title, body, action, onClick }, index) => (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {launchSteps.map(({ step, title, body, action, icon: Icon, tone, progress, onClick }) => {
+                const toneClasses =
+                  tone === "orange"
+                    ? {
+                        border: "border-orange-300/30",
+                        glow: "bg-orange-400/12",
+                        text: "text-orange-200",
+                        bar: "from-orange-300 to-amber-200",
+                      }
+                    : tone === "blue"
+                      ? {
+                          border: "border-blue-300/30",
+                          glow: "bg-blue-400/12",
+                          text: "text-blue-200",
+                          bar: "from-blue-300 to-cyan-200",
+                        }
+                      : tone === "violet"
+                        ? {
+                            border: "border-violet-300/30",
+                            glow: "bg-violet-400/12",
+                            text: "text-violet-200",
+                            bar: "from-violet-300 via-cyan-300 to-orange-300",
+                          }
+                        : {
+                            border: "border-cyan-300/30",
+                            glow: "bg-cyan-300/12",
+                            text: "text-cyan-200",
+                            bar: "from-cyan-300 to-teal-200",
+                          };
+
+                return (
                   <button
                     key={title}
                     type="button"
                     onClick={onClick}
-                    className="group relative mb-4 flex w-full items-center gap-4 rounded-[1.25rem] border border-white/10 bg-white/[0.045] p-4 text-left transition-all hover:border-cyan-300/25 hover:bg-cyan-300/8"
+                    className={`group relative overflow-hidden rounded-[1.35rem] border ${toneClasses.border} bg-white/[0.055] p-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_44px_rgba(0,0,0,0.22)] transition-all hover:-translate-y-1 hover:bg-white/[0.075]`}
                   >
-                    <span className={`absolute -left-[2.05rem] top-5 h-4 w-4 rounded-full border ${index === 0 ? "border-amber-200 bg-amber-300 shadow-[0_0_18px_rgba(250,204,21,0.65)]" : "border-slate-500 bg-slate-700"}`} />
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                        Step 0{index + 1}
+                    <div className={`absolute right-[-2rem] top-[-2rem] h-28 w-28 rounded-full ${toneClasses.glow} blur-3xl`} />
+                    <div className="relative flex items-center gap-4">
+                      <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full border ${toneClasses.border} ${toneClasses.glow} font-display text-2xl font-black ${toneClasses.text}`}>
+                        {step}
                       </div>
-                      <div className="mt-1 font-display text-base font-bold text-white">
-                        {title}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                          Step {step}
+                        </div>
+                        <div className="mt-1 font-display text-lg font-black text-white">
+                          {title}
+                        </div>
+                        <p className="mt-1 text-sm leading-5 text-slate-400">
+                          {body}
+                        </p>
                       </div>
-                      <p className="mt-1 text-sm leading-5 text-slate-400">
-                        {body}
-                      </p>
+                      <Icon className={`hidden h-6 w-6 ${toneClasses.text} sm:block`} />
                     </div>
-                    <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-cyan-300 transition-transform group-hover:translate-x-1 sm:flex">
-                      {action}
-                      <ArrowRight className="h-4 w-4" />
+                    <div className="relative mt-4 flex items-center gap-4">
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${toneClasses.bar} shadow-[0_0_18px_rgba(34,211,238,0.45)]`}
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <span className={`rounded-full border ${toneClasses.border} px-3 py-1 text-xs font-bold ${toneClasses.text}`}>
+                        {action}
+                      </span>
                     </div>
                   </button>
+                );
+              })}
+            </div>
+          </motion.section>
+
+          <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 }}
+              className="dashboard-card"
+            >
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <div>
+                  <div className="eyebrow-badge border-cyan-300/25 bg-cyan-300/10 text-cyan-200">
+                    <Zap className="h-4 w-4 text-cyan-300" />
+                    Club momentum
+                  </div>
+                  <h2 className="mt-4 text-2xl font-display font-black text-white">
+                    Activation cockpit
+                  </h2>
+                </div>
+                <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-right">
+                  <div className="font-display text-2xl font-black text-cyan-200">
+                    {club.total_xp || 0}/100
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                    Club XP
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6 h-3 overflow-hidden rounded-full border border-cyan-300/15 bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-blue-400 to-orange-300 shadow-[0_0_18px_rgba(34,211,238,0.55)]"
+                  style={{ width: `${Math.min(club.total_xp || 10, 100)}%` }}
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {statCards.slice(1).map(({ label, value, icon: Icon, tone, bar }) => (
+                  <div
+                    key={label}
+                    className="rounded-[1.15rem] border border-white/10 bg-white/[0.055] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {label}
+                      </span>
+                      <Icon className={`h-5 w-5 ${tone}`} />
+                    </div>
+                    <div className="mt-3 text-2xl font-display font-black text-white">
+                      {value}
+                    </div>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-cyan-300"
+                        style={{ width: `${Math.min(bar, 100)}%` }}
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
+
+              <Button
+                className="mt-6 h-12 w-full justify-center gap-3 rounded-[1rem] bg-cyan-300 font-display font-black text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.35)] hover:bg-cyan-200"
+                onClick={() => router.push("/live-calls")}
+              >
+                Schedule daily ritual
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </motion.div>
 
             <motion.div
@@ -558,6 +660,97 @@ export default function ClubDetail({ slug }: Props) {
                 </div>
               )}
             </motion.div>
+          </div>
+
+          <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
+            <motion.section
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className="dashboard-card border-blue-300/20"
+            >
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <div className="eyebrow-badge border-blue-300/25 bg-blue-400/10 text-blue-200">
+                    <CalendarDays className="h-4 w-4 text-blue-300" />
+                    Live ritual
+                  </div>
+                  <h2 className="mt-4 text-2xl font-display font-black text-white">
+                    No live call scheduled yet
+                  </h2>
+                </div>
+                <Radio className="h-8 w-8 text-cyan-300" />
+              </div>
+              <p className="text-sm leading-6 text-slate-300">
+                Plan the first community gathering and turn passive members
+                into a daily return habit.
+              </p>
+              <div className="mt-5 rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span className="font-bold text-white">Next ritual in</span>
+                  <span className="text-cyan-200">--:--:--</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[18%] rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.5)]" />
+                </div>
+              </div>
+              <Button
+                className="mt-5 h-12 w-full justify-center gap-3 rounded-[1rem] bg-cyan-300 font-display font-black text-slate-950 hover:bg-cyan-200"
+                onClick={() => router.push("/live-calls")}
+              >
+                Schedule daily ritual
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </motion.section>
+
+            <motion.section
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22 }}
+              className="dashboard-card border-orange-300/20"
+            >
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <div className="eyebrow-badge border-orange-300/25 bg-orange-500/10 text-orange-200">
+                    <Users className="h-4 w-4 text-orange-300" />
+                    Member activation
+                  </div>
+                  <h2 className="mt-4 text-2xl font-display font-black text-white">
+                    Invite 5 members to unlock Club Pulse
+                  </h2>
+                </div>
+                <div className="rounded-2xl border border-orange-300/25 bg-orange-500/12 px-4 py-3 text-right">
+                  <div className="font-display text-2xl font-black text-orange-200">
+                    {Math.min(members.length, 5)} / 5
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                    Founding crew
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-[1.25rem] border border-orange-300/20 bg-orange-500/10 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                <div className="mb-3 flex items-center justify-between text-sm">
+                  <span className="text-slate-300">Founding members</span>
+                  <span className="font-bold text-orange-200">
+                    Active today {members.length > 0 ? 1 : 0}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-orange-300 to-cyan-300 shadow-[0_0_18px_rgba(249,115,22,0.45)]"
+                    style={{ width: `${Math.min(Math.max(members.length * 20, 12), 100)}%` }}
+                  />
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                className="mt-5 h-12 w-full justify-center gap-3 rounded-[1rem] border-orange-300/35 bg-orange-500/10 font-display font-black text-orange-100 hover:bg-orange-500/18"
+                onClick={() => router.push("/clubs")}
+              >
+                Invite members
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </motion.section>
           </div>
 
           <div className="mt-6 flex flex-col gap-4 rounded-[1.3rem] border border-cyan-300/18 bg-white/[0.045] px-5 py-4 text-sm text-slate-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] sm:flex-row sm:items-center sm:justify-between">
