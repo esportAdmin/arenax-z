@@ -7,6 +7,20 @@ Workspace: `C:\arena-forge-main`
 
 This file defines the production environment variables required to publish ArenaX safely.
 
+Planned public domain:
+
+```text
+rallyguild.gg
+```
+
+Domain status:
+
+```text
+planned, not purchased yet
+```
+
+Use `https://rallyguild.gg` only after the domain is purchased, connected in Vercel, and HTTPS-ready.
+
 Use it for:
 - preview deployments
 - production deployments
@@ -19,7 +33,7 @@ These values are exposed to the client and must be valid for the deployed enviro
 ```env
 NEXT_PUBLIC_APP_NAME=ArenaX
 NEXT_PUBLIC_APP_ENV=production
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://rallyguild.gg
 
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
@@ -55,7 +69,7 @@ Supabase usually stores provider secrets in its dashboard, but you still need th
 ArenaX callback route:
 
 ```text
-https://your-domain.com/auth/callback
+https://rallyguild.gg/auth/callback
 ```
 
 Preview callback route example:
@@ -118,7 +132,7 @@ STRIPE_WEBHOOK_SECRET=whsec_test_or_disabled
 
 ```env
 NEXT_PUBLIC_APP_ENV=production
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://rallyguild.gg
 NEXT_PUBLIC_SUPABASE_URL=https://prod-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
@@ -130,15 +144,40 @@ STRIPE_WEBHOOK_SECRET=whsec_live_...
 ## 7. Supabase Dashboard Checks
 
 In Supabase Auth:
-- `Site URL` must match the final domain
+- launch blocker: `Site URL` must be changed from `http://localhost:3000` to the final production domain
 - `Redirect URLs` must include:
-  - `https://your-domain.com/auth/callback`
+  - `https://rallyguild.gg/auth/callback`
+  - `https://www.rallyguild.gg/auth/callback`
   - preview callback if using preview OAuth
+
+Production Site URL:
+
+```text
+Supabase > Authentication > URL Configuration > Site URL
+```
+
+Set it to:
+
+```text
+https://rallyguild.gg
+```
+
+Do this only once the Vercel production domain is connected and ready.
+
+In Discord and Twitch developer consoles:
+- keep the provider redirect URI set to the Supabase callback URL
+- do not replace it with the app domain while Supabase remains the OAuth broker
+
+Provider callback URL:
+
+```text
+https://bbxvpirknqzvjhezrqpo.supabase.co/auth/v1/callback
+```
 
 In Providers:
 - Discord enabled
 - Twitch enabled
-- Google optional only if you still want it
+- Google disabled unless it is intentionally part of the production login strategy
 - email fallback only if intentionally retained
 
 ## 8. Final Validation Before Deploy

@@ -7,6 +7,20 @@ Workspace: `C:\arena-forge-main`
 
 This checklist is the release path for publishing ArenaX as a production-ready retention platform for structured gaming communities.
 
+Planned public domain:
+
+```text
+rallyguild.gg
+```
+
+Domain status:
+
+```text
+planned, not purchased yet
+```
+
+Do not switch production settings to `rallyguild.gg` until the domain is purchased, connected in Vercel, and HTTPS-ready.
+
 Use it in this order:
 - release candidate freeze
 - production environment setup
@@ -71,11 +85,27 @@ In Supabase, verify:
 - Auth providers are enabled only for the intended flows
 - `Discord` is enabled
 - `Twitch` is enabled
+- `Google` is disabled unless we intentionally keep it as a public production login path
 - email fallback is kept secondary or internal-only if that is still the product decision
-- `Site URL` matches the real production domain
+- launch blocker: `Site URL` must be changed from `http://localhost:3000` to the real production domain before public launch
 - allowed redirect URLs include:
-  - `https://your-domain.com/auth/callback`
+  - `https://rallyguild.gg/auth/callback` after the domain is purchased and connected
+  - `https://www.rallyguild.gg/auth/callback` after the domain is purchased and connected
   - preview URL callback if you want preview OAuth testing
+
+Production domain reminder:
+
+```text
+Supabase > Authentication > URL Configuration > Site URL
+```
+
+Set it to:
+
+```text
+https://rallyguild.gg
+```
+
+Do this after the final domain is connected in Vercel and before the production OAuth smoke test.
 
 Database checks:
 - `profiles` table exists and supports the current onboarding/auth flow
@@ -93,14 +123,14 @@ ArenaX is community-first, so this is a launch-critical area.
 
 Discord:
 - production client ID/secret configured in Supabase
-- redirect URL matches Supabase callback configuration
+- Discord Developer Portal redirect URL remains the Supabase callback URL: `https://bbxvpirknqzvjhezrqpo.supabase.co/auth/v1/callback`
 - login flow returns to `/auth/callback`
 - final redirect lands on the intended target page
 
 Twitch:
 - production client ID/secret configured in Supabase
 - email scope is available and accepted
-- redirect URL matches Supabase callback configuration
+- Twitch Developer Console redirect URL remains the Supabase callback URL: `https://bbxvpirknqzvjhezrqpo.supabase.co/auth/v1/callback`
 - login flow returns to `/auth/callback`
 
 Must test both providers in:

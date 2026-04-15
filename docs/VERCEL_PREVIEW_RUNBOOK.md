@@ -7,6 +7,14 @@ Workspace: `C:\arena-forge-main`
 
 This runbook is the safest path to get ArenaX online in a private preview before public launch.
 
+Planned public domain after purchase:
+
+```text
+rallyguild.gg
+```
+
+Keep the preview domain active until `rallyguild.gg` is purchased, connected in Vercel, and validated with Discord/Twitch OAuth.
+
 It assumes:
 - Next.js deployment
 - Vercel hosting
@@ -58,19 +66,27 @@ If you use multiple preview domains, prefer a stable preview alias for OAuth tes
 
 In the Discord developer portal:
 
-- add the preview redirect URI:
-  - `https://your-preview-domain.vercel.app/auth/callback`
+- keep the redirect URI pointed at the Supabase OAuth callback:
+  - `https://bbxvpirknqzvjhezrqpo.supabase.co/auth/v1/callback`
 
-Make sure the same provider is enabled in Supabase.
+Make sure the same provider is enabled in Supabase, and make sure the preview callback is allowed in Supabase Redirect URLs:
+
+```text
+https://your-preview-domain.vercel.app/auth/callback
+```
 
 ## 5. Configure Twitch
 
 In the Twitch developer console:
 
-- add the preview redirect URI:
-  - `https://your-preview-domain.vercel.app/auth/callback`
+- keep the redirect URI pointed at the Supabase OAuth callback:
+  - `https://bbxvpirknqzvjhezrqpo.supabase.co/auth/v1/callback`
 
-Make sure the app is aligned with the Supabase provider configuration.
+Make sure the app is aligned with the Supabase provider configuration, and make sure the preview callback is allowed in Supabase Redirect URLs:
+
+```text
+https://your-preview-domain.vercel.app/auth/callback
+```
 
 ## 6. Deploy Preview
 
@@ -107,17 +123,55 @@ Preview is acceptable only if:
 - `/api/health` reports `app: "healthy"` and `database: "healthy"`
 - `/api/health` can report `workers: "not_configured"` or `workers: "degraded"` during preview if background jobs are not deployed yet
 
-## 8. Promote to Production
+## 8. Allow QA Agent Access Through Preview Protection
+
+If Vercel Deployment Protection is enabled, normal browsers and automated QA will receive `401` or land on `vercel.com/login`.
+
+That is expected. The app can still be healthy behind the protection.
+
+Use one of these two options before running automated preview QA:
+
+### Option A: Temporary Public QA Window
+
+1. open the Vercel project
+2. go to `Settings`
+3. open `Deployment Protection`
+4. temporarily disable protection for preview deployments
+5. run the QA agent
+6. re-enable protection immediately after the report is clean
+
+This is the fastest option for a short internal validation session.
+
+### Option B: Protection Bypass for Automation
+
+1. open the Vercel project
+2. go to `Settings`
+3. open `Deployment Protection`
+4. create or copy the protection bypass secret for automation
+5. run:
+
+```powershell
+$env:QA_BASE_URL="https://your-preview-domain.vercel.app"
+$env:QA_VERCEL_PROTECTION_BYPASS="paste-the-vercel-bypass-secret-here"
+$env:QA_OUTPUT_DIR="artifacts\qa-preview-protected"
+npm run qa:agent
+```
+
+The QA agent already supports Vercel's bypass flow by setting the bypass cookie before checking routes.
+
+Never commit or paste the bypass secret into docs, GitHub, screenshots, or chat history.
+
+## 9. Promote to Production
 
 Only after preview passes:
 
 1. add production env variables
-2. update `NEXT_PUBLIC_SITE_URL`
-3. add production OAuth redirect URIs in Discord and Twitch
-4. update Supabase `Site URL`
+2. update `NEXT_PUBLIC_SITE_URL` to `https://rallyguild.gg` after purchase and Vercel domain validation
+3. confirm Discord and Twitch still use the Supabase OAuth callback URL
+4. update Supabase `Site URL` to `https://rallyguild.gg`
 5. deploy production
 
-## 9. Production Smoke Test
+## 10. Production Smoke Test
 
 Immediately after prod deploy:
 
@@ -146,7 +200,7 @@ Expected `/api/health` shape during preview:
 
 If `workers` is `degraded`, the web app can still be preview-ready. Treat it as an operations task before public launch, not as a broken web deployment.
 
-## 10. Rollback Rule
+## 11. Rollback Rule
 
 Rollback immediately if any of these happens:
 
@@ -156,7 +210,7 @@ Rollback immediately if any of these happens:
 - broken middleware/auth redirects
 - broken subscription flow if billing is part of launch
 
-## 11. Best Next Move
+## 12. Best Next Move
 
 After the preview is stable:
 
