@@ -3,12 +3,16 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   Clock3,
+  Gift,
+  Lock,
   LockKeyhole,
   Radio,
   Shield,
   ShieldCheck,
   Swords,
+  TrendingUp,
   Trophy,
   Zap,
 } from "lucide-react";
@@ -93,22 +97,111 @@ const fallbackFronts: LiveWar[] = [
 ];
 
 const feedItems = [
-  ["2 min ago", "Team Alpha rallied 12 members", "cyan"],
-  ["4 min ago", "North Realm pressure increased", "orange"],
-  ["7 min ago", "Club Omega defended Central Zone", "violet"],
-  ["10 min ago", "New reward tier unlocked", "emerald"],
+  ["2 mins ago", "Team Alpha rallied 12 members", "cyan"],
+  ["4 mins ago", "North Realm pressure increased", "orange"],
+  ["7 mins ago", "Club Omega defended Central Zone", "violet"],
+  ["10 mins ago", "New reward tier unlocked", "emerald"],
 ] as const;
 
 const objectives = [
-  ["Capture first territory", "65%", "In progress", "View map", "cyan"],
-  ["Defend current zone", "90%", "Almost there", "Reinforce", "orange"],
-  ["Rally 5 members", "3/5", "Active", "Invite", "cyan"],
-  ["Complete daily live call", "100%", "Completed", "Claim reward", "emerald"],
+  ["Capture First Territory", "65%", "Reward:", "Rare Emblem", "In Progress", "View Map", "cyan"],
+  ["Defend Current Zone", "90%", "Reward:", "+500 Prestige", "Almost There", "Reinforce", "orange"],
+  ["Rally 5 Members", "3/5", "Reward:", "Squad Bonus", "Active", "Invite", "cyan"],
+  ["Complete Daily Live Call", "100%", "Reward:", "Voice Boost Badge", "Completed", "Claim Reward", "emerald"],
 ] as const;
 
 function pressureFor(war: LiveWar, index: number) {
   const raw = war.capture_progress ?? (war.total_xp ? war.total_xp / 28 : 0);
   return Math.min(100, Math.max(index === 0 ? 58 : 34, Math.round(raw)));
+}
+
+function HeroBg() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-[#040e1c] via-[#071828] to-[#06111f]" />
+      <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(34,211,238,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.4)_1px,transparent_1px)] [background-size:44px_44px]" />
+      <div className="absolute right-0 top-0 h-[28rem] w-[38rem] translate-x-1/4 -translate-y-1/4 rounded-full bg-orange-500/20 blur-[120px]" />
+      <div className="absolute right-10 top-8 h-[20rem] w-[28rem] rounded-full bg-cyan-400/10 blur-[90px]" />
+
+      <svg
+        viewBox="0 0 900 320"
+        className="absolute right-0 top-0 hidden h-full w-[55%] opacity-80 lg:block"
+        preserveAspectRatio="xMaxYMid meet"
+      >
+        <defs>
+          <filter id="heroGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <linearGradient id="heroOrange" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#fb923c" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="heroCyan" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#0e7490" stopOpacity="0.3" />
+          </linearGradient>
+        </defs>
+
+        <rect x="120" y="20" width="760" height="280" rx="20" fill="none" stroke="#22d3ee" strokeWidth="1.5" strokeOpacity="0.35" />
+        {Array.from({ length: 8 }).map((_, row) =>
+          Array.from({ length: 14 }).map((__, column) => {
+            const x = column * 58 + (row % 2 ? 29 : 0) + 100;
+            const y = row * 36 + 30;
+            return (
+              <polygon
+                key={`${row}-${column}`}
+                points={`${x},${y} ${x + 22},${y + 12} ${x + 22},${y + 36} ${x},${y + 48} ${x - 22},${y + 36} ${x - 22},${y + 12}`}
+                fill="none"
+                stroke="#22d3ee"
+                strokeWidth="0.8"
+                strokeOpacity="0.25"
+              />
+            );
+          }),
+        )}
+        <path
+          d="M460 60 L580 30 L720 80 L740 180 L620 230 L470 200 Z"
+          fill="url(#heroOrange)"
+          stroke="#fb923c"
+          strokeWidth="3"
+          filter="url(#heroGlow)"
+          opacity="0.7"
+        />
+        <path
+          d="M200 50 L320 20 L400 70 L380 150 L260 170 L180 120 Z"
+          fill="url(#heroCyan)"
+          stroke="#22d3ee"
+          strokeWidth="3"
+          filter="url(#heroGlow)"
+          opacity="0.65"
+        />
+        <path d="M380 110 C430 90 450 80 460 60" stroke="#fb923c" strokeWidth="2" strokeDasharray="8 6" fill="none" opacity="0.6" />
+        <path d="M380 110 C410 130 440 140 470 140" stroke="#22d3ee" strokeWidth="2" strokeDasharray="6 8" fill="none" opacity="0.5" />
+        {[
+          [290, 95, "#22d3ee"],
+          [560, 130, "#fb923c"],
+          [680, 160, "#fb923c"],
+          [400, 160, "#22d3ee"],
+        ].map(([x, y, color]) => (
+          <g key={`${x}-${y}`} filter="url(#heroGlow)">
+            <circle cx={x as number} cy={y as number} r="28" fill={color as string} opacity="0.12" />
+            <circle cx={x as number} cy={y as number} r="11" fill={color as string} opacity="0.85" />
+            <circle cx={x as number} cy={y as number} r="4.5" fill="#ffffff" opacity="0.9" />
+          </g>
+        ))}
+        <text x="230" y="80" fill="#a5f3fc" fontSize="22" fontWeight="900" letterSpacing="2" filter="url(#heroGlow)">NORTH REALM</text>
+        <text x="490" y="120" fill="#fed7aa" fontSize="20" fontWeight="900" letterSpacing="1" filter="url(#heroGlow)">CENTRAL ZONE</text>
+        <text x="600" y="210" fill="#ede9fe" fontSize="18" fontWeight="900" letterSpacing="1" filter="url(#heroGlow)">EAST REACH</text>
+      </svg>
+    </div>
+  );
 }
 
 function TacticalMap() {
@@ -252,7 +345,17 @@ function TacticalMap() {
   );
 }
 
-function ActiveWarCard({ war, pressure }: { war: LiveWar; pressure: number }) {
+function ActiveWarCard({
+  onOpenMap,
+  onRally,
+  pressure,
+  war,
+}: {
+  onOpenMap: () => void;
+  onRally: () => void;
+  pressure: number;
+  war: LiveWar;
+}) {
   return (
     <article className="relative overflow-hidden rounded-[2rem] border border-orange-300/30 bg-slate-950/78 p-5 shadow-[0_0_42px_rgba(249,115,22,0.12)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.2),transparent_36%)]" />
@@ -304,6 +407,22 @@ function ActiveWarCard({ war, pressure }: { war: LiveWar; pressure: number }) {
             03:45:12
           </div>
         </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Button
+            className="min-h-12 rounded-xl bg-cyan-300 text-sm font-black uppercase tracking-[0.14em] text-slate-950 hover:bg-cyan-200"
+            onClick={onRally}
+          >
+            Rally members
+          </Button>
+          <Button
+            variant="outline"
+            className="min-h-12 rounded-xl border-orange-300/35 bg-orange-500/10 text-sm font-black uppercase tracking-[0.14em] text-orange-100 hover:bg-orange-500/18"
+            onClick={onOpenMap}
+          >
+            Open command room
+          </Button>
+        </div>
       </div>
     </article>
   );
@@ -313,7 +432,8 @@ function CommandCenter() {
   return (
     <aside className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
       <div className="rounded-[1.6rem] border border-orange-300/25 bg-orange-500/10 p-5">
-        <div className="text-xs font-black uppercase tracking-[0.18em] text-orange-200/80">
+        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-orange-200/80">
+          <AlertTriangle className="h-4 w-4" />
           Critical pressure window
         </div>
         <div className="mt-3 font-display text-5xl font-black text-orange-200">
@@ -325,7 +445,8 @@ function CommandCenter() {
       </div>
 
       <div className="rounded-[1.6rem] border border-cyan-300/18 bg-white/[0.045] p-5">
-        <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+          <TrendingUp className="h-4 w-4 text-cyan-300" />
           Top contributors
         </div>
         <div className="mt-4 space-y-3">
@@ -359,7 +480,10 @@ function CommandCenter() {
 
       <div className="rounded-[1.6rem] border border-emerald-300/20 bg-emerald-400/10 p-5">
         <div className="flex items-center gap-3">
-          <LockKeyhole className="h-6 w-6 text-emerald-300" />
+          <div className="relative">
+            <Gift className="h-7 w-7 text-emerald-300" />
+            <Lock className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-slate-950 text-orange-200" />
+          </div>
           <div>
             <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-100/80">
               Reward loop locked
@@ -400,9 +524,9 @@ export default function MultiWarView() {
 
         <div className="container-arena relative z-10 space-y-6">
           <section className="relative overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-slate-950/72 p-6 shadow-[0_0_70px_rgba(34,211,238,0.08)] md:p-8">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(249,115,22,0.22),transparent_24%),radial-gradient(circle_at_40%_40%,rgba(34,211,238,0.16),transparent_34%)]" />
-            <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div>
+            <HeroBg />
+            <div className="relative z-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div className="lg:max-w-[52rem]">
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-[0.72rem] font-black uppercase tracking-[0.2em] text-cyan-100">
                   <Radio className="h-3.5 w-3.5" />
                   War room online
@@ -451,7 +575,12 @@ export default function MultiWarView() {
           ) : null}
 
           <section className="grid gap-5 xl:grid-cols-[0.78fr_1.55fr_0.8fr]">
-            <ActiveWarCard war={activeWar} pressure={activePressure} />
+            <ActiveWarCard
+              war={activeWar}
+              pressure={activePressure}
+              onOpenMap={() => router.push("/war-map")}
+              onRally={() => router.push("/clubs")}
+            />
             <TacticalMap />
             <CommandCenter />
           </section>
@@ -471,9 +600,25 @@ export default function MultiWarView() {
                 {feedItems.map(([time, label, tone]) => (
                   <div key={`${time}-${label}`} className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
                     <div className="flex min-w-0 items-center gap-3">
-                      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${
-                        tone === "cyan" ? "bg-cyan-300" : tone === "orange" ? "bg-orange-300" : tone === "violet" ? "bg-violet-300" : "bg-emerald-300"
-                      }`} />
+                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
+                        tone === "cyan"
+                          ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-200"
+                          : tone === "orange"
+                            ? "border-orange-300/20 bg-orange-500/10 text-orange-200"
+                            : tone === "violet"
+                              ? "border-violet-300/20 bg-violet-500/10 text-violet-200"
+                              : "border-emerald-300/20 bg-emerald-400/10 text-emerald-200"
+                      }`}>
+                        {tone === "cyan" ? (
+                          <Shield className="h-4 w-4" />
+                        ) : tone === "orange" ? (
+                          <TrendingUp className="h-4 w-4" />
+                        ) : tone === "violet" ? (
+                          <Swords className="h-4 w-4" />
+                        ) : (
+                          <Gift className="h-4 w-4" />
+                        )}
+                      </span>
                       <span className="truncate text-sm font-bold text-slate-200">{label}</span>
                     </div>
                     <span className="shrink-0 text-xs text-slate-500">{time}</span>
@@ -487,7 +632,7 @@ export default function MultiWarView() {
                 War objectives
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {objectives.map(([title, progress, state, cta, tone]) => (
+                {objectives.map(([title, progress, rewardLabel, rewardValue, state, cta, tone]) => (
                   <article key={title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                     <div className="min-h-[44px] text-sm font-black text-white">{title}</div>
                     <div className="mt-3 flex items-center justify-between text-xs font-bold">
@@ -495,6 +640,11 @@ export default function MultiWarView() {
                         {state}
                       </span>
                       <span className="text-slate-400">{progress}</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                      <LockKeyhole className="h-3.5 w-3.5 text-cyan-300/80" />
+                      <span>{rewardLabel}</span>
+                      <span className="font-black text-white">{rewardValue}</span>
                     </div>
                     <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
                       <div
@@ -505,7 +655,7 @@ export default function MultiWarView() {
                     <Button
                       variant="outline"
                       className="mt-4 min-h-10 w-full rounded-xl border-white/10 bg-white/[0.04] text-xs font-black uppercase tracking-[0.12em] text-slate-100 hover:bg-white/10"
-                      onClick={() => router.push(cta === "View map" ? "/war-map" : cta === "Invite" ? "/clubs" : "/live-calls")}
+                      onClick={() => router.push(cta === "View Map" ? "/war-map" : cta === "Invite" ? "/clubs" : "/live-calls")}
                     >
                       {cta}
                     </Button>
