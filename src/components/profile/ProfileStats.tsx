@@ -19,7 +19,7 @@ interface ProfileStatsProps {
 export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
   const stats = [
     {
-      label: "Arena Score",
+      label: "Prestige Score",
       value: profile.arena_score.toLocaleString("en-US"),
       icon: Trophy,
       color: "text-primary",
@@ -27,7 +27,7 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       borderColor: "border-primary/30",
     },
     {
-      label: "ARENA Balance",
+      label: "Arena Credits",
       value: profile.arena_balance.toLocaleString("en-US"),
       icon: Coins,
       color: "text-accent",
@@ -51,7 +51,7 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       borderColor: "border-green-400/30",
     },
     {
-      label: "Accuracy",
+      label: "Read Quality",
       value: `${profile.signal_accuracy?.toFixed(1) || 0}%`,
       icon: BarChart3,
       color: "text-cyan-400",
@@ -92,29 +92,39 @@ export function ProfileStats({ profile, totalBadges }: ProfileStatsProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="glass-card p-6"
+      className="section-shell p-5 sm:p-6"
     >
-      <h2 className="mb-6 flex items-center gap-2 text-lg font-display font-bold">
-        <BarChart3 className="h-5 w-5 text-primary" />
-        Detailed Stats
-      </h2>
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="eyebrow-badge">Profile telemetry</div>
+          <h2 className="mt-3 flex items-center gap-2 text-xl font-display font-black text-white">
+            <BarChart3 className="h-5 w-5 text-primary" />
+            Status cockpit
+          </h2>
+        </div>
+        <p className="max-w-md text-sm leading-6 text-slate-400">
+          The numbers that make a player feel visible, progressing, and worth
+          returning to.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 + index * 0.05 }}
-            className={`rounded-xl border p-4 transition-transform hover:scale-105 ${stat.bgColor} ${stat.borderColor}`}
+            className={`relative min-h-[118px] overflow-hidden rounded-2xl border p-4 transition-transform hover:scale-[1.02] ${stat.bgColor} ${stat.borderColor}`}
           >
-            <div className="mb-2 flex items-center gap-2">
+            <div className="pointer-events-none absolute right-[-2rem] top-[-2rem] h-20 w-20 rounded-full bg-white/10 blur-2xl" />
+            <div className="relative mb-3 flex items-center gap-2">
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              <span className="text-xs text-muted-foreground">
+              <span className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 {stat.label}
               </span>
             </div>
-            <div className={`text-xl font-display font-bold ${stat.color}`}>
+            <div className={`relative truncate text-2xl font-display font-black ${stat.color}`}>
               {stat.value}
             </div>
           </motion.div>

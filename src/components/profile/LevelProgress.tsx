@@ -95,20 +95,23 @@ export function LevelProgress({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="glass-card p-6"
+      className="section-shell overflow-hidden p-5 sm:p-6"
     >
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-lg font-display font-bold">
-          <Zap className="h-5 w-5 text-primary" />
-          Progress
-        </h2>
-        <div className={`flex items-center gap-1 text-sm ${tier.color}`}>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="eyebrow-badge">Next unlock path</div>
+          <h2 className="mt-3 flex items-center gap-2 text-xl font-display font-black text-white">
+            <Zap className="h-5 w-5 text-primary" />
+            Progress
+          </h2>
+        </div>
+        <div className={`flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-sm font-bold ${tier.color}`}>
           <TierIcon className="h-4 w-4" />
-          <span className="font-medium">{tier.name}</span>
+          <span>{tier.name}</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -133,8 +136,8 @@ export function LevelProgress({
           />
         </motion.div>
 
-        <div className="flex-1 space-y-3">
-          <div className="flex items-center justify-between text-sm">
+        <div className="min-w-0 flex-1 space-y-3">
+          <div className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
             <span className="text-muted-foreground">
               Level {currentLevel} to {currentLevel + 1}
             </span>
@@ -158,7 +161,7 @@ export function LevelProgress({
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>{Math.round(progressPercent)}% complete</span>
             <span>
               {(xpForNextLevel - currentXp).toLocaleString("en-US")} XP remaining
@@ -168,7 +171,7 @@ export function LevelProgress({
       </div>
 
       <div className="mt-6 border-t border-border/50 pt-4">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Gift className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Rewards</span>
@@ -182,7 +185,7 @@ export function LevelProgress({
           <Link
             href="/rewards"
             prefetch={false}
-            className="flex items-center gap-1 text-xs text-primary hover:underline"
+            className="inline-flex min-h-9 items-center justify-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 text-xs font-bold uppercase tracking-[0.12em] text-primary hover:bg-primary/15"
           >
             View all
             <ChevronRight className="h-3 w-3" />
@@ -199,7 +202,7 @@ export function LevelProgress({
             ))}
           </div>
         ) : upcomingRewards.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {upcomingRewards.map((reward, index) => {
               const isUnlocked = currentLevel >= reward.level_required;
               const canClaim =
@@ -215,7 +218,7 @@ export function LevelProgress({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + index * 0.1 }}
                   className={cn(
-                    "relative rounded-lg border p-3 text-center transition-all",
+                    "relative min-h-[104px] rounded-2xl border p-3 text-center transition-all",
                     rarity.bg,
                     rarity.border,
                     canClaim &&

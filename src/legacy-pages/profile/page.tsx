@@ -102,7 +102,7 @@ export default function Profile() {
   const dailyReset = getNextUtcMidnight();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-hidden bg-background">
       <LevelUpCelebration
         isVisible={showCelebration}
         newLevel={celebrationLevel}
@@ -110,7 +110,13 @@ export default function Profile() {
       />
       <Navbar />
 
-      <main className="pb-12 pt-24">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[8%] top-[10%] h-[28rem] w-[28rem] rounded-full bg-cyan-400/10 blur-[9rem]" />
+        <div className="absolute right-[4%] top-[18%] h-[30rem] w-[30rem] rounded-full bg-orange-500/10 blur-[10rem]" />
+        <div className="absolute bottom-[4%] left-[28%] h-[24rem] w-[24rem] rounded-full bg-fuchsia-500/8 blur-[9rem]" />
+      </div>
+
+      <main className="relative z-10 pb-12 pt-24">
         <div className="container-arena space-y-8">
           <motion.section
             initial={{ opacity: 0, y: -20 }}
@@ -193,20 +199,26 @@ export default function Profile() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                <Button asChild size="lg" className="w-full min-w-0 sm:min-w-[190px] sm:w-auto">
-                <Link href="/live-calls" prefetch={false}>
-                    Make today&apos;s live calls
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
                   <Button
                     asChild
-                  variant="outline"
-                  size="lg"
-                  className="w-full min-w-0 sm:min-w-[190px] sm:w-auto"
-                >
-                  <Link href="/rewards" prefetch={false}>Claim progression rewards</Link>
-                </Button>
+                    size="lg"
+                    className="min-h-12 w-full min-w-0 rounded-full px-5 text-center text-sm font-black uppercase tracking-[0.12em] sm:min-w-[220px] sm:w-auto"
+                  >
+                    <Link href="/live-calls" prefetch={false}>
+                      Make today&apos;s live calls
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="min-h-12 w-full min-w-0 rounded-full px-5 text-center text-sm font-black uppercase tracking-[0.12em] sm:min-w-[240px] sm:w-auto"
+                  >
+                    <Link href="/rewards" prefetch={false}>
+                      Claim progression rewards
+                    </Link>
+                  </Button>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -252,9 +264,9 @@ export default function Profile() {
                     <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
                       Read quality
                     </div>
-                  <div className="mt-2 text-lg font-bold text-white">
-                    {(profile.prediction_accuracy ?? 0).toFixed(1)}% hit rate
-                  </div>
+                    <div className="mt-2 text-lg font-bold text-white">
+                      {(profile.prediction_accuracy ?? 0).toFixed(1)}% read quality
+                    </div>
                   </div>
                 </div>
               </div>
@@ -335,7 +347,10 @@ export default function Profile() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <Button asChild className="h-auto justify-between py-4">
+                  <Button
+                    asChild
+                    className="min-h-12 justify-between rounded-2xl px-4 py-4 text-left"
+                  >
                     <Link href="/war-map" prefetch={false}>
                       Open war command
                       <ArrowRight className="h-4 w-4" />
@@ -344,7 +359,7 @@ export default function Profile() {
                   <Button
                     asChild
                     variant="outline"
-                    className="h-auto justify-between py-4"
+                    className="min-h-12 justify-between rounded-2xl px-4 py-4 text-left"
                   >
                     <Link href="/leaderboard" prefetch={false}>
                       Check prestige ladder
