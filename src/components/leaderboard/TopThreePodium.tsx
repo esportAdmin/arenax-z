@@ -45,7 +45,7 @@ export default function TopThreePodium({ topThree }: TopThreePodiumProps) {
 
     return (
       <div
-        className={`flex ${order === 2 ? "order-1" : order === 1 ? "order-2" : "order-3"} w-full max-w-full sm:max-w-[290px] flex-col justify-end`}
+        className={`flex ${order === 2 ? "order-1" : order === 1 ? "order-2" : "order-3"} w-full max-w-full sm:max-w-[310px] flex-col justify-end`}
       >
         <div
           className={`surface-panel hero-sheen bg-gradient-to-br ${tone} ${height} flex flex-col justify-between p-4 sm:p-5`}
@@ -65,10 +65,10 @@ export default function TopThreePodium({ topThree }: TopThreePodiumProps) {
           </div>
 
           <div>
-            <div className="text-xl font-display font-bold text-white sm:text-2xl">
+            <div className="truncate text-xl font-display font-bold text-white sm:text-2xl">
               {player.username}
             </div>
-            <div className="mt-1 text-sm text-slate-300">{player.club}</div>
+            <div className="mt-1 truncate text-sm text-slate-300">{player.club}</div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
