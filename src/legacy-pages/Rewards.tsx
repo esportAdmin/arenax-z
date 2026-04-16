@@ -139,10 +139,16 @@ export default function Rewards() {
   const nextVaultDrop = getNextWeeklyReset(5, 20);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-hidden bg-background">
       <Navbar />
 
-      <main className="pb-12 pt-24">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[7%] top-[8%] h-[30rem] w-[30rem] rounded-full bg-amber-400/10 blur-[10rem]" />
+        <div className="absolute right-[3%] top-[18%] h-[32rem] w-[32rem] rounded-full bg-cyan-400/10 blur-[10rem]" />
+        <div className="absolute bottom-[5%] left-[28%] h-[24rem] w-[24rem] rounded-full bg-orange-500/10 blur-[9rem]" />
+      </div>
+
+      <main className="relative z-10 pb-12 pt-24">
         <div className="container-arena space-y-8">
           <section className="command-frame hero-sheen relative overflow-hidden px-6 py-8 lg:px-10 lg:py-10">
             <div className="subtle-noise absolute inset-0 opacity-50" />
@@ -180,7 +186,7 @@ export default function Rewards() {
                   <div className="surface-panel border-emerald-400/20 bg-emerald-400/10">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-emerald-200/70">
                       <Coins className="h-4 w-4" />
-                      ARENA balance
+                      Arena credits
                     </div>
                     <div className="mt-3 text-3xl font-black text-white">
                       {profile ? profile.arena_balance.toLocaleString("en-US") : "--"}
@@ -212,7 +218,7 @@ export default function Rewards() {
                   <Button
                     asChild
                     size="lg"
-                    className="w-full min-w-0 sm:min-w-[190px] sm:w-auto"
+                    className="min-h-12 w-full min-w-0 rounded-full px-5 text-center text-sm font-black uppercase tracking-[0.12em] sm:min-w-[210px] sm:w-auto"
                   >
                     <Link href="/profile" prefetch={false}>
                       Return to profile
@@ -224,7 +230,7 @@ export default function Rewards() {
                     asChild
                     variant="outline"
                     size="lg"
-                    className="w-full min-w-0 sm:min-w-[190px] sm:w-auto"
+                    className="min-h-12 w-full min-w-0 rounded-full px-5 text-center text-sm font-black uppercase tracking-[0.12em] sm:min-w-[190px] sm:w-auto"
                   >
                     <Link href="/live-calls" prefetch={false}>Open live calls</Link>
                   </Button>
@@ -270,7 +276,7 @@ export default function Rewards() {
                       Browsing the store is good. Seeing your own next reward is
                       better.
                     </p>
-                    <Button asChild className="mt-4 w-full">
+                    <Button asChild className="mt-4 min-h-12 w-full rounded-full">
                       <Link href="/login" prefetch={false}>Sign in</Link>
                     </Button>
                   </div>
@@ -320,6 +326,37 @@ export default function Rewards() {
             />
           </section>
 
+          <section className="section-shell">
+            <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10">
+                  <ShieldCheck className="h-5 w-5 text-cyan-200" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-200">
+                    Trust strip
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">
+                    Arena credits and reward unlocks are virtual engagement
+                    units only. No cash value. No financial return.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {["Community-first", "No wagering", "Discord/Twitch ready"].map(
+                  (label) => (
+                    <span
+                      key={label}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-300"
+                    >
+                      {label}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          </section>
+
           {profile ? (
             <section className="section-shell space-y-5">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -347,25 +384,30 @@ export default function Rewards() {
                   Premium redemption catalog
                 </h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                  Real rewards create perceived value. Keep the catalog visible,
-                  fresh, and obviously attainable.
+                  Premium perks create perceived value. Keep the catalog visible,
+                  fresh, and obviously attainable without implying financial
+                  return.
                 </p>
               </div>
 
-              <Button variant="outline" onClick={fetchPrizes}>
+              <Button
+                variant="outline"
+                onClick={fetchPrizes}
+                className="min-h-11 rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]"
+              >
                 Refresh catalog
               </Button>
             </div>
 
             {loading ? (
-              <div className="glass-card flex items-center justify-center gap-3 p-6">
+              <div className="section-shell flex items-center justify-center gap-3 p-6">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 <span className="text-sm text-muted-foreground">
                   Loading rewards...
                 </span>
               </div>
             ) : activePrizes.length === 0 ? (
-              <div className="glass-card p-6 text-center">
+              <div className="section-shell p-6 text-center">
                 <Gift className="mx-auto mb-3 h-10 w-10 opacity-50" />
                 <div className="font-medium text-white">No rewards available</div>
                 <div className="mt-1 text-sm text-muted-foreground">
@@ -381,7 +423,7 @@ export default function Rewards() {
                     <div
                       key={prize.id}
                       className={cn(
-                        "surface-panel overflow-hidden border-white/10 p-4 transition-transform duration-200 hover:-translate-y-1",
+                        "surface-panel hero-sheen overflow-hidden border-white/10 p-4 transition-transform duration-200 hover:-translate-y-1",
                         !inStock && "opacity-70",
                       )}
                     >
@@ -399,7 +441,7 @@ export default function Rewards() {
 
                         <div className="shrink-0 text-right">
                           <div className="text-sm font-black text-cyan-300">
-                            {prize.price_arena.toLocaleString("en-US")} ARENA
+                            {prize.price_arena.toLocaleString("en-US")} credits
                           </div>
                           <div className="text-[11px] text-slate-500">
                             Stock: {(prize.stock ?? 0).toLocaleString("en-US")}
@@ -419,13 +461,13 @@ export default function Rewards() {
                         </div>
                       )}
 
-                      <div className="mt-4 flex items-center justify-between gap-3">
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="metal-chip">
                           {inStock ? "Ready to redeem" : "Currently unavailable"}
                         </div>
 
                         <Button
-                          className="min-w-[132px]"
+                          className="min-h-11 w-full min-w-[132px] rounded-full px-5 text-sm font-black uppercase tracking-[0.12em] sm:w-auto"
                           variant={inStock ? "default" : "outline"}
                           disabled={!inStock}
                           onClick={() => {
