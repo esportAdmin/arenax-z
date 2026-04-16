@@ -132,8 +132,8 @@ export const useLiveCalls = () => {
     (liveCall: LiveCallRecord, previousStatus: string) => {
       if (previousStatus === "pending" && liveCall.status === "won") {
         toast({
-          title: "Live call won",
-          description: `${liveCall.selected_team} hit. +${liveCall.projectedImpact} ARENA added.`,
+          title: "Live call converted",
+          description: `${liveCall.selected_team} created momentum. +${liveCall.projectedImpact} ARENA added.`,
           duration: 8000,
         });
 
@@ -143,8 +143,8 @@ export const useLiveCalls = () => {
         liveCall.status === "lost"
       ) {
         toast({
-          title: "Live call missed",
-          description: `${liveCall.selected_team} did not convert. -${liveCall.activityCommitment} ARENA.`,
+          title: "Live call cooled down",
+          description: `${liveCall.selected_team} did not create enough pressure. ${liveCall.activityCommitment} ARENA used.`,
           variant: "destructive",
           duration: 6000,
         });
@@ -327,8 +327,8 @@ export const useLiveCalls = () => {
 
     if (activityCommitment < 50) {
       toast({
-        title: "Minimum activity not met",
-        description: "The minimum commitment is 50 ARENA.",
+        title: "Minimum pulse not met",
+        description: "Start with at least 50 ARENA to make the call visible.",
         variant: "destructive",
       });
       return false;
@@ -336,7 +336,7 @@ export const useLiveCalls = () => {
 
     if (activityCommitment > profile.arena_balance) {
       toast({
-        title: "Insufficient balance",
+        title: "Not enough ARENA",
         description: `You currently have ${profile.arena_balance} ARENA available.`,
         variant: "destructive",
       });
@@ -377,7 +377,7 @@ export const useLiveCalls = () => {
 
         toast({
           title: "Live call submitted",
-          description: `${activityCommitment} ARENA committed to ${selectedTeam}.`,
+          description: `${selectedTeam} is now visible on the command board.`,
         });
 
         return true;
@@ -421,7 +421,7 @@ export const useLiveCalls = () => {
 
       toast({
         title: "Live call submitted",
-        description: `${activityCommitment} ARENA committed to ${selectedTeam}.`,
+        description: `${selectedTeam} is now visible on the command board.`,
       });
 
       await fetchProfile();

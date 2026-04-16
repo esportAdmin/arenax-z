@@ -62,6 +62,12 @@ const recentCalls = [
   ["3 days ago", "Return call", "+120 XP", "Reached"],
 ] as const;
 
+const primaryCtaClass =
+  "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-5 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.11em] shadow-[0_0_24px_rgba(34,211,238,0.22)] sm:w-auto";
+
+const secondaryCtaClass =
+  "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-5 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.11em] sm:w-auto";
+
 function gameMatches(match: Match, gameFilter: GameFilter) {
   if (gameFilter === "all") return true;
   const map: Record<GameFilter, string[]> = {
@@ -110,7 +116,8 @@ function SignalBars({ score }: { score: number }) {
 
 function Waveform() {
   return (
-    <div className="relative h-20 overflow-hidden rounded-2xl border border-cyan-300/20 bg-cyan-300/5">
+    <div className="relative h-24 overflow-hidden rounded-[1.35rem] border border-cyan-300/24 bg-[linear-gradient(135deg,rgba(34,211,238,0.1),rgba(15,23,42,0.72))] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_35%,rgba(34,211,238,0.16),transparent_24%),radial-gradient(circle_at_82%_70%,rgba(249,115,22,0.14),transparent_24%)]" />
       <div className="absolute inset-x-0 top-1/2 h-px bg-cyan-200/15" />
       <div className="absolute inset-0 flex items-center justify-center gap-1 px-5">
         {Array.from({ length: 38 }).map((_, index) => (
@@ -143,7 +150,7 @@ function MetricTile({
     emerald: "border-emerald-300/30 bg-emerald-300/10 text-emerald-100",
   }[tone];
   return (
-    <div className={`rounded-2xl border p-4 ${toneClass}`}>
+    <div className={`min-h-[118px] rounded-[1.35rem] border p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ${toneClass}`}>
       <div className="flex items-center justify-between gap-3">
         <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] opacity-75">{label}</div>
         <Icon className="h-4 w-4 opacity-80" />
@@ -183,7 +190,7 @@ function CommandCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
-      className={`group relative overflow-hidden rounded-[24px] border p-4 transition-all duration-300 ${
+      className={`group relative overflow-hidden rounded-[1.65rem] border p-4 transition-all duration-300 sm:p-5 ${
         match.isLive ? "border-cyan-300/45 bg-cyan-300/[0.09] shadow-[0_0_34px_rgba(34,211,238,0.12)]" : "border-white/12 bg-white/[0.045] hover:border-cyan-300/35"
       }`}
     >
@@ -229,7 +236,7 @@ function CommandCard({
             size="sm"
             disabled={placing || match.isFinished}
             onClick={handleAction}
-            className="min-h-10 min-w-[150px] border border-orange-300/45 bg-orange-400/10 px-4 text-sm font-black uppercase tracking-[0.12em] text-orange-100 hover:bg-orange-300/20"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-orange-300/45 bg-orange-400/10 px-4 text-center text-[0.8rem] font-black uppercase leading-tight tracking-[0.1em] text-orange-100 hover:bg-orange-300/20 sm:w-auto sm:min-w-[160px]"
           >
             {match.isFinished ? "View results" : match.isLive ? "Make live call" : "Rally members"}
           </Button>
@@ -271,8 +278,10 @@ const LiveCalls = () => {
       <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(rgba(34,211,238,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.05)_1px,transparent_1px)] bg-[size:38px_38px] opacity-60" />
       <main className="relative mx-auto max-w-[1500px] space-y-7 px-4 pb-14 pt-24 sm:px-6 lg:px-8">
         <section className="grid gap-6 xl:grid-cols-[1.14fr_0.86fr]">
-          <div className="relative overflow-hidden rounded-[32px] border border-cyan-300/20 bg-slate-950/70 p-5 shadow-[0_0_55px_rgba(34,211,238,0.08)] sm:p-7 lg:p-9">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_24%,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_92%_80%,rgba(249,115,22,0.12),transparent_32%)]" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-cyan-300/22 bg-[linear-gradient(135deg,rgba(11,24,42,0.9),rgba(5,10,24,0.82)_52%,rgba(47,22,12,0.74))] p-5 shadow-[0_0_70px_rgba(34,211,238,0.1)] sm:p-7 lg:p-9">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_62%_24%,rgba(34,211,238,0.2),transparent_28%),radial-gradient(circle_at_92%_80%,rgba(249,115,22,0.18),transparent_32%)]" />
+            <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" />
+            <div className="absolute bottom-0 right-0 h-52 w-52 rounded-full bg-orange-400/10 blur-3xl" />
             <div className="relative grid gap-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-[0.72rem] font-black uppercase tracking-[0.2em] text-cyan-100">
@@ -286,14 +295,14 @@ const LiveCalls = () => {
                     Launch community calls, create visible momentum, and give members a reason to come back before the next reset.
                   </p>
                 </div>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button size="lg" disabled={challengeLoading} onClick={() => setShowChallengeModal(true)} className="min-h-12 w-full rounded-xl bg-cyan-300 px-6 text-sm font-black uppercase tracking-[0.14em] text-slate-950 shadow-[0_0_26px_rgba(34,211,238,0.35)] hover:bg-cyan-200 sm:w-auto">
+                <div className="grid gap-3 sm:grid-cols-3 xl:max-w-3xl">
+                  <Button size="lg" disabled={challengeLoading} onClick={() => setShowChallengeModal(true)} className={`${primaryCtaClass} bg-cyan-300 text-slate-950 hover:bg-cyan-200`}>
                     <Mic2 className="mr-2 h-4 w-4" /> Start live call
                   </Button>
-                  <Button size="lg" variant="outline" onClick={() => setShowChallengeModal(true)} className="min-h-12 w-full rounded-xl border-cyan-300/25 bg-cyan-300/5 px-6 text-sm font-black uppercase tracking-[0.14em] text-cyan-100 hover:bg-cyan-300/10 sm:w-auto">
+                  <Button size="lg" variant="outline" onClick={() => setShowChallengeModal(true)} className={`${secondaryCtaClass} border-cyan-300/25 bg-cyan-300/5 text-cyan-100 hover:bg-cyan-300/10`}>
                     <CalendarClock className="mr-2 h-4 w-4" /> Schedule ritual
                   </Button>
-                  <Button size="lg" variant="outline" onClick={scrollToBoard} className="min-h-12 w-full rounded-xl border-orange-300/35 bg-orange-400/10 px-6 text-sm font-black uppercase tracking-[0.14em] text-orange-100 hover:bg-orange-300/20 sm:w-auto">
+                  <Button size="lg" variant="outline" onClick={scrollToBoard} className={`${secondaryCtaClass} border-orange-300/35 bg-orange-400/10 text-orange-100 hover:bg-orange-300/20`}>
                     View command board <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -304,7 +313,7 @@ const LiveCalls = () => {
                   <MetricTile label="Reset timer" value="08:42" icon={TimerReset} tone="emerald" />
                 </div>
               </div>
-              <div className="rounded-[28px] border border-cyan-300/30 bg-black/30 p-4 shadow-[0_0_38px_rgba(34,211,238,0.1)]">
+              <div className="rounded-[1.85rem] border border-cyan-300/30 bg-black/32 p-4 shadow-[0_0_38px_rgba(34,211,238,0.1),inset_0_1px_0_rgba(255,255,255,0.08)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="text-[0.7rem] font-black uppercase tracking-[0.22em] text-cyan-200/70">Today&apos;s ritual card</div>
@@ -315,8 +324,8 @@ const LiveCalls = () => {
                 </div>
                 <div className="mt-5"><Waveform /></div>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <Button className="min-h-11 rounded-xl bg-cyan-300 text-sm font-black uppercase tracking-[0.14em] text-slate-950 hover:bg-cyan-200" onClick={() => setShowChallengeModal(true)}>Join live call</Button>
-                  <Button variant="outline" className="min-h-11 rounded-xl border-cyan-300/25 bg-cyan-300/5 text-sm font-black uppercase tracking-[0.14em] text-cyan-100 hover:bg-cyan-300/10" onClick={() => setShowChallengeModal(true)}>Create first call</Button>
+                  <Button className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-cyan-300 px-4 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.1em] text-slate-950 hover:bg-cyan-200" onClick={() => setShowChallengeModal(true)}>Join live call</Button>
+                  <Button variant="outline" className="inline-flex min-h-12 items-center justify-center rounded-2xl border-cyan-300/25 bg-cyan-300/5 px-4 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.1em] text-cyan-100 hover:bg-cyan-300/10" onClick={() => setShowChallengeModal(true)}>Create first call</Button>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   <CountdownPill label="Daily reset" target={getNextUtcMidnight()} />
@@ -327,7 +336,8 @@ const LiveCalls = () => {
           </div>
           <MomentumPanel hasCompletedToday={hasCompletedToday} />
         </section>
-        <section id="command-board" className="rounded-[32px] border border-cyan-300/18 bg-slate-950/72 p-5 shadow-[0_0_48px_rgba(34,211,238,0.06)] sm:p-6">
+        <section id="command-board" className="relative overflow-hidden rounded-[2rem] border border-cyan-300/18 bg-slate-950/72 p-5 shadow-[0_0_48px_rgba(34,211,238,0.06)] sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-300/55 to-transparent" />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-[0.7rem] font-black uppercase tracking-[0.2em] text-cyan-100"><Activity className="h-3.5 w-3.5" /> Command board</div>
@@ -335,13 +345,13 @@ const LiveCalls = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               {statusFilters.map((status) => (
-                <button key={status.id} onClick={() => setStatusFilter(status.id)} className={`rounded-full border px-3 py-2 text-xs font-black uppercase tracking-[0.14em] transition-all ${statusFilter === status.id ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:border-white/20 hover:text-white"}`}>{status.label}</button>
+                <button key={status.id} onClick={() => setStatusFilter(status.id)} className={`min-h-10 rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-all ${statusFilter === status.id ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:border-white/20 hover:text-white"}`}>{status.label}</button>
               ))}
             </div>
           </div>
           <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
             {gameFilters.map((game) => (
-              <button key={game.id} onClick={() => setGameFilter(game.id)} className={`shrink-0 rounded-full border px-3.5 py-2 text-xs font-black uppercase tracking-[0.14em] transition-all ${gameFilter === game.id ? "border-orange-300/45 bg-orange-300/14 text-orange-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:border-white/20 hover:text-white"}`}>{game.label}</button>
+              <button key={game.id} onClick={() => setGameFilter(game.id)} className={`min-h-10 shrink-0 rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-all ${gameFilter === game.id ? "border-orange-300/45 bg-orange-300/14 text-orange-100" : "border-white/10 bg-white/[0.04] text-slate-400 hover:border-white/20 hover:text-white"}`}>{game.label}</button>
             ))}
           </div>
           {loading ? <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.035] p-10 text-center text-slate-300">Loading the live-call slate...</div> : null}
@@ -369,7 +379,8 @@ const LiveCalls = () => {
 function MomentumPanel({ hasCompletedToday }: { hasCompletedToday: boolean }) {
   return (
     <aside className="grid gap-5 lg:grid-cols-2 xl:grid-cols-1">
-      <div className="rounded-[28px] border border-white/10 bg-slate-950/72 p-5 shadow-[0_0_44px_rgba(15,23,42,0.45)]">
+      <div className="relative overflow-hidden rounded-[1.85rem] border border-white/10 bg-slate-950/72 p-5 shadow-[0_0_44px_rgba(15,23,42,0.45),inset_0_1px_0_rgba(255,255,255,0.06)]">
+        <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/55 to-transparent" />
         <div className="flex items-center justify-between gap-4">
           <div><div className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-slate-500">Momentum sidebar</div><h2 className="mt-2 text-2xl font-black">Community pulse</h2></div>
           <Gauge className="h-8 w-8 text-cyan-300" />
@@ -388,7 +399,8 @@ function MomentumPanel({ hasCompletedToday }: { hasCompletedToday: boolean }) {
           <p className="mt-3 text-sm text-slate-300">Suggestion: rally members before reset to unlock Club Pulse.</p>
         </div>
       </div>
-      <div className="rounded-[28px] border border-orange-300/20 bg-slate-950/72 p-5">
+      <div className="relative overflow-hidden rounded-[1.85rem] border border-orange-300/20 bg-[linear-gradient(145deg,rgba(15,23,42,0.82),rgba(45,22,10,0.5))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-orange-400/15 blur-3xl" />
         <div className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-orange-200/70">Return loop panel</div>
         <h2 className="mt-2 text-2xl font-black">Bring them back tomorrow</h2>
         <div className="mt-5 space-y-3">
@@ -420,17 +432,17 @@ function RecentAndTrust({
   return (
     <>
       <section className="grid gap-6 xl:grid-cols-[0.42fr_0.58fr]">
-        <div className="rounded-[32px] border border-cyan-300/18 bg-slate-950/72 p-5">
+        <div className="rounded-[2rem] border border-cyan-300/18 bg-slate-950/72 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between gap-4"><div><div className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-cyan-200/70">Hero call</div><h2 className="mt-2 text-2xl font-black">User signal</h2></div><ShieldCheck className="h-7 w-7 text-cyan-300" /></div>
           <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-300/10 font-black text-cyan-100">{userEmail?.slice(0, 1).toUpperCase() || "C"}</div><div className="min-w-0"><div className="truncate font-black text-white">{userEmail || "Commander"}</div><div className="text-xs text-slate-500">Activity synced</div></div></div>
               <CheckCircle2 className="h-5 w-5 text-emerald-300" />
             </div>
-            <Button className="mt-4 min-h-10 w-full rounded-xl bg-cyan-300 text-sm font-black uppercase tracking-[0.14em] text-slate-950 hover:bg-cyan-200" onClick={onOpenModal}>Call results</Button>
+            <Button className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-cyan-300 px-4 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.1em] text-slate-950 hover:bg-cyan-200" onClick={onOpenModal}>Call results</Button>
           </div>
         </div>
-        <div className="rounded-[32px] border border-white/10 bg-slate-950/72 p-5">
+        <div className="rounded-[2rem] border border-white/10 bg-slate-950/72 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <div className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-slate-500">Recent live calls</div>
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {recentCalls.map(([date, label, value, state]) => (
@@ -444,10 +456,10 @@ function RecentAndTrust({
         </div>
       </section>
       {featuredMatch ? (
-        <section className="rounded-[32px] border border-orange-300/20 bg-slate-950/72 p-5 sm:p-6">
+        <section className="rounded-[2rem] border border-orange-300/20 bg-[linear-gradient(135deg,rgba(15,23,42,0.82),rgba(52,25,11,0.54))] p-5 shadow-[0_0_36px_rgba(249,115,22,0.08)] sm:p-6">
           <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
             <div><div className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-orange-200/70">Next action</div><h2 className="mt-2 text-2xl font-black sm:text-3xl">Rally around {dominantTeam(featuredMatch).name}</h2><p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">Signal is visible, attention is warm, and the timer creates a reason to act now.</p></div>
-            <Button className="min-h-11 w-full rounded-xl border border-orange-300/35 bg-orange-400/10 px-5 text-sm font-black uppercase tracking-[0.14em] text-orange-100 hover:bg-orange-300/20 lg:w-auto" variant="outline" onClick={onScrollToBoard}>Open command board</Button>
+            <Button className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl border border-orange-300/35 bg-orange-400/10 px-5 text-center text-[0.82rem] font-black uppercase leading-tight tracking-[0.1em] text-orange-100 hover:bg-orange-300/20 lg:w-auto" variant="outline" onClick={onScrollToBoard}>Open command board</Button>
           </div>
         </section>
       ) : null}
