@@ -67,6 +67,40 @@ const FALLBACK_MATCHES: Match[] = [
   },
 ];
 
+function looksLikeAssetUrl(value: string) {
+  return (
+    /^https?:\/\//i.test(value) ||
+    /^\/\//.test(value) ||
+    /^data:image\//i.test(value) ||
+    /\.(png|jpe?g|webp|gif|svg)(\?|#|$)/i.test(value)
+  );
+}
+
+function cleanDisplayText(value: unknown, fallback: string) {
+  const text = typeof value === "string" ? value.trim() : "";
+
+  if (!text || looksLikeAssetUrl(text)) {
+    return fallback;
+  }
+
+  return text.length > 48 ? `${text.slice(0, 45).trim()}...` : text;
+}
+
+function cleanLogo(value: unknown, fallbackName: string) {
+  const logo = typeof value === "string" ? value.trim() : "";
+
+  if (logo) {
+    return logo;
+  }
+
+  return fallbackName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "RG";
+}
+
 function applyFilter(matches: Match[], filter: UseMatchesOptions["filter"]) {
   if (filter === "live") {
     return matches.filter((match) => match.isLive);
@@ -87,16 +121,21 @@ function normalizeMatch(match: RawMatch): Match {
   const normalizeSignal = (team: RawMatch["teamA"]) =>
     team.signalScore ?? Math.round((team.odds ?? 1) * 100);
 
+  const teamAName = cleanDisplayText(match.teamA.name, "Team Alpha");
+  const teamBName = cleanDisplayText(match.teamB.name, "Team Omega");
+  const tournament = cleanDisplayText(match.tournament, "Community Ritual");
+
   return {
     ...match,
+    tournament,
     teamA: {
-      name: match.teamA.name,
-      logo: match.teamA.logo,
+      name: teamAName,
+      logo: cleanLogo(match.teamA.logo, teamAName),
       signalScore: normalizeSignal(match.teamA),
     },
     teamB: {
-      name: match.teamB.name,
-      logo: match.teamB.logo,
+      name: teamBName,
+      logo: cleanLogo(match.teamB.logo, teamBName),
       signalScore: normalizeSignal(match.teamB),
     },
   };
