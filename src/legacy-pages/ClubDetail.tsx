@@ -216,11 +216,12 @@ export default function ClubDetail({ slug }: Props) {
       }
 
       toast({
-        title: "⚔️ War started!",
+        title: "War started",
         description: "Your club is now in battle.",
       });
 
       refresh();
+      return;
     } catch {
       toast({
         title: "Error",
@@ -322,7 +323,7 @@ export default function ClubDetail({ slug }: Props) {
 
                 <div className="mt-7 grid gap-3 sm:grid-cols-3">
                   <Button
-                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] bg-cyan-300 px-5 font-display font-black text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.48)] hover:bg-cyan-200"
+                    className="min-h-12 justify-center gap-3 rounded-[1rem] bg-cyan-300 px-4 py-3 text-center text-xs font-black leading-tight tracking-[0.08em] text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.48)] hover:bg-cyan-200 sm:text-sm"
                     onClick={() => router.push("/live-calls")}
                   >
                     <Radio className="h-4 w-4" />
@@ -331,7 +332,7 @@ export default function ClubDetail({ slug }: Props) {
 
                   <Button
                     variant="outline"
-                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] border-blue-300/40 bg-blue-500/10 px-5 font-display font-black text-blue-100 shadow-[0_0_24px_rgba(59,130,246,0.18)] hover:bg-blue-400/15"
+                    className="min-h-12 justify-center gap-3 rounded-[1rem] border-blue-300/40 bg-blue-500/10 px-4 py-3 text-center text-xs font-black leading-tight tracking-[0.08em] text-blue-100 shadow-[0_0_24px_rgba(59,130,246,0.18)] hover:bg-blue-400/15 sm:text-sm"
                     onClick={() => router.push("/war-map")}
                   >
                     <Map className="h-4 w-4" />
@@ -341,7 +342,7 @@ export default function ClubDetail({ slug }: Props) {
                   <Button
                     onClick={isAdmin && !activeWar ? handleCreateWar : () => router.push("/clubs")}
                     disabled={isAdmin && !activeWar ? creatingWar : false}
-                    className="h-[3.25rem] justify-center gap-3 rounded-[1rem] border border-orange-300/45 bg-orange-500/14 px-5 font-display font-black text-orange-100 shadow-[0_0_24px_rgba(249,115,22,0.22)] hover:bg-orange-500/22"
+                    className="min-h-12 justify-center gap-3 rounded-[1rem] border border-orange-300/45 bg-orange-500/14 px-4 py-3 text-center text-xs font-black leading-tight tracking-[0.08em] text-orange-100 shadow-[0_0_24px_rgba(249,115,22,0.22)] hover:bg-orange-500/22 sm:text-sm"
                   >
                     {creatingWar ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -355,7 +356,7 @@ export default function ClubDetail({ slug }: Props) {
                     <Button
                       onClick={handleJoin}
                       disabled={joining}
-                      className="h-[3.25rem] justify-center gap-3 rounded-[1rem] px-5 sm:col-span-3"
+                      className="min-h-12 justify-center gap-3 rounded-[1rem] px-5 py-3 text-center text-sm font-black sm:col-span-3"
                     >
                       {joining ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
