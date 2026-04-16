@@ -15,7 +15,7 @@ const topContributors = [
 export default function ClubLeaderboard() {
   return (
     <div className="space-y-4">
-      <div className="surface-panel p-5">
+      <div className="surface-panel hero-sheen p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
@@ -36,7 +36,7 @@ export default function ClubLeaderboard() {
               <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                 Club MVP
               </div>
-              <div className="mt-2 text-xl font-display font-bold text-white">
+              <div className="mt-2 truncate text-xl font-display font-bold text-white">
                 Viper_X
               </div>
             </div>
@@ -46,7 +46,7 @@ export default function ClubLeaderboard() {
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-white/8 bg-white/5 p-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
               <div className="text-[11px] uppercase tracking-[0.16em] text-slate-400">
                 Contribution
               </div>
@@ -54,7 +54,7 @@ export default function ClubLeaderboard() {
                 28.5K
               </div>
             </div>
-            <div className="rounded-2xl border border-white/8 bg-white/5 p-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
               <div className="text-[11px] uppercase tracking-[0.16em] text-slate-400">
                 Pressure swing
               </div>
@@ -72,15 +72,15 @@ export default function ClubLeaderboard() {
           {topContributors.map((contributor) => (
             <div
               key={contributor.rank}
-              className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-white/8 bg-slate-950/55 px-4 py-3.5 transition-colors hover:border-white/16"
+              className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-white/10 bg-slate-950/55 px-4 py-3.5 transition-colors hover:border-white/16"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-sm font-display font-bold text-white">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-sm font-display font-bold text-white">
                   {contributor.badge}
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">
+                    <span className="truncate text-sm font-semibold text-white">
                       {contributor.name}
                     </span>
                     {contributor.rank <= 3 ? (
@@ -106,7 +106,10 @@ export default function ClubLeaderboard() {
           ))}
         </div>
 
-        <Button variant="outline" className="mt-4 w-full justify-between">
+        <Button
+          variant="outline"
+          className="mt-4 min-h-11 w-full justify-between rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]"
+        >
           View full club ladder
           <Shield className="h-4 w-4" />
         </Button>

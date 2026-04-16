@@ -1,8 +1,19 @@
 "use client";
 
-import { Flame, Shield, Sparkles, Sword, Users } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Flame,
+  Radio,
+  Shield,
+  Sparkles,
+  Sword,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 import { CountdownPill } from "@/components/engagement/CountdownPill";
+import { Button } from "@/components/ui/button";
 import { getHoursFromNow, getNextWeeklyReset } from "@/lib/countdown";
 
 const heroStats = [
@@ -57,6 +68,38 @@ export default function ClubHeader() {
             />
           </div>
 
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Button
+              asChild
+              className="min-h-12 rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]"
+            >
+              <Link href="/war-map" prefetch={false}>
+                Open war map
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="min-h-12 rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]"
+            >
+              <Link href="/live-calls" prefetch={false}>
+                Start live call
+                <Radio className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="min-h-12 rounded-full border-amber-300/30 px-5 text-sm font-black uppercase tracking-[0.12em] text-amber-200"
+            >
+              <Link href="/clubs" prefetch={false}>
+                Invite members
+                <UserPlus className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
           <div className="flex flex-wrap gap-2">
             <div className="metal-chip">
               <Flame className="h-4 w-4 text-rose-300" />
@@ -71,7 +114,7 @@ export default function ClubHeader() {
 
         <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
           {heroStats.map(({ label, value, icon: Icon, tone }) => (
-            <div key={label} className="surface-panel p-4">
+            <div key={label} className="surface-panel hero-sheen min-h-[112px] p-4">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                   {label}

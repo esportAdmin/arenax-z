@@ -40,23 +40,23 @@ export default function ActiveWars() {
   return (
     <div className="space-y-4">
       {wars.map((war) => (
-        <div key={war.title} className="surface-panel p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+        <div key={war.title} className="surface-panel hero-sheen p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                 {war.priority} front
               </div>
-              <h3 className="mt-2 text-lg font-display font-bold text-white">
+              <h3 className="mt-2 truncate text-lg font-display font-bold text-white">
                 {war.title}
               </h3>
             </div>
             <CountdownPill label="Lock" target={war.target} tone="rose" />
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3 text-sm">
-            <span className="font-semibold text-cyan-300">{war.attacker}</span>
+          <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-sm">
+            <span className="truncate font-semibold text-cyan-300">{war.attacker}</span>
             <span className="text-slate-500">vs</span>
-            <span className="font-semibold text-rose-300">{war.defender}</span>
+            <span className="truncate text-right font-semibold text-rose-300">{war.defender}</span>
           </div>
 
           <div className="mt-4">
@@ -73,11 +73,11 @@ export default function ActiveWars() {
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Button className="justify-between">
+            <Button className="min-h-11 justify-between rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]">
               Attack now
               <Swords className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="justify-between">
+            <Button variant="outline" className="min-h-11 justify-between rounded-full px-5 text-sm font-black uppercase tracking-[0.12em]">
               Reinforce line
               <Shield className="h-4 w-4" />
             </Button>
