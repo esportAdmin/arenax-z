@@ -53,6 +53,7 @@ const CAN_BOOTSTRAP_ACCOUNT =
 const AUTH_MODE = process.env.QA_AUTH_MODE ?? "local-qa";
 const OAUTH_PROVIDER = (process.env.QA_OAUTH_PROVIDER ?? "discord").toLowerCase();
 const OAUTH_WAIT_MS = Number(process.env.QA_OAUTH_WAIT_MS ?? 180000);
+const VERCEL_PROTECTION_BYPASS = process.env.QA_VERCEL_PROTECTION_BYPASS ?? "";
 const LOCAL_QA_URL = `${BASE_URL}/api/auth/local-qa?redirect=${encodeURIComponent("/dashboard")}`;
 const DEV_BYPASS_URL = `${BASE_URL}/api/auth/dev-bypass?redirect=${encodeURIComponent("/dashboard")}`;
 const USER_DATA_DIR = process.env.QA_USER_DATA_DIR
@@ -325,6 +326,24 @@ async function createInstrumentedPage(browser) {
 
 async function gotoStable(page, routePath) {
   return page.goto(`${BASE_URL}${routePath}`, {
+    waitUntil: "networkidle2",
+    timeout: TIMEOUT_MS,
+  });
+}
+
+async function setVercelBypassCookie(page) {
+  if (!VERCEL_PROTECTION_BYPASS) {
+    return;
+  }
+
+  const bypassUrl = new URL(BASE_URL);
+  bypassUrl.searchParams.set("x-vercel-set-bypass-cookie", "true");
+  bypassUrl.searchParams.set(
+    "x-vercel-protection-bypass",
+    VERCEL_PROTECTION_BYPASS,
+  );
+
+  await page.goto(bypassUrl.toString(), {
     waitUntil: "networkidle2",
     timeout: TIMEOUT_MS,
   });
@@ -883,6 +902,7 @@ async function main() {
 
   try {
     const { page, consoleIssues } = await createInstrumentedPage(browser);
+    await setVercelBypassCookie(page);
     const authentication = await authenticate(page);
     const routes = [];
 
