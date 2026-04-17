@@ -11,7 +11,11 @@ export const LOCAL_QA_USERNAME =
   process.env.QA_LOCAL_USERNAME ?? "qa_operator";
 
 export function isDevBypassAvailable() {
-  return process.env.NODE_ENV !== "production";
+  return (
+    process.env.NODE_ENV !== "production" ||
+    (process.env.VERCEL_ENV === "preview" &&
+      process.env.QA_ENABLE_LOCAL_AUTH === "true")
+  );
 }
 
 export function hasLocalQaBootstrap() {
