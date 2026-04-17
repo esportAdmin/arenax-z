@@ -3,12 +3,14 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
+  Crosshair,
   Flame,
   Globe2,
   LockKeyhole,
   MapPinned,
+  Radio,
   Shield,
-  Sparkles,
+  Swords,
   TimerReset,
 } from "lucide-react";
 
@@ -58,34 +60,33 @@ export default function GlobalAnimatedWarMap({
   const clubId = useMyClub();
   const { toast } = useToast();
 
-  const [selectedTerritory, setSelectedTerritory] = useState<Territory | null>(null);
+  const [selectedTerritoryId, setSelectedTerritoryId] = useState<string | null>(null);
 
   useEffect(() => {
     if (territories.length === 0) {
-      if (selectedTerritory !== null) {
-        setSelectedTerritory(null);
+      if (selectedTerritoryId !== null) {
+        setSelectedTerritoryId(null);
       }
       return;
     }
 
-    if (!selectedTerritory) {
-      setSelectedTerritory(territories[0]);
+    if (!selectedTerritoryId) {
+      setSelectedTerritoryId(territories[0].id);
       return;
     }
 
-    const nextSelected = territories.find(
-      (territory) => territory.id === selectedTerritory.id,
-    );
-
-    if (!nextSelected) {
-      setSelectedTerritory(territories[0]);
-      return;
+    if (!territories.some((territory) => territory.id === selectedTerritoryId)) {
+      setSelectedTerritoryId(territories[0].id);
     }
+  }, [territories, selectedTerritoryId]);
 
-    if (nextSelected !== selectedTerritory) {
-      setSelectedTerritory(nextSelected);
-    }
-  }, [territories, selectedTerritory]);
+  const selectedTerritory = useMemo(
+    () =>
+      territories.find((territory) => territory.id === selectedTerritoryId) ??
+      territories[0] ??
+      null,
+    [selectedTerritoryId, territories],
+  );
 
   const metrics = useMemo(() => {
     const controlled = territories.filter((territory) => territory.controlling_club_id).length;
@@ -105,7 +106,7 @@ export default function GlobalAnimatedWarMap({
     if (!clubId) {
       toast({
         title: "Club required",
-        description: "Join a club before launching an invasion.",
+        description: "Join a club before opening a pressure window.",
         variant: "destructive",
       });
       return;
@@ -127,15 +128,15 @@ export default function GlobalAnimatedWarMap({
 
       if (!response.ok || !payload?.success) {
         toast({
-          title: "Invasion failed",
-          description: payload?.error ?? "The war room could not start this attack.",
+          title: "Pressure window failed",
+          description: payload?.error ?? "The war room could not start this pressure window.",
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Invasion launched",
+        title: "Pressure window opened",
         description: `Battle lines are moving toward ${territory.name}.`,
       });
     } catch {
@@ -167,7 +168,7 @@ export default function GlobalAnimatedWarMap({
       tone: "from-blue-400/30 to-indigo-500/5",
     },
     {
-      label: "Auto-Placed",
+      label: "Smart Layout",
       value: metrics.autoLayout,
       icon: MapPinned,
       tone: "from-emerald-400/30 to-teal-500/5",
@@ -176,27 +177,30 @@ export default function GlobalAnimatedWarMap({
 
   return (
     <Shell showChrome={showChrome}>
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden bg-[#030915]">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[-10%] top-[-12%] h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
-          <div className="absolute right-[-6%] top-[12%] h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="absolute bottom-[-15%] left-[18%] h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
+          <div className="absolute left-[-10%] top-[-12%] h-96 w-96 rounded-full bg-cyan-400/12 blur-3xl" />
+          <div className="absolute right-[-6%] top-[12%] h-[28rem] w-[28rem] rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="absolute bottom-[-15%] left-[18%] h-96 w-96 rounded-full bg-orange-500/12 blur-3xl" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <main className="relative mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="mb-8 rounded-[28px] border border-white/10 bg-white/5 p-6 shadow-[0_0_60px_rgba(34,211,238,0.08)] backdrop-blur-xl lg:p-8"
+            className="relative mb-8 overflow-hidden rounded-[2rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,23,42,0.92),rgba(5,10,24,0.86)_54%,rgba(49,24,12,0.72))] p-6 shadow-[0_0_70px_rgba(34,211,238,0.1)] backdrop-blur-xl lg:p-8"
           >
+            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
+            <div className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-orange-400/12 blur-3xl" />
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Global animated command layer
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/24 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-cyan-200">
+                  <Radio className="h-3.5 w-3.5" />
+                  War room online
                 </div>
-                <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
+                <h1 className="font-display text-4xl font-black leading-[0.98] tracking-tight text-white sm:text-6xl">
                   {title}
                 </h1>
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
@@ -208,7 +212,7 @@ export default function GlobalAnimatedWarMap({
                 {stats.map(({ icon: Icon, label, value, tone }) => (
                   <div
                     key={label}
-                    className={`min-w-[150px] rounded-2xl border border-white/10 bg-gradient-to-br ${tone} p-4 shadow-[0_15px_40px_rgba(2,12,23,0.25)]`}
+                    className={`min-w-[150px] rounded-[1.35rem] border border-white/10 bg-gradient-to-br ${tone} p-4 shadow-[0_15px_40px_rgba(2,12,23,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]`}
                   >
                     <div className="flex items-center justify-between text-slate-200">
                       <span className="text-xs uppercase tracking-[0.22em] text-slate-300">
@@ -223,23 +227,24 @@ export default function GlobalAnimatedWarMap({
             </div>
           </motion.section>
 
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,2.2fr)_360px]">
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,2.35fr)_390px]">
             <motion.section
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.08 }}
-              className="overflow-hidden rounded-[30px] border border-cyan-300/15 bg-slate-950/85 shadow-[0_0_80px_rgba(34,211,238,0.08)]"
+              className="relative overflow-hidden rounded-[2rem] border border-cyan-300/18 bg-slate-950/88 shadow-[0_0_90px_rgba(34,211,238,0.1)]"
             >
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-300/70 to-transparent" />
               <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200/80">
-                    Live world control
+                  <div className="text-xs font-black uppercase tracking-[0.24em] text-cyan-200/80">
+                    Territory control map
                   </div>
-                  <div className="mt-1 text-lg font-semibold text-white">
-                    Animated frontlines across the global board
+                  <div className="mt-1 text-lg font-black text-white">
+                    Central board, active pressure, and rally windows
                   </div>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,0.9)]" />
                   {metrics.autoLayout > 0
                     ? `${metrics.autoLayout} territories currently using smart placement`
@@ -248,20 +253,35 @@ export default function GlobalAnimatedWarMap({
               </div>
 
               <div className="p-3 sm:p-4">
-                <div className="rounded-[24px] border border-white/10 bg-[#040b17] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="relative overflow-hidden rounded-[1.65rem] border border-cyan-300/18 bg-[#030916] p-2 shadow-[0_0_46px_rgba(34,211,238,0.08),inset_0_1px_0_rgba(255,255,255,0.06)]">
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_48%,rgba(34,211,238,0.1),transparent_28%),radial-gradient(circle_at_78%_55%,rgba(249,115,22,0.12),transparent_22%)]" />
                   {loading ? (
-                    <div className="flex h-[520px] items-center justify-center text-slate-300">
+                    <div className="relative flex h-[620px] items-center justify-center text-slate-300">
                       Loading global theater...
                     </div>
                   ) : (
-                    <div className="h-[520px]">
+                    <div className="relative h-[620px] min-h-[460px]">
                       <WorldMapSvg
                         territories={territories}
-                        onSelect={setSelectedTerritory}
-                        selectedTerritoryId={selectedTerritory?.id ?? null}
+                        onSelect={(territory) => setSelectedTerritoryId(territory.id)}
+                        selectedTerritoryId={selectedTerritoryId}
                       />
                     </div>
                   )}
+                </div>
+              </div>
+              <div className="grid gap-3 border-t border-white/10 px-5 py-4 text-xs font-bold uppercase tracking-[0.14em] text-slate-400 sm:grid-cols-3">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" />
+                  Controlled zones
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-orange-300 shadow-[0_0_12px_rgba(251,146,60,0.8)]" />
+                  Pressure rising
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-400 shadow-[0_0_12px_rgba(251,113,133,0.8)]" />
+                  Active rivalry
                 </div>
               </div>
             </motion.section>
@@ -279,9 +299,10 @@ export default function GlobalAnimatedWarMap({
                 onInvade={handleInvade}
               />
 
-              <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 shadow-[0_15px_50px_rgba(2,12,23,0.24)] backdrop-blur-xl">
-                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
-                  Command notes
+              <div className="relative overflow-hidden rounded-[1.85rem] border border-white/10 bg-white/[0.045] p-6 shadow-[0_15px_50px_rgba(2,12,23,0.24),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+                <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-400/10 blur-3xl" />
+                <div className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200/80">
+                  Command center
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -298,14 +319,14 @@ export default function GlobalAnimatedWarMap({
                 </div>
 
                 <div className="mt-4 space-y-3">
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-6 text-slate-300">
-                    The map should do more than display control. It should make
-                    the next return feel urgent, social, and worth monitoring.
+                  <div className="rounded-2xl border border-cyan-300/18 bg-cyan-300/8 p-4 text-sm leading-6 text-slate-300">
+                    The map is the daily return trigger. It should make admins
+                    see where attention is heating up and what to rally next.
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <div className="flex items-center gap-2 text-sm font-bold text-white">
                       <Flame className="h-4 w-4 text-rose-300" />
-                      Contested fronts should look emotionally hot
+                      Active fronts feel hot
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-400">
                       Red pulses, time windows, and ownership pressure give
@@ -313,9 +334,9 @@ export default function GlobalAnimatedWarMap({
                     </p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <div className="flex items-center gap-2 text-sm font-bold text-white">
                       <LockKeyhole className="h-4 w-4 text-slate-200" />
-                      Locked territory finishes should tease premium status
+                      Locked finishes tease prestige
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-400">
                       The world feels stickier when captured ground hints at
@@ -323,14 +344,44 @@ export default function GlobalAnimatedWarMap({
                     </p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                      <TimerReset className="h-4 w-4 text-amber-300" />
-                      Unified map behavior matters
+                    <div className="flex items-center gap-2 text-sm font-bold text-white">
+                      <Crosshair className="h-4 w-4 text-orange-300" />
+                      Next action stays obvious
                     </div>
                     <p className="mt-2 text-sm leading-6 text-slate-400">
-                      Public map, club map, and war map should all reinforce the
-                      same world-state ritual instead of feeling like separate tools.
+                      Every territory state points toward one action: rally,
+                      defend, scout, or return before the next pulse.
                     </p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toast({
+                          title: "Front selected",
+                          description: selectedTerritory
+                            ? `${selectedTerritory.name} is ready for the next rally call.`
+                            : "Select a territory to focus the rally call.",
+                        })
+                      }
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-cyan-300/28 bg-cyan-300/10 px-4 text-center text-xs font-black uppercase tracking-[0.12em] text-cyan-100 transition-colors hover:bg-cyan-300/16"
+                    >
+                      <Swords className="h-4 w-4" />
+                      Rally active front
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toast({
+                          title: "Next pulse queued",
+                          description: "Review the map again before reset to protect the return loop.",
+                        })
+                      }
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-orange-300/30 bg-orange-400/10 px-4 text-center text-xs font-black uppercase tracking-[0.12em] text-orange-100 transition-colors hover:bg-orange-300/16"
+                    >
+                      <TimerReset className="h-4 w-4" />
+                      Review next pulse
+                    </button>
                   </div>
                 </div>
               </div>

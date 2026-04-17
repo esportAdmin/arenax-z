@@ -41,6 +41,15 @@ const CONTINENT_PATHS = [
   "M850 348 C878 338 912 346 936 366 C960 384 964 410 948 426 C932 442 902 446 876 438 C850 428 830 408 828 388 C824 370 832 354 850 348 Z",
 ];
 
+const REGION_LABELS = [
+  { label: "NORTH AMERICA", x: 178, y: 120, anchor: "middle" },
+  { label: "SOUTH AMERICA", x: 246, y: 410, anchor: "middle" },
+  { label: "EUROPE", x: 510, y: 104, anchor: "middle" },
+  { label: "AFRICA", x: 542, y: 404, anchor: "middle" },
+  { label: "ASIA COMMAND", x: 786, y: 112, anchor: "middle" },
+  { label: "OCEANIA", x: 884, y: 334, anchor: "middle" },
+] as const;
+
 type CoordMap = Map<string, { cx: number; cy: number; isAutoPlaced: boolean }>;
 
 function clamp(value: number, min: number, max: number) {
@@ -176,8 +185,17 @@ export default function WorldMapSvg({
         </linearGradient>
 
         <linearGradient id="wms-continent" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(34,211,238,0.14)" />
-          <stop offset="100%" stopColor="rgba(59,130,246,0.04)" />
+          <stop offset="0%" stopColor="rgba(34,211,238,0.2)" />
+          <stop offset="54%" stopColor="rgba(59,130,246,0.07)" />
+          <stop offset="100%" stopColor="rgba(249,115,22,0.06)" />
+        </linearGradient>
+
+        <linearGradient id="wms-hudFrame" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.08" />
+          <stop offset="18%" stopColor="#22d3ee" stopOpacity="0.88" />
+          <stop offset="50%" stopColor="#67e8f9" stopOpacity="0.32" />
+          <stop offset="82%" stopColor="#fb923c" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#fb923c" stopOpacity="0.08" />
         </linearGradient>
 
         <radialGradient id="wms-warGlow" cx="50%" cy="50%" r="50%">
@@ -228,10 +246,55 @@ export default function WorldMapSvg({
             strokeWidth="0.6"
           />
         </pattern>
+
+        <pattern id="wms-hex" width="34" height="30" patternUnits="userSpaceOnUse">
+          <path
+            d="M8.5 1 L25.5 1 L34 15 L25.5 29 L8.5 29 L0 15 Z"
+            fill="none"
+            stroke="rgba(34,211,238,0.045)"
+            strokeWidth="0.8"
+          />
+        </pattern>
       </defs>
 
       <rect width={VIEWBOX_WIDTH} height={VIEWBOX_HEIGHT} fill="url(#wms-ocean)" />
       <rect width={VIEWBOX_WIDTH} height={VIEWBOX_HEIGHT} fill="url(#wms-grid)" />
+      <rect width={VIEWBOX_WIDTH} height={VIEWBOX_HEIGHT} fill="url(#wms-hex)" opacity="0.75" />
+      <path
+        d="M42 34 H370 L392 54 H608 L630 34 H958 V466 H632 L606 446 H394 L368 466 H42 Z"
+        fill="rgba(2,12,23,0.24)"
+        stroke="url(#wms-hudFrame)"
+        strokeWidth="2.2"
+      />
+      <path
+        d="M70 62 H344 M656 62 H930 M70 438 H344 M656 438 H930"
+        fill="none"
+        stroke="url(#wms-hudFrame)"
+        strokeWidth="4"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+      <g transform="translate(388, 28)">
+        <rect
+          width="224"
+          height="38"
+          rx="12"
+          fill="rgba(2,12,23,0.82)"
+          stroke="rgba(34,211,238,0.34)"
+        />
+        <text
+          x="112"
+          y="24"
+          textAnchor="middle"
+          fill="#a5f3fc"
+          fontSize="12"
+          fontWeight="800"
+          fontFamily="monospace"
+          letterSpacing="2"
+        >
+          TERRITORY CONTROL
+        </text>
+      </g>
 
       {CONTINENT_PATHS.map((path, index) => (
         <path
@@ -249,6 +312,23 @@ export default function WorldMapSvg({
             repeatCount="indefinite"
           />
         </path>
+      ))}
+
+      {REGION_LABELS.map(({ label, x, y, anchor }) => (
+        <text
+          key={label}
+          x={x}
+          y={y}
+          textAnchor={anchor}
+          fill="rgba(186,230,253,0.24)"
+          fontSize="12"
+          fontWeight="800"
+          fontFamily="monospace"
+          letterSpacing="2"
+          style={{ pointerEvents: "none", userSelect: "none" }}
+        >
+          {label}
+        </text>
       ))}
 
       <rect x={-240} y={0} width={220} height={VIEWBOX_HEIGHT} fill="url(#wms-scan)">
@@ -318,6 +398,33 @@ export default function WorldMapSvg({
           </text>
         </g>
       )}
+
+      {visibleTerritories
+        .filter((territory) => territory.controlling_club_id)
+        .slice(0, 10)
+        .map((territory, index, controlled) => {
+          const coord = coords.get(territory.id);
+          const next = controlled[index + 1] ? coords.get(controlled[index + 1].id) : null;
+          if (!coord || !next) return null;
+
+          return (
+            <path
+              key={`${territory.id}-route`}
+              d={`M${coord.cx} ${coord.cy} C${(coord.cx + next.cx) / 2} ${coord.cy - 42}, ${(coord.cx + next.cx) / 2} ${next.cy + 42}, ${next.cx} ${next.cy}`}
+              fill="none"
+              stroke={index % 2 === 0 ? "rgba(34,211,238,0.2)" : "rgba(249,115,22,0.18)"}
+              strokeWidth="1.2"
+              strokeDasharray="5 8"
+            >
+              <animate
+                attributeName="stroke-dashoffset"
+                values="0;-26"
+                dur="4s"
+                repeatCount="indefinite"
+              />
+            </path>
+          );
+        })}
 
       {visibleTerritories.map((territory) => {
         const coord = coords.get(territory.id);
@@ -450,6 +557,27 @@ export default function WorldMapSvg({
 
             {war && (
               <g>
+                <g transform={`translate(${cx - 44}, ${cy - radius - 44})`}>
+                  <rect
+                    width="88"
+                    height="20"
+                    rx="8"
+                    fill="rgba(127,29,29,0.82)"
+                    stroke="rgba(251,146,60,0.5)"
+                  />
+                  <text
+                    x="44"
+                    y="14"
+                    textAnchor="middle"
+                    fontSize="8"
+                    fontWeight="800"
+                    fill="#fed7aa"
+                    fontFamily="monospace"
+                    style={{ pointerEvents: "none", userSelect: "none" }}
+                  >
+                    PRESSURE RISING
+                  </text>
+                </g>
                 <circle cx={cx} cy={cy - radius - 12} r={10} fill="#ef4444" opacity={0.22}>
                   <animate
                     attributeName="r"
