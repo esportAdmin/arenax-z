@@ -60,17 +60,17 @@ export function InsightCards() {
     {
       type: "insight",
       title: "Key Insight",
-      description: "Team A has 75% win probability against Team B in the upcoming match, based on historical data and current meta analysis."
+      description: "Club Alpha is creating a strong return loop this week: live calls, member replies, and challenge activity are all trending up."
     },
     {
       type: "alert",
       title: "Risk Alert",
-      description: "Low prediction confidence for match between Team C and Team D due to recent roster changes and unstable performance."
+      description: "Member momentum is softening before the next reset. Trigger a live ritual or founder update before attention drops."
     },
     {
       type: "opportunity",
       title: "Opportunity",
-    description: "High signal movement on Team E. AI model suggests the community may be under-reading this match."
+      description: "A high-signal rivalry is forming. Rally the community now while the story is still fresh and visible."
     }
   ];
 

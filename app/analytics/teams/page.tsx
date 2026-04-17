@@ -1,8 +1,5 @@
-"use client";
-
-import AnalyticsTeams from "@/legacy-pages/analytics/AnalyticsTeams";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <AnalyticsTeams />;
+  redirect("/clubs");
 }
-

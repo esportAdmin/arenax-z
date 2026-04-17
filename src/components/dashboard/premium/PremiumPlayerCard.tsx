@@ -16,7 +16,7 @@ type PlayerSummary = {
   name: string;
   tierLabel: string;
   totalScore: number;
-  accuracy: number;
+  signalRate: number;
   challenges: number;
   levelLabel: string;
   levelProgress: number;
@@ -30,7 +30,7 @@ export default function PremiumPlayerCard() {
     name: "EsportsPro123",
     tierLabel: "Professional",
     totalScore: 8450,
-    accuracy: 72,
+    signalRate: 72,
     challenges: 128,
     levelLabel: "Level 2",
     levelProgress: 25,
@@ -80,10 +80,10 @@ export default function PremiumPlayerCard() {
             href="/leaderboard"
           />
           <PremiumRingProgress
-            label="Accuracy"
-            value={data.accuracy}
+            label="Signal Rate"
+            value={data.signalRate}
             color="#7ED8A5"
-            href="/predictions"
+            href="/live-calls"
           />
           <PremiumMetricTile
             label="Challenges:"

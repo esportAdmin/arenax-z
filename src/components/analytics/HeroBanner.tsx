@@ -18,14 +18,14 @@ export function HeroBanner() {
       <div className="relative z-10 flex items-center justify-between">
         <div>
           <h1 className="text-4xl font-display font-bold text-foreground mb-2">
-            ArenaX Analytics Dashboard
+            RallyGuild Retention Intelligence
           </h1>
           <p className="text-lg text-muted-foreground">
-            Professional esports analytics & prediction platform
+            Community health, live ritual momentum, and club activation signals
           </p>
         </div>
         <Button size="lg" className="bg-white text-background hover:bg-white/90 font-semibold px-8">
-          Get Started
+          Review Signals
         </Button>
       </div>
     </div>

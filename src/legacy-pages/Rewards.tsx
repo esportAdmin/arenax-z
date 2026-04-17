@@ -21,73 +21,19 @@ import { ReturnNudgeCard } from "@/components/engagement/ReturnNudgeCard";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { LevelRewardsGrid } from "@/components/rewards/LevelRewardsGrid";
+import { RewardStoreCard } from "@/components/rewards/RewardStoreCard";
+import {
+  FALLBACK_PRIZES,
+  normalizePrize,
+  type Prize,
+} from "@/components/rewards/rewardCatalogData";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
 import { getHoursFromNow, getNextWeeklyReset } from "@/lib/countdown";
 import { isLocalQaUser } from "@/lib/dev-auth";
-import { cn } from "@/lib/utils";
-
-type PrizeRow = Database["public"]["Tables"]["arena_prizes"]["Row"];
-
-export type Prize = Omit<PrizeRow, "active"> & {
-  active: boolean;
-};
-
-const FALLBACK_PRIZES: Prize[] = [
-  {
-    id: 1,
-    sku: "qa-premium-pass",
-    name: "Premium Command Pass",
-    description: "A flagship reward card that keeps the vault feeling desirable.",
-    price_arena: 1200,
-    usd_value: 19,
-    stock: 14,
-    category: "premium",
-    image_url: null,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-    updated_at: new Date().toISOString(),
-    active: true,
-  },
-  {
-    id: 2,
-    sku: "qa-elite-badge",
-    name: "Elite Club Crest",
-    description: "A high-status cosmetic unlock for social proof inside the product.",
-    price_arena: 850,
-    usd_value: 12,
-    stock: 32,
-    category: "identity",
-    image_url: null,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-    updated_at: new Date().toISOString(),
-    active: true,
-  },
-  {
-    id: 3,
-    sku: "qa-drop-crate",
-    name: "Weekly Drop Crate",
-    description: "A repeatable vault reward that reinforces return behavior.",
-    price_arena: 500,
-    usd_value: 7,
-    stock: 99,
-    category: "drops",
-    image_url: null,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    updated_at: new Date().toISOString(),
-    active: true,
-  },
-];
-
-function normalizePrize(row: PrizeRow): Prize {
-  return {
-    ...row,
-    active: row.active ?? false,
-  };
-}
 
 export default function Rewards() {
   const { user } = useAuth();
@@ -343,7 +289,7 @@ export default function Rewards() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {["Community-first", "No wagering", "Discord/Twitch ready"].map(
+                {["Community-first", "Virtual-only", "Discord/Twitch ready"].map(
                   (label) => (
                     <span
                       key={label}
@@ -416,74 +362,19 @@ export default function Rewards() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {activePrizes.map((prize) => {
-                  const inStock = (prize.stock ?? 0) > 0;
-
-                  return (
-                    <div
-                      key={prize.id}
-                      className={cn(
-                        "surface-panel hero-sheen overflow-hidden border-white/10 p-4 transition-transform duration-200 hover:-translate-y-1",
-                        !inStock && "opacity-70",
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="truncate text-lg font-bold text-white">
-                            {prize.name}
-                          </div>
-                          {prize.description ? (
-                            <div className="mt-1 line-clamp-2 text-sm text-slate-400">
-                              {prize.description}
-                            </div>
-                          ) : null}
-                        </div>
-
-                        <div className="shrink-0 text-right">
-                          <div className="text-sm font-black text-cyan-300">
-                            {prize.price_arena.toLocaleString("en-US")} credits
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Stock: {(prize.stock ?? 0).toLocaleString("en-US")}
-                          </div>
-                        </div>
-                      </div>
-
-                      {prize.image_url ? (
-                        <img
-                          src={prize.image_url}
-                          alt={prize.name}
-                          className="mt-4 h-40 w-full rounded-2xl border border-white/10 object-cover"
-                        />
-                      ) : (
-                        <div className="mt-4 flex h-40 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-                          <Gift className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                      )}
-
-                      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="metal-chip">
-                          {inStock ? "Ready to redeem" : "Currently unavailable"}
-                        </div>
-
-                        <Button
-                          className="min-h-11 w-full min-w-[132px] rounded-full px-5 text-sm font-black uppercase tracking-[0.12em] sm:w-auto"
-                          variant={inStock ? "default" : "outline"}
-                          disabled={!inStock}
-                          onClick={() => {
-                            toast({
-                              title: "Redemption flow pending",
-                              description:
-                                "Wire your real redemption flow here to turn this into a high-retention value loop.",
-                            });
-                          }}
-                        >
-                          {inStock ? "Redeem" : "Out of stock"}
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {activePrizes.map((prize) => (
+                  <RewardStoreCard
+                    key={prize.id}
+                    prize={prize}
+                    onRedeem={() => {
+                      toast({
+                        title: "Redemption flow pending",
+                        description:
+                          "Wire your real redemption flow here to turn this into a high-retention value loop.",
+                      });
+                    }}
+                  />
+                ))}
               </div>
             )}
           </section>

@@ -8,11 +8,11 @@ interface MatchCardProps {
   status: "live" | "upcoming" | "completed";
   teamA: { name: string; logo: string; score?: number };
   teamB: { name: string; logo: string; score?: number };
-  prediction: string;
+  signal: string;
   time?: string;
 }
 
-function MatchCard({ status, teamA, teamB, prediction, time }: MatchCardProps) {
+function MatchCard({ status, teamA, teamB, signal, time }: MatchCardProps) {
   const statusConfig = {
     live: { label: "LIVE", color: "text-destructive", dot: "bg-destructive animate-pulse" },
     upcoming: { label: "UPCOMING", color: "text-warning", dot: "bg-warning" },
@@ -56,11 +56,11 @@ function MatchCard({ status, teamA, teamB, prediction, time }: MatchCardProps) {
         </div>
       </div>
 
-      {/* Prediction & Action */}
+      {/* Signal & Action */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground truncate max-w-[150px]">{prediction}</span>
+        <span className="text-xs text-muted-foreground truncate max-w-[150px]">{signal}</span>
         <Button size="sm" variant={status === "completed" ? "outline" : "default"} className="h-8 text-xs">
-          {status === "completed" ? "View Details" : "View Match"}
+          {status === "completed" ? "View Details" : "View Signal"}
         </Button>
       </div>
     </div>
@@ -76,8 +76,8 @@ function mapMatchToCard(match: Match): MatchCardProps {
 
   const status = getStatus();
   
-  // Generate a simple live-call signal message
-  const getPrediction = () => {
+  // Generate a simple live-call signal message.
+  const getSignal = () => {
     if (match.isFinished && match.winner) {
       return `${match.winner} won`;
     }
@@ -116,7 +116,7 @@ function mapMatchToCard(match: Match): MatchCardProps {
       logo: match.teamB.logo || "/placeholder.svg",
       score: (match.isLive || match.isFinished) && match.mapScore ? match.mapScore.teamB : undefined
     },
-    prediction: getPrediction(),
+    signal: getSignal(),
     time: getTime()
   };
 }
@@ -139,7 +139,7 @@ export function LiveMatchesWidget() {
     <div className="bg-[#0a0a0f] rounded-2xl border border-white/5 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/5">
-        <h3 className="font-semibold text-foreground">Live & Upcoming Matches</h3>
+        <h3 className="font-semibold text-foreground">Live Community Signals</h3>
         <button 
           onClick={() => refetch()}
           disabled={loading}

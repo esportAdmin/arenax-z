@@ -18,7 +18,7 @@ import {
   Zap,
   Calendar,
   LogOut,
-  Gamepad2,
+  Swords,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -39,7 +39,7 @@ import { differenceInDays, parseISO } from "date-fns";
 
 const navLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Games", href: "/game", icon: Gamepad2 },
+  { name: "War Room", href: "/wars", icon: Swords },
   { name: "Live Calls", href: "/live-calls", icon: TrendingUp },
   { name: "Clubs", href: "/clubs", icon: Users },
   { name: "Leaderboard", href: "/leaderboard", icon: Trophy },

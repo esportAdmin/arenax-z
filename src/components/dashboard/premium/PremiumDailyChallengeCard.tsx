@@ -36,8 +36,8 @@ export default function PremiumDailyChallengeCard() {
       <div className="h-full px-8 pt-8 pb-7">
         {/* Header */}
         <div>
-          <div className="text-3xl font-display font-bold text-white">Daily Challenge</div>
-          <div className="mt-1 text-sm text-white/45">Gagne 500 Points + 10 XP</div>
+          <div className="text-3xl font-display font-bold text-white">Daily Ritual</div>
+          <div className="mt-1 text-sm text-white/45">Earn 500 Points + 10 XP</div>
         </div>
 
         {/* Matches */}
@@ -65,11 +65,11 @@ export default function PremiumDailyChallengeCard() {
                 </div>
 
                 <PremiumBluePillButton
-                  href={`/predictions?from=daily_challenge&matchup=${encodeURIComponent(
+                  href={`/live-calls?from=daily_ritual&matchup=${encodeURIComponent(
                     m.matchup,
                   )}&game=${encodeURIComponent(m.game)}`}
                 >
-                  Prédire
+                  Rally
                 </PremiumBluePillButton>
               </div>
             </div>
@@ -90,7 +90,7 @@ export default function PremiumDailyChallengeCard() {
 
           <div className="mt-4 flex items-center justify-between text-base font-semibold text-white/55">
             <div>3/3 <span className="font-medium">Completed</span></div>
-            <div>Début: 03:45:22</div>
+            <div>Reset: 03:45:22</div>
           </div>
         </div>
 
@@ -107,13 +107,13 @@ export default function PremiumDailyChallengeCard() {
                 color: "#1a1405",
               }}
             >
-              <Link href="/predictions?from=daily_challenge_complete">Tout Terminer</Link>
+              <Link href="/live-calls?from=daily_ritual_complete">Complete Ritual</Link>
             </Button>
 
             <div className="flex-1">
               <div className="flex items-center gap-2 text-base font-semibold" style={{ color: premiumColors.gold }}>
                 <Trophy className="h-5 w-5" color={premiumColors.gold} />
-                Gagne 500 Points
+                Earn 500 Points
               </div>
               <div className="mt-1 flex items-center gap-2 text-sm font-semibold text-white/70">
                 <Sparkles className="h-4 w-4" color={premiumColors.gold} />

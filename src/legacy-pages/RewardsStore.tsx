@@ -3,21 +3,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  AlertCircle,
   CheckCircle2,
   Clock,
   Coins,
   Gamepad2,
   Gift,
   Package,
-  ShoppingCart,
   Sparkles,
 } from "lucide-react";
 
-import { AppLink } from "@/components/AppLink";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { Badge } from "@/components/ui/badge";
+import { RewardsStorePrizeCard } from "@/components/rewards/RewardsStorePrizeCard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,151 +29,19 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useArenaBalance } from "@/hooks/useArenaBalance";
 import { supabase } from "@/integrations/supabase/client";
 import { logger } from "@/lib/logger";
-
-interface Prize {
-  id: number;
-  sku: string;
-  name: string;
-  description: string | null;
-  image_url: string | null;
-  price_arena: number;
-  usd_value: number | null;
-  stock: number;
-  category: string | null;
-  active: boolean;
-}
-
-function PrizeCard({
-  prize,
-  onRedeem,
-  userBalance,
-  isAuthenticated,
-  isRedeeming,
-}: {
-  prize: Prize;
-  onRedeem: (prize: Prize) => void;
-  userBalance: number;
-  isAuthenticated: boolean;
-  isRedeeming: boolean;
-}) {
-  const canAfford = userBalance >= prize.price_arena;
-  const isOutOfStock = prize.stock === 0;
-  const isUnlimited = prize.stock === -1;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="glass-card group overflow-hidden"
-    >
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
-        {prize.image_url ? (
-          <img
-            src={prize.image_url}
-            alt={prize.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Gift className="h-16 w-16 text-muted-foreground/30" />
-          </div>
-        )}
-
-        {prize.category && (
-          <Badge className="absolute left-3 top-3 bg-background/80 backdrop-blur-sm">
-            {prize.category}
-          </Badge>
-        )}
-
-        {isOutOfStock ? (
-          <Badge variant="destructive" className="absolute right-3 top-3">
-            Sold out
-          </Badge>
-        ) : !isUnlimited && prize.stock && prize.stock <= 5 ? (
-          <Badge
-            variant="secondary"
-            className="absolute right-3 top-3 bg-accent/80"
-          >
-            {prize.stock} left
-          </Badge>
-        ) : null}
-      </div>
-
-      <div className="space-y-3 p-4">
-        <h3 className="line-clamp-1 font-display text-lg font-bold">
-          {prize.name}
-        </h3>
-        <p className="min-h-[2.5rem] line-clamp-2 text-sm text-muted-foreground">
-          {prize.description || "No description available"}
-        </p>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Coins className="h-5 w-5 text-accent" />
-            <span className="font-display text-xl font-bold text-accent">
-              {prize.price_arena.toLocaleString()}
-            </span>
-            <span className="text-sm text-muted-foreground">AP</span>
-          </div>
-          {prize.usd_value && (
-            <span className="text-sm text-muted-foreground">
-              ~${prize.usd_value}
-            </span>
-          )}
-        </div>
-
-        {isAuthenticated ? (
-          <Button
-            className="w-full gap-2"
-            variant={canAfford && !isOutOfStock ? "hero" : "outline"}
-            disabled={!canAfford || isOutOfStock || isRedeeming}
-            onClick={() => onRedeem(prize)}
-          >
-            {isRedeeming ? (
-              <>
-                <Clock className="h-4 w-4 animate-spin" />
-                Redeeming...
-              </>
-            ) : isOutOfStock ? (
-              <>
-                <AlertCircle className="h-4 w-4" />
-                Sold out
-              </>
-            ) : !canAfford ? (
-              <>
-                <AlertCircle className="h-4 w-4" />
-                Insufficient balance
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="h-4 w-4" />
-                Redeem
-              </>
-            )}
-          </Button>
-        ) : (
-          <AppLink href="/auth" className="block">
-            <Button variant="outline" className="w-full">
-              Sign in to redeem
-            </Button>
-          </AppLink>
-        )}
-      </div>
-    </motion.div>
-  );
-}
+import type { RewardsStoreItem } from "@/types/rewardsStore";
 
 const RewardsStore = () => {
   const { user } = useAuth();
   const { balance: userBalance, redeemPrize } = useArenaBalance();
 
-  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [prizes, setPrizes] = useState<RewardsStoreItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [redeeming, setRedeeming] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [confirmDialog, setConfirmDialog] = useState<Prize | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<RewardsStoreItem | null>(
+    null,
+  );
 
   const fetchPrizes = useCallback(async () => {
     setLoading(true);
@@ -189,7 +54,7 @@ const RewardsStore = () => {
     if (error) {
       logger.error("Error fetching prizes:", error);
     } else {
-      setPrizes((data || []) as Prize[]);
+      setPrizes((data || []) as RewardsStoreItem[]);
     }
     setLoading(false);
   }, []);
@@ -198,7 +63,7 @@ const RewardsStore = () => {
     fetchPrizes();
   }, [fetchPrizes]);
 
-  const handleRedeem = (prize: Prize) => {
+  const handleRedeem = (prize: RewardsStoreItem) => {
     setConfirmDialog(prize);
   };
 
@@ -243,11 +108,12 @@ const RewardsStore = () => {
                   </div>
                   <h1 className="font-display text-3xl font-bold md:text-4xl">
                     <span className="text-foreground">Rewards </span>
-                    <span className="gradient-text-accent">Store</span>
+                    <span className="gradient-text-accent">Perks</span>
                   </h1>
                 </div>
                 <p className="text-muted-foreground">
-                  Redeem your Arena Points for exclusive rewards
+                  Claim status perks, community access, and cosmetic rewards
+                  with virtual Arena Points.
                 </p>
               </div>
 
@@ -331,9 +197,9 @@ const RewardsStore = () => {
             >
               <AnimatePresence mode="popLayout">
                 {filteredPrizes.map((prize) => (
-                  <PrizeCard
+                  <RewardsStorePrizeCard
                     key={prize.id}
-                    prize={prize}
+                    item={prize}
                     onRedeem={handleRedeem}
                     userBalance={userBalance}
                     isAuthenticated={!!user}

@@ -1,4 +1,11 @@
-import { Trophy, Calendar, Target, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Activity,
+  Calendar,
+  Radio,
+  TrendingDown,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {
@@ -43,34 +50,34 @@ export function StatsGrid() {
     {
       icon: Trophy,
       iconBg: "bg-primary/20",
-      label: "Active Tournaments",
+      label: "Active Events",
       value: "12",
       change: 3,
-      subtitle: "vs last month"
+      subtitle: "vs last month",
     },
     {
       icon: Calendar,
       iconBg: "bg-secondary/20",
-      label: "Matches Today",
+      label: "Live Calls Today",
       value: "28",
       change: 5,
-      subtitle: "Total scheduled"
+      subtitle: "Total scheduled",
     },
     {
-      icon: Target,
+      icon: Radio,
       iconBg: "bg-success/20",
-      label: "Prediction Accuracy %",
+      label: "Ritual Completion",
       value: "89.5%",
       change: 2,
-      subtitle: "Rolling 30-day avg"
+      subtitle: "Rolling 30-day avg",
     },
     {
-      icon: DollarSign,
+      icon: Activity,
       iconBg: "bg-warning/20",
-      label: "Revenue / Usage",
-      value: "$45.2K",
+      label: "Member Touchpoints",
+      value: "45.2K",
       change: 8,
-      subtitle: "Monthly recurring"
+      subtitle: "Monthly community actions",
     }
   ];
 

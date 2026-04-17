@@ -1,8 +1,5 @@
-"use client";
-
-import AnalyticsReports from "@/legacy-pages/analytics/AnalyticsReports";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <AnalyticsReports />;
+  redirect("/analytics");
 }
-

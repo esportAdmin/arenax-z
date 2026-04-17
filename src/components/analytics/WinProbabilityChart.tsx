@@ -17,8 +17,10 @@ export function WinProbabilityChart() {
   return (
     <div className="bg-[#12121a] rounded-2xl p-5 border border-white/5">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-foreground">Win Probability</h3>
-        <p className="text-sm text-muted-foreground">Team A: 65%</p>
+        <h3 className="text-lg font-semibold text-foreground">
+          Activation Signal
+        </h3>
+        <p className="text-sm text-muted-foreground">Community pulse: 65%</p>
       </div>
 
       <div className="relative h-[180px] flex items-center justify-center">
@@ -42,7 +44,9 @@ export function WinProbabilityChart() {
         
         {/* Center text */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl font-display font-bold text-foreground">65%</span>
+          <span className="text-4xl font-display font-bold text-foreground">
+            65%
+          </span>
         </div>
       </div>
 

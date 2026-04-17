@@ -8,24 +8,38 @@ export default function RankedBoard() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-white/70">
+      <div className="dashboard-card text-white/70">
         Loading ranked board...
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
-      <div className="mb-4 flex items-center gap-2 text-white">
-        <Trophy className="h-5 w-5 text-yellow-400" />
-        <h3 className="text-xl font-bold">Ranked Competitive Board</h3>
+    <div className="dashboard-card border-amber-300/20">
+      <div className="mb-5 flex items-center justify-between gap-4 text-white">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-amber-300/25 bg-amber-400/10">
+            <Trophy className="h-5 w-5 text-amber-300" />
+          </div>
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-200">
+              Public ladder
+            </div>
+            <h3 className="font-display text-2xl font-black">
+              Ranked Competitive Board
+            </h3>
+          </div>
+        </div>
+        <span className="hidden rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-bold text-cyan-200 sm:inline-flex">
+          Live season
+        </span>
       </div>
 
       <div className="space-y-3">
         {data.map((row) => (
           <div
             key={row.club_id}
-            className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 px-4 py-3"
+            className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/25 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-cyan-300/30 hover:bg-white/[0.055]"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 text-center font-bold text-cyan-300">

@@ -22,7 +22,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { LevelProgress } from "@/components/profile/LevelProgress";
 import { LevelUpCelebration } from "@/components/profile/LevelUpCelebration";
-import { PredictionHistory } from "@/components/profile/PredictionHistory";
+import { LiveCallHistoryPanel } from "@/components/profile/LiveCallHistoryPanel";
 import { ProfileBadges } from "@/components/profile/ProfileBadges";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileStats } from "@/components/profile/ProfileStats";
@@ -373,7 +373,7 @@ export default function Profile() {
             <MmrProgressChart />
 
             <div className="grid gap-6 lg:grid-cols-2">
-              <PredictionHistory liveCalls={liveCalls} />
+              <LiveCallHistoryPanel liveCalls={liveCalls} />
               <ProfileBadges userBadges={userBadges} />
             </div>
           </div>

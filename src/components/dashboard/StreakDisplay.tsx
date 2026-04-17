@@ -276,7 +276,7 @@ export function StreakDisplay() {
           >
             <Calendar className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Make your first prediction to start your streak.
+              Start your first live call to begin your streak.
             </p>
           </motion.div>
         )}

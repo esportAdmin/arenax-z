@@ -35,7 +35,7 @@ export function LiveMatchesSection() {
 
           <Button asChild variant="outline" className="gap-2">
             <AppLink href="/live-calls">
-              View All Matches
+              View All Calls
               <ChevronRight className="w-4 h-4" />
             </AppLink>
           </Button>
@@ -154,7 +154,7 @@ export function LiveMatchesSection() {
                       disabled={match.isFinished}
                     >
               <AppLink href="/live-calls">
-                        {match.isFinished ? "Finished" : "Open Call"}
+                        {match.isFinished ? "Completed" : "Open Call"}
                       </AppLink>
                     </Button>
                   </div>
@@ -172,7 +172,7 @@ export function LiveMatchesSection() {
             className="text-center py-12"
           >
             <p className="text-muted-foreground mb-4">
-              No matches available at the moment
+              No live calls available at the moment
             </p>
             <Button onClick={refetch} variant="outline" className="gap-2">
               <RefreshCw className="w-4 h-4" />

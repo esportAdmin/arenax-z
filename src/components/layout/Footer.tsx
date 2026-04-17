@@ -5,19 +5,20 @@ import { AppLink } from "@/components/AppLink";
 const footerLinks = {
   product: [
     { name: "Dashboard", href: "/dashboard" },
+    { name: "Clubs", href: "/clubs" },
     { name: "Live Calls", href: "/live-calls" },
+    { name: "War Room", href: "/wars" },
     { name: "Rewards", href: "/rewards" },
-    { name: "Leaderboard", href: "/leaderboard" },
   ],
   company: [
-    { name: "About", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Press Kit", href: "/press" },
-    { name: "Contact", href: "/contact" },
+    { name: "Pricing", href: "/subscription" },
+    { name: "Concierge Guide", href: "/docs" },
+    { name: "Support", href: "/contact" },
+    { name: "Leaderboard", href: "/leaderboard" },
   ],
   resources: [
     { name: "Concierge Guide", href: "/docs" },
-    { name: "FAQ", href: "/faq" },
+    { name: "Subscription", href: "/subscription" },
     { name: "Contact & Support", href: "/contact" },
   ],
   legal: [
@@ -73,8 +74,8 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
             </AppLink>
 
             <p className="mb-6 text-sm text-muted-foreground">
-              Where serious esports communities build status, sharpen their reads,
-              and turn match knowledge into momentum.
+              Where serious gaming communities build status, run live rituals,
+              and turn member attention into visible momentum.
             </p>
 
             <div className="flex gap-3">

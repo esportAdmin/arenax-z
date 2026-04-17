@@ -8,7 +8,7 @@ export default function GuildTournamentBoard() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-white/70">
+      <div className="dashboard-card text-white/70">
         Loading tournaments...
       </div>
     );
@@ -30,18 +30,32 @@ export default function GuildTournamentBoard() {
       {Object.entries(groups).map(([tournamentId, rows]) => (
         <div
           key={tournamentId}
-          className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-md"
+            className="dashboard-card border-orange-300/20"
         >
-          <div className="mb-4 flex items-center gap-2 text-white">
-            <Swords className="h-5 w-5 text-red-400" />
-            <h3 className="text-xl font-bold">{rows[0].tournament_name}</h3>
+          <div className="mb-5 flex items-center justify-between gap-4 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-orange-300/25 bg-orange-500/10">
+                <Swords className="h-5 w-5 text-orange-300" />
+              </div>
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-200">
+                  Tournament room
+                </div>
+                <h3 className="font-display text-2xl font-black">
+                  {rows[0].tournament_name}
+                </h3>
+              </div>
+            </div>
+            <span className="hidden rounded-full border border-orange-300/20 bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-100 sm:inline-flex">
+              {rows.length} clubs
+            </span>
           </div>
 
           <div className="space-y-3">
             {rows.map((entry) => (
               <div
                 key={`${entry.tournament_id}-${entry.club_id}`}
-                className="flex items-center justify-between rounded-lg border border-white/10 bg-black/20 px-4 py-3"
+                className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/25 px-4 py-3 transition hover:border-orange-300/30 hover:bg-white/[0.055]"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 text-center font-bold text-cyan-300">

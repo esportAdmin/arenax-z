@@ -96,7 +96,7 @@ export function DashboardStats() {
     },
     {
       icon: Target,
-      label: "Prediction Accuracy",
+      label: "Signal Accuracy",
       value: "68%",
       change: "+5%",
       trend: "up" as const,

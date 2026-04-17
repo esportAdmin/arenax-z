@@ -13,7 +13,7 @@ import { AppLink } from "@/components/AppLink";
 const stats = [
   { value: "50K+", label: "Competitive Fans", icon: Target },
   { value: "1M+", label: "Live Calls Logged", icon: Sparkles },
-  { value: "85%", label: "Top-Tier Accuracy", icon: Trophy },
+  { value: "85%", label: "Member Signal", icon: Trophy },
   { value: "AXT", label: "Premium Rewards Layer", icon: Zap },
 ];
 
@@ -57,7 +57,7 @@ export function HeroSection() {
           >
             The premium layer for esports fans who want more than watching.{" "}
             <br className="hidden sm:block" />
-            Make sharper live calls, climb the ladder, and unlock{" "}
+            Rally your club, build visible momentum, and unlock{" "}
             <span className="text-accent font-bold">AXT</span>.
           </motion.p>
 
@@ -74,9 +74,9 @@ export function HeroSection() {
               </Button>
             </AppLink>
 
-            <AppLink href="/game">
+            <AppLink href="/wars">
               <Button variant="web3" size="xl" className="text-lg">
-                See Live Matchups
+                Open War Room
               </Button>
             </AppLink>
           </motion.div>

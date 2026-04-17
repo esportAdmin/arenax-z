@@ -78,53 +78,53 @@ export default function PremiumSubscriptionHub() {
       {
         id: "starter",
         name: "Starter",
-        priceLabel: "€9",
+        priceLabel: "$29",
         priceSubLabel: "/ month",
         accent: "cyan",
         icon: Sparkles,
-        highlights: ["Core premium access", "XP boost", "Standard support"],
+        highlights: ["Community launch kit", "XP boost", "Standard support"],
         includes: [
-          "Premium picks (limited)",
-          "Club access + chat",
-          "Badges & cosmetics",
+          "Live ritual planning",
+          "Club access + command chat",
+          "Badges and cosmetic status",
           "XP bonus +10%",
         ],
-        cta: "Upgrade to Starter",
+        cta: "Activate Starter",
       },
       {
         id: "pro",
         name: "Pro",
-        priceLabel: "€19",
+        priceLabel: "$79",
         priceSubLabel: "/ month",
         accent: "violet",
         icon: Star,
-        highlights: ["Best value", "Priority features", "Rewards"],
+        highlights: ["Best value", "Retention loops", "Priority features"],
         includes: [
-          "Premium picks (unlimited)",
-          "Challenges & wars access",
-          "Monthly rewards",
+          "Unlimited live rituals",
+          "Challenges and war-room access",
+          "Monthly community perks",
           "XP bonus +25%",
           "Priority support",
         ],
-        cta: "Upgrade to Pro",
+        cta: "Activate Pro",
         recommended: true,
       },
       {
         id: "elite",
         name: "Elite",
-        priceLabel: "€39",
+        priceLabel: "$149",
         priceSubLabel: "/ month",
         accent: "amber",
         icon: Crown,
-        highlights: ["Full experience", "VIP perks", "Maximum rewards"],
+        highlights: ["Full command suite", "VIP perks", "Concierge priority"],
         includes: [
           "Everything in Pro",
           "VIP access & exclusive drops",
-          "Enhanced monthly rewards",
+          "Enhanced monthly perks",
           "XP bonus +50%",
-          "VIP support",
+          "Priority concierge support",
         ],
-        cta: "Upgrade to Elite",
+        cta: "Activate Elite",
       },
     ],
     [],
@@ -138,11 +138,11 @@ export default function PremiumSubscriptionHub() {
       },
       {
         q: "How does billing work?",
-        a: "Checkout should be connected through Stripe or Lemon Squeezy. The button starts a payment session.",
+        a: "Checkout is intended to run through Lemon Squeezy for US subscriptions. The button starts the hosted payment session once production billing is configured.",
       },
       {
         q: "What happens if I change plans?",
-        a: "Proration, upgrades, and downgrades should be handled by the billing provider. The UI is ready for that flow.",
+        a: "Plan changes should be handled by the billing provider. The UI is ready for that flow once production billing is connected.",
       },
       {
         q: "I have an issue. Who should I contact?",
@@ -178,7 +178,7 @@ export default function PremiumSubscriptionHub() {
         toast({
           title: "Billing not configured",
           description:
-            "Set NEXT_PUBLIC_STRIPE_PRICE_* (Starter/Pro/Elite) and redeploy.",
+            "Connect Lemon Squeezy product IDs before enabling checkout.",
           variant: "destructive",
         });
         return;
@@ -249,30 +249,30 @@ export default function PremiumSubscriptionHub() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-white/60 backdrop-blur-md">
               <Shield className="h-4 w-4 text-cyan-200" />
-              SUBSCRIPTION
+              COMMUNITY PLANS
             </div>
 
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight md:text-6xl">
-              Go{" "}
+              Build the{" "}
               <span className="bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(168,85,247,0.28)]">
-                Premium
+                Retention Engine
               </span>
             </h1>
 
             <p className="mx-auto mt-4 max-w-2xl text-base text-white/60 md:text-lg">
-              Advanced features, monthly rewards, and VIP access in a premium
-              package built for fast, polished UX.
+              Paid tiers for Discord and Twitch communities that want daily
+              rituals, prestige loops, and cleaner member activation.
             </p>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Badge className="border-white/15 bg-white/5 text-white/70">
-                Lighthouse ≥ 95
+                Discord/Twitch ready
               </Badge>
               <Badge className="border-white/15 bg-white/5 text-white/70">
-                WCAG 2.2 AA
+                Community-first
               </Badge>
               <Badge className="border-white/15 bg-white/5 text-white/70">
-                Focused layout
+                No cash rewards
               </Badge>
             </div>
           </motion.div>
@@ -529,7 +529,7 @@ export default function PremiumSubscriptionHub() {
                   </span>
                 </div>
                 <div className="mt-2 text-xs text-white/50">
-                  Checkout still needs a live Stripe/Lemon Squeezy connection.
+                  Checkout still needs the live Lemon Squeezy connection.
                 </div>
               </div>
 
