@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { sanitizeRedirectPath } from "@/lib/auth-flow";
 import {
   hasLocalQaBootstrap,
+  isDevBypassAvailable,
   LOCAL_QA_EMAIL,
   LOCAL_QA_PASSWORD,
   LOCAL_QA_USERNAME,
@@ -44,7 +45,20 @@ async function findUserIdByEmail(admin: any, email: string) {
 export async function GET(request: NextRequest) {
   if (!hasLocalQaBootstrap()) {
     return NextResponse.json(
-      { error: "Local QA login is unavailable in this environment." },
+      {
+        error: "Local QA login is unavailable in this environment.",
+        diagnostics: {
+          nodeEnv: process.env.NODE_ENV ?? null,
+          vercelEnv: process.env.VERCEL_ENV ?? null,
+          devBypassAvailable: isDevBypassAvailable(),
+          localAuthEnabled: process.env.QA_ENABLE_LOCAL_AUTH === "true",
+          hasSupabaseUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+          hasSupabaseAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+          hasServiceRoleKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+          serviceRoleIsPlaceholder:
+            process.env.SUPABASE_SERVICE_ROLE_KEY === "REPLACE_ME",
+        },
+      },
       { status: 503 },
     );
   }
