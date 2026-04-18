@@ -213,6 +213,12 @@ async function takeScreenshot(page, fileName) {
   const filePath = path.join(OUTPUT_DIR, fileName);
 
   try {
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
+    });
+    await sleep(120);
     await page.screenshot({ path: filePath, fullPage: true });
     return filePath;
   } catch (error) {
@@ -227,6 +233,11 @@ async function takeScreenshot(page, fileName) {
         width: 1440,
         height: 1080,
         deviceScaleFactor: 1,
+      });
+      await page.evaluate(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        document.documentElement.scrollLeft = 0;
+        document.body.scrollLeft = 0;
       });
       await sleep(250);
       await page.screenshot({ path: filePath, fullPage: true });
