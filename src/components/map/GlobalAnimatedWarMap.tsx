@@ -177,7 +177,7 @@ export default function GlobalAnimatedWarMap({
 
   return (
     <Shell showChrome={showChrome}>
-      <div className="relative overflow-hidden bg-[#030915]">
+      <div className="relative overflow-x-hidden bg-[#030915]">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-[-10%] top-[-12%] h-96 w-96 rounded-full bg-cyan-400/12 blur-3xl" />
           <div className="absolute right-[-6%] top-[12%] h-[28rem] w-[28rem] rounded-full bg-blue-500/10 blur-3xl" />
@@ -185,7 +185,7 @@ export default function GlobalAnimatedWarMap({
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto max-w-[1720px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <main className="relative mx-auto w-full max-w-[1720px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,12 +227,12 @@ export default function GlobalAnimatedWarMap({
             </div>
           </motion.section>
 
-          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2.8fr)_360px] 2xl:grid-cols-[minmax(0,3.2fr)_380px]">
+          <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] 2xl:grid-cols-[minmax(0,1fr)_380px]">
             <motion.section
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.08 }}
-              className="relative overflow-hidden rounded-[2.35rem] border border-cyan-300/24 bg-[linear-gradient(145deg,rgba(6,18,32,0.94),rgba(2,6,23,0.9)_48%,rgba(29,17,11,0.82))] shadow-[0_0_100px_rgba(34,211,238,0.14),inset_0_0_70px_rgba(34,211,238,0.05)]"
+              className="relative min-w-0 overflow-hidden rounded-[2.35rem] border border-cyan-300/24 bg-[linear-gradient(145deg,rgba(6,18,32,0.94),rgba(2,6,23,0.9)_48%,rgba(29,17,11,0.82))] shadow-[0_0_100px_rgba(34,211,238,0.14),inset_0_0_70px_rgba(34,211,238,0.05)]"
             >
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-orange-200/80" />
@@ -265,7 +265,7 @@ export default function GlobalAnimatedWarMap({
                       Loading global theater...
                     </div>
                   ) : (
-                    <div className="relative h-[720px] min-h-[520px]">
+                    <div className="relative h-[640px] min-h-[500px] 2xl:h-[720px]">
                       <WorldMapSvg
                         territories={territories}
                         onSelect={(territory) => setSelectedTerritoryId(territory.id)}
@@ -295,7 +295,7 @@ export default function GlobalAnimatedWarMap({
               initial={{ opacity: 0, x: 18 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.45, ease: "easeOut", delay: 0.14 }}
-              className="space-y-6"
+              className="min-w-0 space-y-6"
             >
               <TerritoryDetailsPanel
                 territory={selectedTerritory}
