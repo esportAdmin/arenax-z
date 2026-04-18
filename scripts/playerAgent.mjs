@@ -827,10 +827,20 @@ async function clickByAgentId(page, id) {
 }
 
 async function exercisePageInteractions(page, routePath) {
-  const candidates = await discoverActionables(page);
+  const initialCandidates = await discoverActionables(page);
   const interactions = [];
+  const exercisedLabels = new Set();
 
-  for (const candidate of candidates.slice(0, 4)) {
+  for (let index = 0; index < 4; index += 1) {
+    const candidates = await discoverActionables(page);
+    const candidate = candidates.find((entry) => !exercisedLabels.has(entry.text));
+
+    if (!candidate) {
+      break;
+    }
+
+    exercisedLabels.add(candidate.text);
+
     const beforePath = new URL(page.url()).pathname;
     const beforeTitle = await page.title();
     const clicked = await clickByAgentId(page, candidate.id);
@@ -867,7 +877,7 @@ async function exercisePageInteractions(page, routePath) {
 
   return {
     interactions,
-    actionablesCount: candidates.length,
+    actionablesCount: initialCandidates.length,
   };
 }
 
