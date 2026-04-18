@@ -54,5 +54,5 @@ export default function PlayPage() {
     );
   }
 
-  return <QueueScreen userId={user.id} queueType="ranked" />;
+  return <QueueScreen userId={user.id} queueType="casual" />;
 }
