@@ -80,6 +80,7 @@ const APP_ROUTES = [
   { name: "Play", path: "/play" },
   { name: "Clubs", path: "/clubs" },
   { name: "War Map", path: "/war-map" },
+  { name: "War Room", path: "/wars" },
   { name: "Leaderboard", path: "/leaderboard" },
   { name: "Live Calls", path: "/live-calls" },
   { name: "Profile", path: "/profile" },
