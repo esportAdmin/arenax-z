@@ -1,23 +1,24 @@
-// src/components/subscription/PremiumSubscriptionHub.tsx
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
+  Bot,
   Check,
   ChevronRight,
   Crown,
+  Gem,
   HelpCircle,
   Loader2,
-  Shield,
+  Radio,
+  ShieldCheck,
   Sparkles,
-  Star,
+  Users,
   Zap,
 } from "lucide-react";
 
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,536 +35,394 @@ import { SUBSCRIPTION_TIERS } from "@/lib/subscriptionTiers";
 
 type PlanId = "free" | "starter" | "pro" | "elite";
 type PaidPlanId = Exclude<PlanId, "free">;
+type Accent = "cyan" | "violet" | "orange" | "gold";
 
 type Plan = {
-  id: PaidPlanId;
+  id: PlanId;
   name: string;
-  priceLabel: string;
-  priceSubLabel: string;
-  accent: "cyan" | "violet" | "amber";
-  icon: typeof Crown;
-  highlights: string[];
-  includes: string[];
+  role: string;
+  price: string;
+  interval: string;
+  accent: Accent;
+  icon: LucideIcon;
   cta: string;
+  features: string[];
   recommended?: boolean;
-};
-
-type FaqItem = {
-  q: string;
-  a: string;
 };
 
 type ConfirmState = { open: false } | { open: true; planId: PaidPlanId };
 
-function cx(...parts: Array<string | false | null | undefined>): string {
-  return parts.filter(Boolean).join(" ");
+const plans: Plan[] = [
+  {
+    id: "free",
+    name: "Free",
+    role: "Community Essentials",
+    price: "$0",
+    interval: "/mo",
+    accent: "cyan",
+    icon: Users,
+    cta: "Start Free",
+    features: ["Basic club tools", "Limited war-room access", "Community activation", "Standard support"],
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    role: "Momentum Builder",
+    price: "$29",
+    interval: "/mo",
+    accent: "violet",
+    icon: Sparkles,
+    cta: "Upgrade to Starter",
+    features: ["Live ritual planning", "Club command tools", "War-room intro", "Member activation loops"],
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    role: "Retention Command",
+    price: "$79",
+    interval: "/mo",
+    accent: "orange",
+    icon: Crown,
+    cta: "Upgrade to Pro",
+    recommended: true,
+    features: ["All Starter features", "Full club metrics", "Advanced war-room tracking", "Reward visibility"],
+  },
+  {
+    id: "elite",
+    name: "Elite",
+    role: "Concierge Suite",
+    price: "$149",
+    interval: "/mo",
+    accent: "gold",
+    icon: Gem,
+    cta: "Contact Sales",
+    features: ["All Pro features", "Dedicated admin support", "Concierge onboarding", "SLA priority support"],
+  },
+];
+
+const comparison = [
+  ["Live ritual planning", true, true, true, true],
+  ["Club command tools", true, true, true, true],
+  ["War-room pressure tracking", false, true, true, true],
+  ["Member activation loops", false, true, true, true],
+  ["Advanced admin workflows", false, false, true, true],
+  ["Priority support", false, false, true, true],
+  ["Concierge onboarding", false, false, false, true],
+] as const;
+
+const faqs = [
+  ["Is this a gambling platform?", "No. RallyGuild is a retention and community operations tool. There is no wagering, payout, betting, cash prize, or financial return."],
+  ["How does billing work?", "Paid plans are prepared for Lemon Squeezy hosted checkout in production, with subscriptions managed by the merchant-of-record flow."],
+  ["Can I switch plans?", "Yes. Plan changes should be handled from the billing portal once the live Lemon Squeezy setup is connected."],
+  ["What is Launch Concierge?", "A one-time onboarding add-on for Discord/Twitch setup, role configuration, ritual planning, and launch support."],
+] as const;
+
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
 }
 
+/**
+ * Returns the tactical color recipe used by command-tier cards.
+ *
+ * @example
+ * const visuals = getPlanVisuals("orange");
+ * console.log(visuals.border);
+ */
+function getPlanVisuals(accent: Accent) {
+  const recipes = {
+    cyan: {
+      border: "border-cyan-300/35 shadow-[0_0_32px_rgba(34,211,238,0.18)]",
+      glow: "from-cyan-300/22 via-cyan-300/6 to-transparent",
+      text: "text-cyan-200",
+      button: "from-cyan-300 to-cyan-500 text-slate-950 shadow-[0_0_22px_rgba(34,211,238,0.34)]",
+      chip: "border-cyan-300/25 bg-cyan-300/10 text-cyan-100",
+    },
+    violet: {
+      border: "border-violet-300/35 shadow-[0_0_32px_rgba(167,139,250,0.16)]",
+      glow: "from-violet-400/20 via-violet-400/6 to-transparent",
+      text: "text-violet-200",
+      button: "from-cyan-300 to-violet-400 text-slate-950 shadow-[0_0_22px_rgba(167,139,250,0.28)]",
+      chip: "border-violet-300/25 bg-violet-300/10 text-violet-100",
+    },
+    orange: {
+      border: "border-orange-300/60 shadow-[0_0_42px_rgba(251,146,60,0.22)]",
+      glow: "from-orange-300/24 via-cyan-300/8 to-transparent",
+      text: "text-orange-200",
+      button: "from-orange-300 to-amber-400 text-slate-950 shadow-[0_0_26px_rgba(251,146,60,0.38)]",
+      chip: "border-orange-300/35 bg-orange-300/12 text-orange-100",
+    },
+    gold: {
+      border: "border-amber-300/45 shadow-[0_0_34px_rgba(245,158,11,0.18)]",
+      glow: "from-amber-300/22 via-orange-300/8 to-transparent",
+      text: "text-amber-200",
+      button: "from-cyan-300 to-amber-300 text-slate-950 shadow-[0_0_22px_rgba(245,158,11,0.30)]",
+      chip: "border-amber-300/30 bg-amber-300/10 text-amber-100",
+    },
+  };
+
+  return recipes[accent];
+}
+
+/**
+ * Renders the RallyGuild subscription command center.
+ *
+ * @example
+ * <PremiumSubscriptionHub />
+ */
 export default function PremiumSubscriptionHub() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const {
-    subscribed,
-    tier,
-    subscriptionEnd,
-    loading: subLoading,
-    createCheckout,
-  } = useSubscription();
-
+  const { subscribed, tier, subscriptionEnd, loading, createCheckout } = useSubscription();
   const [confirm, setConfirm] = useState<ConfirmState>({ open: false });
-  const [isStartingCheckout, setIsStartingCheckout] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-  const plans: Plan[] = useMemo(
-    () => [
-      {
-        id: "starter",
-        name: "Starter",
-        priceLabel: "$29",
-        priceSubLabel: "/ month",
-        accent: "cyan",
-        icon: Sparkles,
-        highlights: ["Community launch kit", "XP boost", "Standard support"],
-        includes: [
-          "Live ritual planning",
-          "Club access + command chat",
-          "Badges and cosmetic status",
-          "XP bonus +10%",
-        ],
-        cta: "Activate Starter",
-      },
-      {
-        id: "pro",
-        name: "Pro",
-        priceLabel: "$79",
-        priceSubLabel: "/ month",
-        accent: "violet",
-        icon: Star,
-        highlights: ["Best value", "Retention loops", "Priority features"],
-        includes: [
-          "Unlimited live rituals",
-          "Challenges and war-room access",
-          "Monthly community perks",
-          "XP bonus +25%",
-          "Priority support",
-        ],
-        cta: "Activate Pro",
-        recommended: true,
-      },
-      {
-        id: "elite",
-        name: "Elite",
-        priceLabel: "$149",
-        priceSubLabel: "/ month",
-        accent: "amber",
-        icon: Crown,
-        highlights: ["Full command suite", "VIP perks", "Concierge priority"],
-        includes: [
-          "Everything in Pro",
-          "VIP access & exclusive drops",
-          "Enhanced monthly perks",
-          "XP bonus +50%",
-          "Priority concierge support",
-        ],
-        cta: "Activate Elite",
-      },
-    ],
-    [],
-  );
+  const currentTierId = (tier?.id?.toLowerCase() as PlanId | undefined) ?? "free";
 
-  const faqs: FaqItem[] = useMemo(
-    () => [
-      {
-        q: "Can I cancel anytime?",
-        a: "Yes. Your subscription stays active until the end of the current billing period. This still needs to be wired to the payment provider.",
-      },
-      {
-        q: "How does billing work?",
-        a: "Checkout is intended to run through Lemon Squeezy for US subscriptions. The button starts the hosted payment session once production billing is configured.",
-      },
-      {
-        q: "What happens if I change plans?",
-        a: "Plan changes should be handled by the billing provider. The UI is ready for that flow once production billing is connected.",
-      },
-      {
-        q: "I have an issue. Who should I contact?",
-        a: "In-app support plus support email. The Elite tier receives priority handling.",
-      },
-    ],
-    [],
-  );
-
-  const currentTierId: PlanId = useMemo(() => {
-    const id = (tier?.id || "").toLowerCase();
-    if (id === "elite") return "elite";
-    if (id === "pro") return "pro";
-    if (id === "starter") return "starter";
-    return "free";
-  }, [tier]);
-
-  const startCheckout = useCallback(
-    async (planId: PaidPlanId) => {
-      if (!user) {
+  const openConfirm = useCallback(
+    (planId: PlanId) => {
+      if (planId === "free") {
         toast({
-          title: "Sign-in required",
-          description: "Sign in to activate a subscription.",
-          variant: "destructive",
+          title: "Free tier ready",
+          description: "Use Discord or Twitch login, then launch your first community ritual.",
         });
         return;
       }
 
-      const tierConfig = SUBSCRIPTION_TIERS[planId];
-      const priceId = tierConfig?.price_id;
-
-      if (!priceId || /_ID$/.test(priceId)) {
-        toast({
-          title: "Billing not configured",
-          description:
-            "Connect Lemon Squeezy product IDs before enabling checkout.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setIsStartingCheckout(true);
-      try {
-        await createCheckout(priceId);
-      } finally {
-        setIsStartingCheckout(false);
-      }
+      setConfirm({ open: true, planId });
     },
-    [createCheckout, toast, user],
+    [toast],
   );
 
-  const openConfirm = (planId: PaidPlanId) => {
-    setConfirm({ open: true, planId });
-  };
+  const startCheckout = useCallback(async () => {
+    if (!confirm.open) return;
 
-  const closeConfirm = () => setConfirm({ open: false });
-
-  const accentStyles = (accent: Plan["accent"]) => {
-    if (accent === "cyan") {
-      return {
-        ring: "ring-cyan-500/30",
-        glow: "shadow-[0_0_30px_rgba(0,240,255,0.18)]",
-        chip: "bg-cyan-500/15 text-cyan-200 border-cyan-500/30",
-        cta: "from-cyan-400 to-blue-500",
-        borderHover: "hover:border-cyan-500/35",
-      };
+    if (!user) {
+      toast({
+        title: "Sign-in required",
+        description: "Connect Discord or Twitch before activating a paid command tier.",
+        variant: "destructive",
+      });
+      setConfirm({ open: false });
+      return;
     }
 
-    if (accent === "amber") {
-      return {
-        ring: "ring-amber-500/25",
-        glow: "shadow-[0_0_30px_rgba(245,158,11,0.16)]",
-        chip: "bg-amber-500/15 text-amber-200 border-amber-500/30",
-        cta: "from-amber-400 to-yellow-300",
-        borderHover: "hover:border-amber-500/35",
-      };
+    const tierConfig = SUBSCRIPTION_TIERS[confirm.planId];
+    const priceId = tierConfig?.price_id;
+
+    if (!priceId || /_ID$/.test(priceId)) {
+      toast({
+        title: "Billing not live yet",
+        description: "Add the Lemon Squeezy variant ID before opening production checkout.",
+        variant: "destructive",
+      });
+      setConfirm({ open: false });
+      return;
     }
 
-    return {
-      ring: "ring-purple-500/25",
-      glow: "shadow-[0_0_30px_rgba(168,85,247,0.18)]",
-      chip: "bg-purple-500/15 text-purple-200 border-purple-500/30",
-      cta: "from-purple-500 to-fuchsia-500",
-      borderHover: "hover:border-purple-500/35",
-    };
-  };
+    setCheckoutLoading(true);
+    try {
+      await createCheckout(priceId);
+      setConfirm({ open: false });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }, [confirm, createCheckout, toast, user]);
 
   return (
-    <div className="min-h-screen bg-[#0A0B14] text-white">
+    <div className="min-h-screen overflow-hidden bg-[#050b14] text-white">
       <Navbar />
 
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(1100px_circle_at_20%_25%,rgba(0,240,255,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_80%_35%,rgba(168,85,247,0.14),transparent_55%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
-      </div>
+      <main className="relative isolate pb-16 pt-24">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:72px_72px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(950px_circle_at_18%_16%,rgba(34,211,238,0.22),transparent_58%),radial-gradient(860px_circle_at_84%_25%,rgba(168,85,247,0.18),transparent_58%),radial-gradient(680px_circle_at_52%_54%,rgba(251,146,60,0.16),transparent_64%)]" />
+          <div className="absolute left-0 right-0 top-40 h-28 bg-[linear-gradient(90deg,transparent,rgba(34,211,238,0.26),rgba(251,146,60,0.20),transparent)] blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.58)_82%)]" />
+        </div>
 
-      <main className="pb-16 pt-24">
-        <div className="container-arena">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-auto max-w-3xl text-center"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-white/60 backdrop-blur-md">
-              <Shield className="h-4 w-4 text-cyan-200" />
-              COMMUNITY PLANS
-            </div>
-
-            <h1 className="mt-5 text-4xl font-extrabold tracking-tight md:text-6xl">
-              Build the{" "}
-              <span className="bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(168,85,247,0.28)]">
-                Retention Engine
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8">
+          <section className="relative rounded-[2rem] border border-cyan-300/15 bg-slate-950/38 px-5 py-10 text-center shadow-[0_0_70px_rgba(34,211,238,0.08)] backdrop-blur-xl sm:px-8">
+            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-transparent" />
+            <p className="mx-auto inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-1.5 text-xs font-black uppercase tracking-[0.24em] text-cyan-100">
+              <Radio className="h-4 w-4" />
+              RallyGuild command tiers
+            </p>
+            <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
+              Turn your community into a{" "}
+              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-orange-200 bg-clip-text text-transparent">
+                daily comeback loop.
               </span>
             </h1>
-
-            <p className="mx-auto mt-4 max-w-2xl text-base text-white/60 md:text-lg">
-              Paid tiers for Discord and Twitch communities that want daily
-              rituals, prestige loops, and cleaner member activation.
+            <p className="mx-auto mt-4 max-w-3xl text-base text-slate-300 sm:text-lg">
+              Upgrade your Discord/Twitch command center with retention tools, live rituals, club momentum, and premium admin workflows.
             </p>
-
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Badge className="border-white/15 bg-white/5 text-white/70">
-                Discord/Twitch ready
-              </Badge>
-              <Badge className="border-white/15 bg-white/5 text-white/70">
-                Community-first
-              </Badge>
-              <Badge className="border-white/15 bg-white/5 text-white/70">
-                No cash rewards
-              </Badge>
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button className="h-12 rounded-xl bg-cyan-300 px-8 font-black text-slate-950 hover:bg-cyan-200">
+                Choose your command tier
+              </Button>
+              <Button variant="outline" className="h-12 rounded-xl border-orange-300/45 bg-orange-300/10 px-8 font-black text-orange-100 hover:bg-orange-300/15">
+                View launch-safe policy
+              </Button>
             </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/20">
-                  <Zap className="h-5 w-5 text-cyan-200" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-bold text-white">
-                    Subscription status
-                  </div>
-                  <div className="mt-0.5 text-sm text-white/60">
-                    {subLoading ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Loading...
-                      </span>
-                    ) : subscribed ? (
-                      <>
-                        Active •{" "}
-                        <span className="font-semibold">
-                          {tier?.name ?? "Premium"}
-                        </span>
-                        {subscriptionEnd ? (
-                          <span className="text-white/45">
-                            {" "}
-                            • ends {subscriptionEnd}
-                          </span>
-                        ) : null}
-                      </>
-                    ) : (
-                      "No active subscription"
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="border-white/15 bg-transparent text-white hover:bg-white/5"
-                  onClick={() => {
-                    const el = document.getElementById("subscription-faq");
-                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                >
-                  <HelpCircle className="h-4 w-4" />
-                  FAQ
-                </Button>
-
-                <Button
-                  className="bg-gradient-to-r from-cyan-400 to-blue-500 font-bold text-black"
-                  onClick={() => {
-                    const el = document.getElementById("subscription-plans");
-                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                >
-                  View plans
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-
-          <div id="subscription-plans" className="mt-10">
-            <div className="mb-4 flex items-end justify-between gap-3">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">
-                  Plans
-                </div>
-                <div className="mt-1 text-xl font-extrabold">
-                  Choose your tier
-                </div>
-              </div>
-              <Badge className="border-white/15 bg-white/5 text-white/70">
-                Monthly billing
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {plans.map((plan, index) => {
-                const styles = accentStyles(plan.accent);
-                const isCurrent = currentTierId === plan.id;
-
-                return (
-                  <motion.div
-                    key={plan.id}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.04 * index }}
-                    className={cx(
-                      "relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900/65 to-slate-950/70 p-7 backdrop-blur-xl",
-                      styles.borderHover,
-                      plan.recommended && "ring-1 " + styles.ring,
-                      plan.recommended && styles.glow,
-                    )}
-                  >
-                    <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-black/30 blur-3xl" />
-
-                    <div className="relative">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-black/20">
-                            <plan.icon className="h-6 w-6 text-white/80" />
-                          </div>
-                          <div>
-                            <div className="text-lg font-extrabold">
-                              {plan.name}
-                            </div>
-                            <div className="mt-1 text-sm text-white/55">
-                              {plan.highlights[0]}
-                            </div>
-                          </div>
-                        </div>
-
-                        {plan.recommended ? (
-                          <Badge className={cx("border", styles.chip)}>
-                            Recommended
-                          </Badge>
-                        ) : null}
-                      </div>
-
-                      <div className="mt-6 flex items-end gap-2">
-                        <div className="text-5xl font-extrabold tracking-tight">
-                          {plan.priceLabel}
-                        </div>
-                        <div className="pb-2 text-sm font-semibold text-white/55">
-                          {plan.priceSubLabel}
-                        </div>
-                      </div>
-
-                      <div className="mt-5 space-y-2">
-                        {plan.highlights.slice(1).map((highlight) => (
-                          <div
-                            key={highlight}
-                            className="flex items-center gap-2 text-sm text-white/65"
-                          >
-                            <Check className="h-4 w-4 text-emerald-300" />
-                            <span>{highlight}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">
-                          Included
-                        </div>
-                        <div className="mt-3 space-y-2">
-                          {plan.includes.map((item) => (
-                            <div
-                              key={item}
-                              className="flex items-start gap-2 text-sm text-white/70"
-                            >
-                              <span className="mt-[2px] h-2 w-2 shrink-0 rounded-full bg-white/35" />
-                              <span>{item}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="mt-6 space-y-3">
-                        <Button
-                          className={cx(
-                            "h-12 w-full rounded-2xl font-extrabold text-black",
-                            "bg-gradient-to-r " + styles.cta,
-                          )}
-                          disabled={isCurrent || isStartingCheckout}
-                          onClick={() => openConfirm(plan.id)}
-                          aria-label={`Choose ${plan.name}`}
-                        >
-                          {isStartingCheckout ? (
-                            <span className="inline-flex items-center gap-2">
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              Loading...
-                            </span>
-                          ) : isCurrent ? (
-                            "Current plan"
-                          ) : (
-                            plan.cta
-                          )}
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          className="h-12 w-full rounded-2xl border-white/15 bg-transparent text-white hover:bg-white/5"
-                          onClick={() => {
-                            const el = document.getElementById("subscription-faq");
-                            el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          }}
-                        >
-                          Details & FAQ
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div id="subscription-faq" className="mt-12">
-            <div className="mb-4">
-              <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">
-                FAQ
-              </div>
-              <div className="mt-1 text-xl font-extrabold">
-                Frequently asked questions
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              {faqs.map((faq) => (
-                <div
-                  key={faq.q}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-black/20">
-                      <HelpCircle className="h-4 w-4 text-white/70" />
-                    </div>
-                    <div>
-                      <div className="font-bold">{faq.q}</div>
-                      <div className="mt-1 text-sm text-white/60">{faq.a}</div>
-                    </div>
-                  </div>
-                </div>
+            <div className="mx-auto mt-7 flex max-w-4xl flex-wrap items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-bold text-slate-300">
+              {["Discord/Twitch ready", "Community-first", "No cash value", "No financial return", "Built for retention"].map((item) => (
+                <span key={item} className="inline-flex items-center gap-2 rounded-full px-3 py-1">
+                  <ShieldCheck className="h-4 w-4 text-cyan-200" />
+                  {item}
+                </span>
               ))}
             </div>
-          </div>
+          </section>
 
-          <Dialog open={confirm.open} onOpenChange={(open) => !open && closeConfirm()}>
-            <DialogContent className="border-white/10 bg-slate-950/80 text-white backdrop-blur-xl sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Confirm subscription</DialogTitle>
-                <DialogDescription className="text-white/60">
-                  You will be redirected to checkout to activate your plan.
-                </DialogDescription>
-              </DialogHeader>
+          <section className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-4">
+            {plans.map((plan) => {
+              const visuals = getPlanVisuals(plan.accent);
+              const Icon = plan.icon;
+              const isCurrent = subscribed && currentTierId === plan.id;
 
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white/70">
-                <div className="flex items-center justify-between">
-                  <span>Plan</span>
-                  <span className="font-bold">
-                    {confirm.open ? confirm.planId.toUpperCase() : ""}
-                  </span>
-                </div>
-                <div className="mt-2 text-xs text-white/50">
-                  Checkout still needs the live Lemon Squeezy connection.
-                </div>
+              return (
+                <article key={plan.id} className={cx("relative overflow-hidden rounded-[1.65rem] border bg-slate-950/62 p-5 backdrop-blur-xl transition hover:-translate-y-1", visuals.border, plan.recommended && "lg:-mt-4")}>
+                  <div className={cx("absolute inset-x-0 top-0 h-28 bg-gradient-to-b", visuals.glow)} />
+                  {plan.recommended ? (
+                    <div className="absolute left-1/2 top-0 -translate-x-1/2 rounded-b-xl border border-orange-300/40 bg-orange-300 px-4 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-950">
+                      Recommended
+                    </div>
+                  ) : null}
+                  <div className="relative pt-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className={cx("flex items-center gap-2 text-sm font-black uppercase tracking-[0.18em]", visuals.text)}>
+                          <Icon className="h-5 w-5" />
+                          {plan.name}
+                        </div>
+                        <p className="mt-1 text-sm font-semibold text-slate-300">{plan.role}</p>
+                      </div>
+                      {isCurrent ? <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-xs font-bold text-emerald-100">Active</span> : null}
+                    </div>
+                    <div className="mt-6 flex items-end gap-2">
+                      <span className="text-4xl font-black tracking-tight">{plan.price}</span>
+                      <span className="pb-1 text-sm font-bold text-slate-400">{plan.interval}</span>
+                    </div>
+                    <ul className="mt-5 space-y-2.5">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2 text-sm text-slate-300">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-cyan-200" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button disabled={isCurrent || checkoutLoading} onClick={() => openConfirm(plan.id)} className={cx("mt-7 h-11 w-full rounded-xl bg-gradient-to-r font-black", visuals.button)}>
+                      {isCurrent ? "Current tier" : plan.cta}
+                      {!isCurrent ? <ChevronRight className="h-4 w-4" /> : null}
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+
+          <section className="mt-7 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_0.9fr]">
+            <div className="rounded-[1.5rem] border border-cyan-300/25 bg-slate-950/58 p-5 shadow-[0_0_38px_rgba(34,211,238,0.12)] backdrop-blur-xl">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-black text-cyan-100">Command tier comparison</h2>
+                <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-bold text-cyan-100">
+                  Monthly plans
+                </span>
               </div>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full min-w-[620px] border-separate border-spacing-0 text-sm">
+                  <thead className="text-left text-xs uppercase tracking-[0.18em] text-slate-400">
+                    <tr>{["Feature", "Free", "Starter", "Pro", "Elite"].map((head) => <th key={head} className="border-b border-white/10 px-3 py-3">{head}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {comparison.map(([feature, free, starter, pro, elite]) => (
+                      <tr key={feature} className="text-slate-300">
+                        <td className="border-b border-white/8 px-3 py-3 font-semibold">{feature}</td>
+                        {[free, starter, pro, elite].map((enabled, index) => (
+                          <td key={`${feature}-${index}`} className="border-b border-white/8 px-3 py-3">
+                            {enabled ? <Check className="h-4 w-4 text-cyan-200" /> : <span className="text-slate-600">—</span>}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  className="border-white/15 bg-transparent text-white hover:bg-white/5"
-                  onClick={closeConfirm}
-                  disabled={isStartingCheckout}
-                >
-                  Cancel
+            <div className="space-y-5">
+              <div className="rounded-[1.5rem] border border-orange-300/40 bg-orange-300/10 p-5 shadow-[0_0_34px_rgba(251,146,60,0.16)] backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-orange-300/30 bg-orange-300/12">
+                    <Bot className="h-6 w-6 text-orange-100" />
+                  </div>
+                  <div>
+                    <h2 className="font-black text-orange-100">Launch Concierge</h2>
+                    <p className="text-sm text-orange-50/70">One-time setup for Discord/Twitch community activation.</p>
+                  </div>
+                </div>
+                <Button className="mt-5 h-11 w-full rounded-xl bg-gradient-to-r from-orange-300 to-amber-300 font-black text-slate-950">
+                  Add Launch Concierge
                 </Button>
+              </div>
+              <div className="rounded-[1.5rem] border border-amber-300/30 bg-slate-950/66 p-5 backdrop-blur-xl">
+                <h2 className="flex items-center gap-2 font-black text-amber-100">
+                  <Zap className="h-5 w-5" />
+                  Launch-safe monetization
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  Arena Points, badges, perks, and rewards are virtual engagement elements only. They have no cash value, no financial return, and cannot be redeemed for money.
+                </p>
+              </div>
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-300 backdrop-blur-xl">
+                <div className="font-black text-white">Status</div>
+                <p className="mt-2">
+                  {loading ? "Checking subscription..." : subscribed ? `Active tier: ${tier?.name ?? "Premium"}${subscriptionEnd ? ` until ${subscriptionEnd}` : ""}` : "No active paid tier yet."}
+                </p>
+              </div>
+            </div>
+          </section>
 
-                <Button
-                  className="bg-gradient-to-r from-cyan-400 to-blue-500 font-extrabold text-black"
-                  onClick={async () => {
-                    if (!confirm.open) return;
-                    await startCheckout(confirm.planId);
-                    closeConfirm();
-                  }}
-                  disabled={isStartingCheckout}
-                >
-                  Continue
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <section className="mt-7 rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+            <h2 className="text-center text-xl font-black">Frequently Asked Questions</h2>
+            <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+              {faqs.map(([question, answer]) => (
+                <details key={question} className="group rounded-2xl border border-cyan-300/15 bg-slate-950/62 p-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-cyan-100">
+                    <span>{question}</span>
+                    <HelpCircle className="h-4 w-4 shrink-0 transition group-open:rotate-45" />
+                  </summary>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">{answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
 
           <div className="mt-10">
             <Footer />
           </div>
         </div>
       </main>
+
+      <Dialog open={confirm.open} onOpenChange={(open) => !open && setConfirm({ open: false })}>
+        <DialogContent className="border-cyan-300/20 bg-slate-950/90 text-white shadow-[0_0_45px_rgba(34,211,238,0.15)] backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle>Open Lemon Squeezy checkout</DialogTitle>
+            <DialogDescription className="text-slate-300">
+              You are activating a community command tier. No cash rewards, payouts, wagering, or financial return are offered.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" className="border-white/15 bg-transparent text-white hover:bg-white/5" onClick={() => setConfirm({ open: false })}>
+              Cancel
+            </Button>
+            <Button className="bg-cyan-300 font-black text-slate-950 hover:bg-cyan-200" onClick={startCheckout} disabled={checkoutLoading}>
+              {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

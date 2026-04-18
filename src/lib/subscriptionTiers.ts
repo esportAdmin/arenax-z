@@ -1,11 +1,11 @@
-// Subscription tiers configuration
-// Replace price_id and product_id with actual Stripe IDs from your dashboard
+// Subscription tiers configuration.
+// Use Lemon Squeezy variant/product IDs for production billing.
 
 export interface SubscriptionTier {
   id: string;
   name: string;
-  price_id: string; // Replace with your Stripe price ID
-  product_id: string; // Replace with your Stripe product ID
+  price_id: string; // Lemon Squeezy variant ID, kept as price_id for API compatibility.
+  product_id: string; // Lemon Squeezy product ID, kept as product_id for API compatibility.
   price: number;
   currency: string;
   interval: 'month' | 'year';
@@ -15,62 +15,73 @@ export interface SubscriptionTier {
 }
 
 const env = {
-  starterPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER,
-  proPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
-  elitePriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ELITE,
-  starterProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_STARTER,
-  proProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_PRO,
-  eliteProductId: process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ELITE,
+  starterPriceId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_STARTER ??
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER,
+  proPriceId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_PRO ??
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO,
+  elitePriceId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ELITE ??
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_ELITE,
+  starterProductId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_STARTER ??
+    process.env.NEXT_PUBLIC_STRIPE_PRODUCT_STARTER,
+  proProductId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_PRO ??
+    process.env.NEXT_PUBLIC_STRIPE_PRODUCT_PRO,
+  eliteProductId:
+    process.env.NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_ELITE ??
+    process.env.NEXT_PUBLIC_STRIPE_PRODUCT_ELITE,
 } as const;
 
 export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   starter: {
     id: 'starter',
     name: 'Starter',
-    price_id: env.starterPriceId ?? 'price_STARTER_ID',
-    product_id: env.starterProductId ?? 'prod_STARTER_ID',
-    price: 9.99,
+    price_id: env.starterPriceId ?? 'variant_STARTER_ID',
+    product_id: env.starterProductId ?? 'product_STARTER_ID',
+    price: 29,
     currency: 'USD',
     interval: 'month',
     arenaPointsPerMonth: 500,
     features: [
-      '500 Arena Points / month',
-      'Basic live calls',
-      'Access to public clubs',
+      'Live ritual planning',
+      'Club command tools',
+      'Member activation loops',
     ],
   },
   pro: {
     id: 'pro',
     name: 'Pro',
-    price_id: env.proPriceId ?? 'price_PRO_ID',
-    product_id: env.proProductId ?? 'prod_PRO_ID',
-    price: 19.99,
+    price_id: env.proPriceId ?? 'variant_PRO_ID',
+    product_id: env.proProductId ?? 'product_PRO_ID',
+    price: 79,
     currency: 'USD',
     interval: 'month',
     arenaPointsPerMonth: 1500,
     features: [
-      '1,500 Arena Points / month',
-      'Priority live calls',
-      'Create & manage clubs',
-      'Exclusive badges',
+      'Full club metrics',
+      'Advanced war-room tracking',
+      'Reward visibility',
+      'Priority support',
     ],
     popular: true,
   },
   elite: {
     id: 'elite',
     name: 'Elite',
-    price_id: env.elitePriceId ?? 'price_ELITE_ID',
-    product_id: env.eliteProductId ?? 'prod_ELITE_ID',
-    price: 39.99,
+    price_id: env.elitePriceId ?? 'variant_ELITE_ID',
+    product_id: env.eliteProductId ?? 'product_ELITE_ID',
+    price: 149,
     currency: 'USD',
     interval: 'month',
     arenaPointsPerMonth: 4000,
     features: [
-      '4,000 Arena Points / month',
-      'VIP live calls with analytics',
-      'Create unlimited clubs',
-      'Legendary badges',
-      'Priority support',
+      'Dedicated admin support',
+      'Concierge onboarding',
+      'SLA priority support',
+      'Custom admin workflows',
     ],
   },
 };
