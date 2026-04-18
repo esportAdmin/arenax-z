@@ -226,42 +226,44 @@ export default function GlobalAnimatedWarMap({
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+        <main className="relative mx-auto w-full max-w-[1600px] px-4 py-4 sm:px-6 sm:py-5 lg:px-8 lg:py-7">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="relative mb-5 overflow-hidden rounded-[1.6rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,23,42,0.92),rgba(5,10,24,0.86)_54%,rgba(49,24,12,0.72))] p-4 shadow-[0_0_70px_rgba(34,211,238,0.1)] backdrop-blur-xl lg:p-5"
+            className="relative mb-4 overflow-hidden rounded-[1.35rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,23,42,0.92),rgba(5,10,24,0.86)_54%,rgba(49,24,12,0.72))] p-3 shadow-[0_0_70px_rgba(34,211,238,0.1)] backdrop-blur-xl sm:rounded-[1.6rem] sm:p-4 lg:mb-5 lg:p-5"
           >
             <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
             <div className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-orange-400/12 blur-3xl" />
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/24 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-cyan-200">
-                  <Radio className="h-3.5 w-3.5" />
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-cyan-300/24 bg-cyan-300/10 px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.2em] text-cyan-200 sm:mb-3 sm:px-3 sm:text-xs sm:tracking-[0.22em]">
+                  <Radio className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   War room online
                 </div>
-                <h1 className="font-display text-3xl font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
+                <h1 className="font-display text-[2rem] font-black leading-[0.9] tracking-tight text-white sm:text-5xl sm:leading-[0.98]">
                   {title}
                 </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-[0.95rem]">
+                <p className="mt-2 max-w-2xl text-[0.82rem] leading-5 text-slate-300 sm:mt-3 sm:text-[0.95rem] sm:leading-6">
                   {subtitle}
                 </p>
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-2 sm:gap-2 xl:grid-cols-4">
                 {stats.map(({ icon: Icon, label, value, tone }) => (
                   <div
                     key={label}
-                    className={`min-w-[132px] rounded-[1.15rem] border border-white/10 bg-gradient-to-br ${tone} p-3 shadow-[0_15px_40px_rgba(2,12,23,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]`}
+                    className={`min-w-0 rounded-xl border border-white/10 bg-gradient-to-br ${tone} p-2 shadow-[0_15px_40px_rgba(2,12,23,0.25),inset_0_1px_0_rgba(255,255,255,0.06)] sm:min-w-[132px] sm:rounded-[1.15rem] sm:p-3`}
                   >
                     <div className="flex items-center justify-between text-slate-200">
-                      <span className="text-xs uppercase tracking-[0.22em] text-slate-300">
+                      <span className="truncate text-[0.5rem] uppercase tracking-[0.16em] text-slate-300 sm:text-xs sm:tracking-[0.22em]">
                         {label}
                       </span>
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-white">{value}</div>
+                    <div className="mt-1 text-lg font-bold text-white sm:mt-2 sm:text-2xl">
+                      {value}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -281,16 +283,16 @@ export default function GlobalAnimatedWarMap({
                 <div className="absolute -left-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-r-[2rem] border border-cyan-300/10 bg-cyan-300/5" />
                 <div className="absolute -right-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-l-[2rem] border border-orange-300/10 bg-orange-300/5" />
               </div>
-              <div className="flex flex-col gap-3 border-b border-white/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-2 border-b border-white/10 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
                 <div>
-                  <div className="text-xs font-black uppercase tracking-[0.24em] text-cyan-200/80">
+                  <div className="text-[0.64rem] font-black uppercase tracking-[0.24em] text-cyan-200/80 sm:text-xs">
                     Territory control map
                   </div>
-                  <div className="mt-1 text-lg font-black text-white">
+                  <div className="mt-1 text-base font-black leading-5 text-white sm:text-lg sm:leading-normal">
                     Central board, active pressure, and rally windows
                   </div>
                 </div>
-                <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-300/8 px-3 py-1 text-xs font-bold text-cyan-100">
+                <div className="inline-flex min-h-8 items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-300/8 px-3 py-1 text-[0.68rem] font-bold leading-4 text-cyan-100 sm:min-h-9 sm:text-xs">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,0.9)]" />
                   {metrics.autoLayout > 0
                     ? `${metrics.autoLayout} territories currently using smart placement`
