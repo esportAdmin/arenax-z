@@ -38,11 +38,15 @@ type ShellProps = {
 
 function Shell({ children, showChrome }: ShellProps) {
   if (!showChrome) {
-    return <div className="min-h-screen bg-slate-950 text-white">{children}</div>;
+    return (
+      <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
+        {children}
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <Navbar />
       <div className="pt-20">{children}</div>
       <Footer />
@@ -185,7 +189,7 @@ export default function GlobalAnimatedWarMap({
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto w-full max-w-[1720px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <main className="relative mx-auto w-full max-w-[1720px] px-7 py-8 sm:px-8 lg:px-10 lg:py-12">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
