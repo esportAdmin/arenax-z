@@ -349,6 +349,15 @@ async function gotoStable(page, routePath) {
   });
 }
 
+/**
+ * Sets the Vercel protection bypass cookie without waiting for every preview
+ * asset to become idle.
+ *
+ * Example:
+ * ```js
+ * await setVercelBypassCookie(page);
+ * ```
+ */
 async function setVercelBypassCookie(page) {
   if (!VERCEL_PROTECTION_BYPASS) {
     return;
@@ -367,10 +376,16 @@ async function setVercelBypassCookie(page) {
     VERCEL_PROTECTION_BYPASS,
   );
 
-  await page.goto(bypassUrl.toString(), {
-    waitUntil: "networkidle2",
-    timeout: TIMEOUT_MS,
-  });
+  try {
+    await page.goto(bypassUrl.toString(), {
+      waitUntil: "domcontentloaded",
+      timeout: Math.min(TIMEOUT_MS, 30000),
+    });
+  } catch (error) {
+    if (!String(error?.message ?? "").includes("Navigation timeout")) {
+      throw error;
+    }
+  }
 }
 
 async function getSnapshot(page) {

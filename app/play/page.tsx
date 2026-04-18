@@ -3,7 +3,7 @@
 /**
  * app/play/page.tsx
  * Post-onboarding pivot route.
- * Redirects to /queue (matchmaking) or renders QueueScreen directly.
+ * Renders the community rally launchpad for authenticated operators.
  * Referenced by: OnboardingFlow.tsx, middleware.ts, emailService.ts
  */
 
@@ -31,14 +31,14 @@ export default function PlayPage() {
         <div className="flex min-h-screen items-center justify-center px-4 pt-20">
           <div className="max-w-xl rounded-3xl border border-white/10 bg-[#0a0f1e]/90 p-8 text-center backdrop-blur-xl">
             <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
-              Matchmaking access
+              Rally access
             </div>
             <h1 className="mt-4 text-3xl font-display font-black text-white">
-              Reconnect to enter the live queue
+              Reconnect to launch a rally session
             </h1>
             <p className="mt-4 text-sm leading-6 text-slate-400">
               ArenaX-Z keeps this surface tied to your active session so your
-              queue status, club identity, and ranked context stay trustworthy.
+              club identity, live calls, and command context stay trustworthy.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button asChild size="lg">
