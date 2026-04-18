@@ -185,7 +185,7 @@ export default function GlobalAnimatedWarMap({
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <main className="relative mx-auto max-w-[1720px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,14 +227,19 @@ export default function GlobalAnimatedWarMap({
             </div>
           </motion.section>
 
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,2.35fr)_390px]">
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2.8fr)_360px] 2xl:grid-cols-[minmax(0,3.2fr)_380px]">
             <motion.section
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.08 }}
-              className="relative overflow-hidden rounded-[2rem] border border-cyan-300/18 bg-slate-950/88 shadow-[0_0_90px_rgba(34,211,238,0.1)]"
+              className="relative overflow-hidden rounded-[2.35rem] border border-cyan-300/24 bg-[linear-gradient(145deg,rgba(6,18,32,0.94),rgba(2,6,23,0.9)_48%,rgba(29,17,11,0.82))] shadow-[0_0_100px_rgba(34,211,238,0.14),inset_0_0_70px_rgba(34,211,238,0.05)]"
             >
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-300/70 to-transparent" />
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-orange-200/80" />
+                <div className="absolute inset-x-16 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-200/70 to-cyan-200/70" />
+                <div className="absolute -left-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-r-[2rem] border border-cyan-300/10 bg-cyan-300/5" />
+                <div className="absolute -right-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-l-[2rem] border border-orange-300/10 bg-orange-300/5" />
+              </div>
               <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="text-xs font-black uppercase tracking-[0.24em] text-cyan-200/80">
@@ -244,7 +249,7 @@ export default function GlobalAnimatedWarMap({
                     Central board, active pressure, and rally windows
                   </div>
                 </div>
-                <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-slate-300">
+                <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-300/8 px-3 py-1 text-xs font-bold text-cyan-100">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,0.9)]" />
                   {metrics.autoLayout > 0
                     ? `${metrics.autoLayout} territories currently using smart placement`
@@ -252,15 +257,15 @@ export default function GlobalAnimatedWarMap({
                 </div>
               </div>
 
-              <div className="p-3 sm:p-4">
-                <div className="relative overflow-hidden rounded-[1.65rem] border border-cyan-300/18 bg-[#030916] p-2 shadow-[0_0_46px_rgba(34,211,238,0.08),inset_0_1px_0_rgba(255,255,255,0.06)]">
+              <div className="p-3 sm:p-5">
+                <div className="relative overflow-hidden rounded-[1.95rem] border border-cyan-300/24 bg-[#030916] p-2 shadow-[0_0_62px_rgba(34,211,238,0.13),0_0_46px_rgba(249,115,22,0.07),inset_0_1px_0_rgba(255,255,255,0.07)]">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_48%,rgba(34,211,238,0.1),transparent_28%),radial-gradient(circle_at_78%_55%,rgba(249,115,22,0.12),transparent_22%)]" />
                   {loading ? (
-                    <div className="relative flex h-[620px] items-center justify-center text-slate-300">
+                    <div className="relative flex h-[720px] items-center justify-center text-slate-300">
                       Loading global theater...
                     </div>
                   ) : (
-                    <div className="relative h-[620px] min-h-[460px]">
+                    <div className="relative h-[720px] min-h-[520px]">
                       <WorldMapSvg
                         territories={territories}
                         onSelect={(territory) => setSelectedTerritoryId(territory.id)}

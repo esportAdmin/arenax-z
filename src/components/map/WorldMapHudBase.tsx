@@ -1,9 +1,43 @@
 import {
-  CONTINENT_PATHS,
   REGION_LABELS,
   VIEWBOX_HEIGHT,
   VIEWBOX_WIDTH,
 } from "@/components/map/worldMapLayout";
+
+const TACTICAL_REGIONS = [
+  {
+    label: "North Realm",
+    path: "M92 196 L202 110 L370 128 L452 218 L372 326 L158 304 Z",
+    fill: "url(#wms-cyanRegion)",
+    stroke: "#22d3ee",
+    labelX: 238,
+    labelY: 214,
+  },
+  {
+    label: "Central Zone",
+    path: "M340 240 L470 162 L644 188 L742 280 L666 398 L456 404 L322 330 Z",
+    fill: "url(#wms-orangeRegion)",
+    stroke: "#fb923c",
+    labelX: 526,
+    labelY: 304,
+  },
+  {
+    label: "East Reach",
+    path: "M636 352 L754 278 L896 318 L940 426 L808 486 L668 444 Z",
+    fill: "url(#wms-violetRegion)",
+    stroke: "#a855f7",
+    labelX: 786,
+    labelY: 386,
+  },
+  {
+    label: "West Haven",
+    path: "M168 350 L286 310 L394 386 L286 458 L144 430 Z",
+    fill: "rgba(34,211,238,0.18)",
+    stroke: "#67e8f9",
+    labelX: 262,
+    labelY: 402,
+  },
+] as const;
 
 /**
  * Renders reusable SVG definitions for the tactical world map.
@@ -25,6 +59,18 @@ export function WorldMapDefs() {
         <stop offset="0%" stopColor="rgba(34,211,238,0.2)" />
         <stop offset="54%" stopColor="rgba(59,130,246,0.07)" />
         <stop offset="100%" stopColor="rgba(249,115,22,0.06)" />
+      </linearGradient>
+      <linearGradient id="wms-cyanRegion" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#0891b2" stopOpacity="0.7" />
+        <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.28" />
+      </linearGradient>
+      <linearGradient id="wms-orangeRegion" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.36" />
+        <stop offset="100%" stopColor="#f97316" stopOpacity="0.82" />
+      </linearGradient>
+      <linearGradient id="wms-violetRegion" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.38" />
+        <stop offset="100%" stopColor="#a855f7" stopOpacity="0.72" />
       </linearGradient>
       <linearGradient id="wms-hudFrame" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.08" />
@@ -62,6 +108,13 @@ export function WorldMapDefs() {
       </filter>
       <filter id="wms-selectedGlow" x="-80%" y="-80%" width="260%" height="260%">
         <feGaussianBlur stdDeviation="6" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="wms-regionGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="7" result="blur" />
         <feMerge>
           <feMergeNode in="blur" />
           <feMergeNode in="SourceGraphic" />
@@ -108,9 +161,9 @@ export function WorldMapHudBase() {
       />
       <path
         d="M42 34 H370 L392 54 H608 L630 34 H958 V466 H632 L606 446 H394 L368 466 H42 Z"
-        fill="rgba(2,12,23,0.24)"
+        fill="rgba(2,12,23,0.32)"
         stroke="url(#wms-hudFrame)"
-        strokeWidth="2.2"
+        strokeWidth="3.2"
       />
       <path
         d="M70 62 H344 M656 62 H930 M70 438 H344 M656 438 H930"
@@ -141,23 +194,52 @@ export function WorldMapHudBase() {
           TERRITORY CONTROL
         </text>
       </g>
-      {CONTINENT_PATHS.map((path, index) => (
-        <path
-          key={path}
-          d={path}
-          fill="url(#wms-continent)"
-          opacity={0.55}
-          stroke="rgba(125,211,252,0.08)"
-          strokeWidth="1.4"
-        >
-          <animate
-            attributeName="opacity"
-            values={index % 2 === 0 ? "0.28;0.52;0.28" : "0.18;0.38;0.18"}
-            dur={`${14 + index * 2}s`}
-            repeatCount="indefinite"
-          />
-        </path>
-      ))}
+      <g opacity="0.68">
+        <path d="M88 438 H900" stroke="rgba(103,232,249,0.16)" strokeWidth="2" />
+        <path d="M126 84 H886" stroke="rgba(251,146,60,0.14)" strokeWidth="2" />
+        <path d="M230 94 C386 152 548 148 744 106" stroke="rgba(34,211,238,0.18)" strokeDasharray="10 12" fill="none" strokeWidth="2" />
+        <path d="M286 400 C430 318 602 318 820 392" stroke="rgba(168,85,247,0.22)" strokeDasharray="12 10" fill="none" strokeWidth="2" />
+      </g>
+      <g>
+        {TACTICAL_REGIONS.map((region, index) => (
+          <g key={region.label} filter="url(#wms-regionGlow)">
+            <path
+              d={region.path}
+              fill={region.fill}
+              stroke={region.stroke}
+              strokeWidth="4.5"
+              opacity="0.88"
+            >
+              <animate
+                attributeName="opacity"
+                values={index === 1 ? "0.74;1;0.74" : "0.62;0.84;0.62"}
+                dur={`${8 + index * 2}s`}
+                repeatCount="indefinite"
+              />
+            </path>
+            <text
+              x={region.labelX}
+              y={region.labelY}
+              textAnchor="middle"
+              fill="#e0faff"
+              fontSize="28"
+              fontWeight="900"
+              fontFamily="monospace"
+              letterSpacing="2"
+              style={{ pointerEvents: "none", userSelect: "none" }}
+            >
+              {region.label.toUpperCase()}
+            </text>
+          </g>
+        ))}
+      </g>
+      <g filter="url(#wms-regionGlow)">
+        <circle cx="568" cy="292" r="44" fill="#fb923c" opacity="0.22" />
+        <circle cx="568" cy="292" r="12" fill="#fed7aa" />
+        <text x="568" y="250" textAnchor="middle" fill="#fed7aa" fontSize="13" fontFamily="monospace" fontWeight="900" letterSpacing="1">
+          PRESSURE CORE
+        </text>
+      </g>
       {REGION_LABELS.map(({ label, x, y, anchor }) => (
         <text
           key={label}
