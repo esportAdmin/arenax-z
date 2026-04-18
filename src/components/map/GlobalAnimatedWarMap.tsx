@@ -83,7 +83,7 @@ function Shell({ children, showChrome }: ShellProps) {
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <Navbar />
-      <div className="pt-20">{children}</div>
+      <div className="pt-16 lg:pt-20">{children}</div>
       <Footer />
     </div>
   );
@@ -226,34 +226,34 @@ export default function GlobalAnimatedWarMap({
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.045)_1px,transparent_1px)] bg-[size:42px_42px]" />
         </div>
 
-        <main className="relative mx-auto w-full max-w-[1720px] px-7 py-8 sm:px-8 lg:px-10 lg:py-12">
+        <main className="relative mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="relative mb-8 overflow-hidden rounded-[2rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,23,42,0.92),rgba(5,10,24,0.86)_54%,rgba(49,24,12,0.72))] p-6 shadow-[0_0_70px_rgba(34,211,238,0.1)] backdrop-blur-xl lg:p-8"
+            className="relative mb-5 overflow-hidden rounded-[1.6rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,23,42,0.92),rgba(5,10,24,0.86)_54%,rgba(49,24,12,0.72))] p-4 shadow-[0_0_70px_rgba(34,211,238,0.1)] backdrop-blur-xl lg:p-5"
           >
             <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
             <div className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-orange-400/12 blur-3xl" />
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
                 <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/24 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-cyan-200">
                   <Radio className="h-3.5 w-3.5" />
                   War room online
                 </div>
-                <h1 className="font-display text-4xl font-black leading-[0.98] tracking-tight text-white sm:text-6xl">
+                <h1 className="font-display text-3xl font-black leading-[0.98] tracking-tight text-white sm:text-5xl">
                   {title}
                 </h1>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-[0.95rem]">
                   {subtitle}
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 {stats.map(({ icon: Icon, label, value, tone }) => (
                   <div
                     key={label}
-                    className={`min-w-[150px] rounded-[1.35rem] border border-white/10 bg-gradient-to-br ${tone} p-4 shadow-[0_15px_40px_rgba(2,12,23,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]`}
+                    className={`min-w-[132px] rounded-[1.15rem] border border-white/10 bg-gradient-to-br ${tone} p-3 shadow-[0_15px_40px_rgba(2,12,23,0.25),inset_0_1px_0_rgba(255,255,255,0.06)]`}
                   >
                     <div className="flex items-center justify-between text-slate-200">
                       <span className="text-xs uppercase tracking-[0.22em] text-slate-300">
@@ -261,19 +261,19 @@ export default function GlobalAnimatedWarMap({
                       </span>
                       <Icon className="h-4 w-4" />
                     </div>
-                    <div className="mt-4 text-3xl font-bold text-white">{value}</div>
+                    <div className="mt-2 text-2xl font-bold text-white">{value}</div>
                   </div>
                 ))}
               </div>
             </div>
           </motion.section>
 
-          <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,360px)] 2xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(300px,340px)] 2xl:grid-cols-[minmax(0,1fr)_360px]">
             <motion.section
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.08 }}
-              className="relative min-w-0 overflow-hidden rounded-[2.35rem] border border-cyan-300/24 bg-[linear-gradient(145deg,rgba(6,18,32,0.94),rgba(2,6,23,0.9)_48%,rgba(29,17,11,0.82))] shadow-[0_0_100px_rgba(34,211,238,0.14),inset_0_0_70px_rgba(34,211,238,0.05)]"
+              className="relative min-w-0 overflow-hidden rounded-[1.9rem] border border-cyan-300/24 bg-[linear-gradient(145deg,rgba(6,18,32,0.94),rgba(2,6,23,0.9)_48%,rgba(29,17,11,0.82))] shadow-[0_0_100px_rgba(34,211,238,0.14),inset_0_0_70px_rgba(34,211,238,0.05)]"
             >
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-orange-200/80" />
@@ -281,7 +281,7 @@ export default function GlobalAnimatedWarMap({
                 <div className="absolute -left-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-r-[2rem] border border-cyan-300/10 bg-cyan-300/5" />
                 <div className="absolute -right-16 top-1/2 h-72 w-24 -translate-y-1/2 rounded-l-[2rem] border border-orange-300/10 bg-orange-300/5" />
               </div>
-              <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-b border-white/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="text-xs font-black uppercase tracking-[0.24em] text-cyan-200/80">
                     Territory control map
@@ -298,15 +298,15 @@ export default function GlobalAnimatedWarMap({
                 </div>
               </div>
 
-              <div className="p-3 sm:p-5">
-                <div className="relative overflow-hidden rounded-[1.95rem] border border-cyan-300/24 bg-[#030916] p-2 shadow-[0_0_62px_rgba(34,211,238,0.13),0_0_46px_rgba(249,115,22,0.07),inset_0_1px_0_rgba(255,255,255,0.07)]">
+              <div className="p-3 sm:p-4">
+                <div className="relative overflow-hidden rounded-[1.55rem] border border-cyan-300/24 bg-[#030916] p-2 shadow-[0_0_62px_rgba(34,211,238,0.13),0_0_46px_rgba(249,115,22,0.07),inset_0_1px_0_rgba(255,255,255,0.07)]">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_52%_48%,rgba(34,211,238,0.1),transparent_28%),radial-gradient(circle_at_78%_55%,rgba(249,115,22,0.12),transparent_22%)]" />
                   {loading ? (
-                    <div className="relative flex h-[720px] items-center justify-center text-slate-300">
+                    <div className="relative flex h-[430px] items-center justify-center text-slate-300 sm:h-[520px] xl:h-[56vh] xl:max-h-[610px] 2xl:max-h-[650px]">
                       Loading global theater...
                     </div>
                   ) : (
-                    <div className="relative h-[640px] min-h-[500px] overflow-hidden rounded-[1.75rem] 2xl:h-[720px]">
+                    <div className="relative h-[430px] overflow-hidden rounded-[1.35rem] sm:h-[520px] xl:h-[56vh] xl:max-h-[610px] 2xl:max-h-[650px]">
                       <RealGlobalCommandMap
                         territories={territories}
                         onSelect={(territory) => setSelectedTerritoryId(territory.id)}
@@ -316,7 +316,7 @@ export default function GlobalAnimatedWarMap({
                   )}
                 </div>
               </div>
-              <div className="grid gap-3 border-t border-white/10 px-5 py-4 text-xs font-bold uppercase tracking-[0.14em] text-slate-400 sm:grid-cols-3">
+              <div className="grid gap-3 border-t border-white/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-400 sm:grid-cols-3">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" />
                   Controlled zones
@@ -336,7 +336,7 @@ export default function GlobalAnimatedWarMap({
               initial={{ opacity: 0, x: 18 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.45, ease: "easeOut", delay: 0.14 }}
-              className="min-w-0 space-y-6"
+              className="min-w-0 space-y-4"
             >
               <TerritoryDetailsPanel
                 territory={selectedTerritory}
@@ -345,7 +345,7 @@ export default function GlobalAnimatedWarMap({
                 onInvade={handleInvade}
               />
 
-              <div className="relative overflow-hidden rounded-[1.85rem] border border-white/10 bg-white/[0.045] p-6 shadow-[0_15px_50px_rgba(2,12,23,0.24),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+              <div className="relative overflow-hidden rounded-[1.55rem] border border-white/10 bg-white/[0.045] p-4 shadow-[0_15px_50px_rgba(2,12,23,0.24),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
                 <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-400/10 blur-3xl" />
                 <div className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200/80">
                   Command center
@@ -365,39 +365,24 @@ export default function GlobalAnimatedWarMap({
                 </div>
 
                 <div className="mt-4 space-y-3">
-                  <div className="rounded-2xl border border-cyan-300/18 bg-cyan-300/8 p-4 text-sm leading-6 text-slate-300">
+                  <div className="rounded-2xl border border-cyan-300/18 bg-cyan-300/8 p-3 text-sm leading-6 text-slate-300">
                     The map is the daily return trigger. It should make admins
                     see where attention is heating up and what to rally next.
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-white">
-                      <Flame className="h-4 w-4 text-rose-300" />
-                      Active fronts feel hot
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
-                      Red pulses, time windows, and ownership pressure give
-                      players a reason to peek at the map again before reset.
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-white">
-                      <LockKeyhole className="h-4 w-4 text-slate-200" />
-                      Locked finishes tease prestige
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
-                      The world feels stickier when captured ground hints at
-                      visible upgrades, not just hidden value.
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-white">
-                      <Crosshair className="h-4 w-4 text-orange-300" />
-                      Next action stays obvious
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
-                      Every territory state points toward one action: rally,
-                      defend, scout, or return before the next pulse.
-                    </p>
+                  <div className="grid gap-2">
+                    {[
+                      { icon: Flame, label: "Hot fronts", tone: "text-rose-300" },
+                      { icon: LockKeyhole, label: "Prestige teases", tone: "text-slate-200" },
+                      { icon: Crosshair, label: "Clear next action", tone: "text-orange-300" },
+                    ].map(({ icon: Icon, label, tone }) => (
+                      <div
+                        key={label}
+                        className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-sm font-bold text-white"
+                      >
+                        <Icon className={`h-4 w-4 ${tone}`} />
+                        {label}
+                      </div>
+                    ))}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                     <button
