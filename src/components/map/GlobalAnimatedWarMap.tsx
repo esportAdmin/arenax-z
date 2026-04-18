@@ -36,6 +36,41 @@ type ShellProps = {
   showChrome: boolean;
 };
 
+const US_FIRST_TERRITORY_HINTS = [
+  "us east",
+  "us west",
+  "west coast",
+  "east coast",
+  "texas",
+  "midwest",
+  "northeast",
+  "florida",
+  "canada",
+  "mexico",
+  "brazil",
+  "latam",
+];
+
+/**
+ * Keeps the war map default aligned with the US-first launch market.
+ *
+ * Example:
+ * ```ts
+ * getPreferredStarterTerritory([{ name: "US East" } as Territory])
+ * ```
+ */
+function getPreferredStarterTerritory(territories: Territory[]) {
+  return (
+    territories.find((territory) => {
+      const normalized = territory.name.toLowerCase().trim();
+      return US_FIRST_TERRITORY_HINTS.some((hint) => normalized.includes(hint));
+    }) ??
+    territories.find((territory) => territory.region?.toLowerCase().includes("america")) ??
+    territories[0] ??
+    null
+  );
+}
+
 function Shell({ children, showChrome }: ShellProps) {
   if (!showChrome) {
     return (
@@ -67,6 +102,8 @@ export default function GlobalAnimatedWarMap({
   const [selectedTerritoryId, setSelectedTerritoryId] = useState<string | null>(null);
 
   useEffect(() => {
+    const preferredTerritory = getPreferredStarterTerritory(territories);
+
     if (territories.length === 0) {
       if (selectedTerritoryId !== null) {
         setSelectedTerritoryId(null);
@@ -75,19 +112,19 @@ export default function GlobalAnimatedWarMap({
     }
 
     if (!selectedTerritoryId) {
-      setSelectedTerritoryId(territories[0].id);
+      setSelectedTerritoryId(preferredTerritory?.id ?? null);
       return;
     }
 
     if (!territories.some((territory) => territory.id === selectedTerritoryId)) {
-      setSelectedTerritoryId(territories[0].id);
+      setSelectedTerritoryId(preferredTerritory?.id ?? null);
     }
   }, [territories, selectedTerritoryId]);
 
   const selectedTerritory = useMemo(
     () =>
       territories.find((territory) => territory.id === selectedTerritoryId) ??
-      territories[0] ??
+      getPreferredStarterTerritory(territories) ??
       null,
     [selectedTerritoryId, territories],
   );
