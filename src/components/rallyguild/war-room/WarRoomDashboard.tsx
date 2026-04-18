@@ -83,7 +83,7 @@ export function WarRoomDashboard() {
                 </section>
               ) : null}
 
-              <section className="grid gap-5 xl:grid-cols-[0.74fr_1.7fr_0.78fr]">
+              <section className="grid items-start gap-5 xl:grid-cols-[minmax(18rem,0.82fr)_minmax(36rem,1.68fr)_minmax(18rem,0.82fr)]">
                 <ActiveWarCard
                   war={activeWar}
                   pressure={activePressure}

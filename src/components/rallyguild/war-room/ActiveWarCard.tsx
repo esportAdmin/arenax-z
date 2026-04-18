@@ -35,12 +35,12 @@ export function ActiveWarCard({
 
       <div className="relative space-y-4">
         <div className="rounded-[1.55rem] border border-white/10 bg-black/24 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
               <div className="text-[0.68rem] font-black uppercase tracking-[0.22em] text-orange-200/75">
                 Active rivalry
               </div>
-              <h2 className="mt-2 font-display text-3xl font-black uppercase text-white">
+              <h2 className="mt-2 break-words font-display text-2xl font-black uppercase leading-tight text-white 2xl:text-3xl">
                 Shadow Strike
               </h2>
             </div>
@@ -54,7 +54,7 @@ export function ActiveWarCard({
           </p>
         </div>
 
-        <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 rounded-[1.45rem] border border-white/10 bg-black/30 p-3 text-center">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-2 rounded-[1.45rem] border border-white/10 bg-black/30 p-3 text-center">
           <div className="rounded-2xl border border-cyan-300/18 bg-cyan-300/8 p-3">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-300/28 bg-cyan-300/12">
               <Shield className="h-7 w-7 text-cyan-200" />
@@ -62,9 +62,9 @@ export function ActiveWarCard({
             <div className="mt-3 text-[0.64rem] font-black uppercase tracking-[0.16em] text-slate-500">
               Attacker
             </div>
-            <div className="mt-1 truncate font-black text-cyan-100">{attacker}</div>
+            <div className="mt-1 truncate text-sm font-black text-cyan-100">{attacker}</div>
           </div>
-          <div className="flex items-center justify-center px-1 font-display text-3xl font-black text-orange-200 drop-shadow-[0_0_14px_rgba(251,146,60,0.5)]">
+          <div className="flex items-center justify-center px-1 font-display text-2xl font-black text-orange-200 drop-shadow-[0_0_14px_rgba(251,146,60,0.5)] 2xl:text-3xl">
             VS
           </div>
           <div className="rounded-2xl border border-orange-300/18 bg-orange-500/10 p-3">
@@ -74,7 +74,9 @@ export function ActiveWarCard({
             <div className="mt-3 text-[0.64rem] font-black uppercase tracking-[0.16em] text-slate-500">
               Defender
             </div>
-            <div className="mt-1 truncate font-black text-orange-100">Club Omega</div>
+            <div className="mt-1 truncate text-sm font-black text-orange-100">
+              Club Omega
+            </div>
           </div>
         </div>
 
@@ -98,7 +100,7 @@ export function ActiveWarCard({
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-[1fr_1.2fr]">
+        <div className="grid gap-3 2xl:grid-cols-[1fr_1.2fr]">
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-center">
             <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500">
               Time remaining
