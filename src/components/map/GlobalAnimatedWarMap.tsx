@@ -17,8 +17,8 @@ import {
 import { CountdownPill } from "@/components/engagement/CountdownPill";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { RealEuropeCommandMap } from "@/components/map/RealEuropeCommandMap";
 import { TerritoryDetailsPanel } from "@/components/map/TerritoryDetailsPanel";
-import WorldMapSvg from "@/components/map/WorldMapSvg";
 import { useActiveWars } from "@/hooks/useActiveWars";
 import { Territory, useGlobalWarMap } from "@/hooks/useGlobalWarMap";
 import { useMyClub } from "@/hooks/useMyClub";
@@ -269,8 +269,8 @@ export default function GlobalAnimatedWarMap({
                       Loading global theater...
                     </div>
                   ) : (
-                    <div className="relative h-[640px] min-h-[500px] 2xl:h-[720px]">
-                      <WorldMapSvg
+                    <div className="relative h-[640px] min-h-[500px] overflow-hidden rounded-[1.75rem] 2xl:h-[720px]">
+                      <RealEuropeCommandMap
                         territories={territories}
                         onSelect={(territory) => setSelectedTerritoryId(territory.id)}
                         selectedTerritoryId={selectedTerritoryId}
