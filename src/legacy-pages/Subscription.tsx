@@ -37,7 +37,7 @@ const Subscription = () => {
     openCustomerPortal,
   } = useSubscription();
 
-  // Handle success/cancel from Stripe
+  // Handle success/cancel from the hosted billing provider.
   useEffect(() => {
     const sp = searchParams ?? new URLSearchParams();
     const success = sp.get("success");

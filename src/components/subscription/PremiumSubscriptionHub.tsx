@@ -16,7 +16,6 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
@@ -31,18 +30,19 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
-import { SUBSCRIPTION_TIERS } from "@/lib/subscriptionTiers";
-
+import {
+  getCheckoutTier,
+  type BillingCycle,
+  type PaidSubscriptionPlanId,
+} from "@/lib/subscriptionTiers";
 type PlanId = "free" | "starter" | "pro" | "elite";
-type PaidPlanId = Exclude<PlanId, "free">;
 type Accent = "cyan" | "violet" | "orange" | "gold";
 
 type Plan = {
   id: PlanId;
   name: string;
   role: string;
-  price: string;
-  interval: string;
+  monthlyPrice: number;
   accent: Accent;
   icon: LucideIcon;
   cta: string;
@@ -50,63 +50,19 @@ type Plan = {
   recommended?: boolean;
 };
 
-type ConfirmState = { open: false } | { open: true; planId: PaidPlanId };
+type ConfirmState = { open: false } | { open: true; planId: PaidSubscriptionPlanId };
 
 const plans: Plan[] = [
-  {
-    id: "free",
-    name: "Free",
-    role: "Community Essentials",
-    price: "$0",
-    interval: "/mo",
-    accent: "cyan",
-    icon: Users,
-    cta: "Start Free",
-    features: ["Basic club tools", "Limited war-room access", "Community activation", "Standard support"],
-  },
-  {
-    id: "starter",
-    name: "Starter",
-    role: "Momentum Builder",
-    price: "$29",
-    interval: "/mo",
-    accent: "violet",
-    icon: Sparkles,
-    cta: "Upgrade to Starter",
-    features: ["Live ritual planning", "Club command tools", "War-room intro", "Member activation loops"],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    role: "Retention Command",
-    price: "$79",
-    interval: "/mo",
-    accent: "orange",
-    icon: Crown,
-    cta: "Upgrade to Pro",
-    recommended: true,
-    features: ["All Starter features", "Full club metrics", "Advanced war-room tracking", "Reward visibility"],
-  },
-  {
-    id: "elite",
-    name: "Elite",
-    role: "Concierge Suite",
-    price: "$149",
-    interval: "/mo",
-    accent: "gold",
-    icon: Gem,
-    cta: "Contact Sales",
-    features: ["All Pro features", "Dedicated admin support", "Concierge onboarding", "SLA priority support"],
-  },
-];
+  { id: "free", name: "Free", role: "Community Essentials", monthlyPrice: 0, accent: "cyan", icon: Users, cta: "Start Free", features: ["Basic club tools", "Limited war-room access", "Community activation", "Standard support"] },
+  { id: "starter", name: "Starter", role: "Momentum Builder", monthlyPrice: 29, accent: "violet", icon: Sparkles, cta: "Upgrade to Starter", features: ["Live ritual planning", "Club command tools", "War-room intro", "Member activation loops"] },
+  { id: "pro", name: "Pro", role: "Retention Command", monthlyPrice: 79, accent: "orange", icon: Crown, cta: "Upgrade to Pro", recommended: true, features: ["All Starter features", "Full club metrics", "Advanced war-room tracking", "Reward visibility"] },
+  { id: "elite", name: "Elite", role: "Concierge Suite", monthlyPrice: 149, accent: "gold", icon: Gem, cta: "Contact Sales", features: ["All Pro features", "Dedicated admin support", "Concierge onboarding", "SLA priority support"] },
+] as const satisfies Plan[];
 
 const comparison = [
-  ["Live ritual planning", true, true, true, true],
-  ["Club command tools", true, true, true, true],
-  ["War-room pressure tracking", false, true, true, true],
-  ["Member activation loops", false, true, true, true],
-  ["Advanced admin workflows", false, false, true, true],
-  ["Priority support", false, false, true, true],
+  ["Live ritual planning", true, true, true, true], ["Club command tools", true, true, true, true],
+  ["War-room pressure tracking", false, true, true, true], ["Member activation loops", false, true, true, true],
+  ["Advanced admin workflows", false, false, true, true], ["Priority support", false, false, true, true],
   ["Concierge onboarding", false, false, false, true],
 ] as const;
 
@@ -135,28 +91,24 @@ function getPlanVisuals(accent: Accent) {
       glow: "from-cyan-300/22 via-cyan-300/6 to-transparent",
       text: "text-cyan-200",
       button: "from-cyan-300 to-cyan-500 text-slate-950 shadow-[0_0_22px_rgba(34,211,238,0.34)]",
-      chip: "border-cyan-300/25 bg-cyan-300/10 text-cyan-100",
     },
     violet: {
       border: "border-violet-300/35 shadow-[0_0_32px_rgba(167,139,250,0.16)]",
       glow: "from-violet-400/20 via-violet-400/6 to-transparent",
       text: "text-violet-200",
       button: "from-cyan-300 to-violet-400 text-slate-950 shadow-[0_0_22px_rgba(167,139,250,0.28)]",
-      chip: "border-violet-300/25 bg-violet-300/10 text-violet-100",
     },
     orange: {
       border: "border-orange-300/60 shadow-[0_0_42px_rgba(251,146,60,0.22)]",
       glow: "from-orange-300/24 via-cyan-300/8 to-transparent",
       text: "text-orange-200",
       button: "from-orange-300 to-amber-400 text-slate-950 shadow-[0_0_26px_rgba(251,146,60,0.38)]",
-      chip: "border-orange-300/35 bg-orange-300/12 text-orange-100",
     },
     gold: {
       border: "border-amber-300/45 shadow-[0_0_34px_rgba(245,158,11,0.18)]",
       glow: "from-amber-300/22 via-orange-300/8 to-transparent",
       text: "text-amber-200",
       button: "from-cyan-300 to-amber-300 text-slate-950 shadow-[0_0_22px_rgba(245,158,11,0.30)]",
-      chip: "border-amber-300/30 bg-amber-300/10 text-amber-100",
     },
   };
 
@@ -172,9 +124,10 @@ function getPlanVisuals(accent: Accent) {
 export default function PremiumSubscriptionHub() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { subscribed, tier, subscriptionEnd, loading, createCheckout } = useSubscription();
+  const { subscribed, tier, createCheckout } = useSubscription();
   const [confirm, setConfirm] = useState<ConfirmState>({ open: false });
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
 
   const currentTierId = (tier?.id?.toLowerCase() as PlanId | undefined) ?? "free";
 
@@ -206,7 +159,7 @@ export default function PremiumSubscriptionHub() {
       return;
     }
 
-    const tierConfig = SUBSCRIPTION_TIERS[confirm.planId];
+    const tierConfig = getCheckoutTier(confirm.planId, billingCycle);
     const priceId = tierConfig?.price_id;
 
     if (!priceId || /_ID$/.test(priceId)) {
@@ -221,12 +174,12 @@ export default function PremiumSubscriptionHub() {
 
     setCheckoutLoading(true);
     try {
-      await createCheckout(priceId);
+      await createCheckout(priceId, confirm.planId);
       setConfirm({ open: false });
     } finally {
       setCheckoutLoading(false);
     }
-  }, [confirm, createCheckout, toast, user]);
+  }, [billingCycle, confirm, createCheckout, toast, user]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#050b14] text-white">
@@ -272,6 +225,23 @@ export default function PremiumSubscriptionHub() {
                 </span>
               ))}
             </div>
+            <div className="mx-auto mt-6 grid max-w-md grid-cols-2 rounded-2xl border border-cyan-300/20 bg-slate-950/70 p-1">
+              {(["monthly", "yearly"] as const).map((cycle) => (
+                <button
+                  key={cycle}
+                  type="button"
+                  onClick={() => setBillingCycle(cycle)}
+                  className={cx(
+                    "rounded-xl px-4 py-3 text-sm font-black transition",
+                    billingCycle === cycle
+                      ? "bg-cyan-300 text-slate-950 shadow-[0_0_20px_rgba(103,232,249,0.30)]"
+                      : "text-slate-300 hover:bg-white/5",
+                  )}
+                >
+                  {cycle === "monthly" ? "Monthly" : "Yearly - 2 months free"}
+                </button>
+              ))}
+            </div>
           </section>
 
           <section className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-4">
@@ -279,6 +249,12 @@ export default function PremiumSubscriptionHub() {
               const visuals = getPlanVisuals(plan.accent);
               const Icon = plan.icon;
               const isCurrent = subscribed && currentTierId === plan.id;
+              const displayPrice =
+                billingCycle === "yearly" && plan.id !== "free"
+                  ? plan.monthlyPrice * 10
+                  : plan.monthlyPrice;
+              const interval =
+                billingCycle === "yearly" && plan.id !== "free" ? "/yr" : "/mo";
 
               return (
                 <article key={plan.id} className={cx("relative overflow-hidden rounded-[1.65rem] border bg-slate-950/62 p-5 backdrop-blur-xl transition hover:-translate-y-1", visuals.border, plan.recommended && "lg:-mt-4")}>
@@ -300,9 +276,14 @@ export default function PremiumSubscriptionHub() {
                       {isCurrent ? <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-xs font-bold text-emerald-100">Active</span> : null}
                     </div>
                     <div className="mt-6 flex items-end gap-2">
-                      <span className="text-4xl font-black tracking-tight">{plan.price}</span>
-                      <span className="pb-1 text-sm font-bold text-slate-400">{plan.interval}</span>
+                      <span className="text-4xl font-black tracking-tight">${displayPrice}</span>
+                      <span className="pb-1 text-sm font-bold text-slate-400">{interval}</span>
                     </div>
+                    {billingCycle === "yearly" && plan.id !== "free" ? (
+                      <p className="mt-2 text-xs font-bold text-orange-100">
+                        Billed yearly. Equivalent to 2 months free.
+                      </p>
+                    ) : null}
                     <ul className="mt-5 space-y-2.5">
                       {plan.features.map((feature) => (
                         <li key={feature} className="flex items-start gap-2 text-sm text-slate-300">
@@ -325,9 +306,6 @@ export default function PremiumSubscriptionHub() {
             <div className="rounded-[1.5rem] border border-cyan-300/25 bg-slate-950/58 p-5 shadow-[0_0_38px_rgba(34,211,238,0.12)] backdrop-blur-xl">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-black text-cyan-100">Command tier comparison</h2>
-                <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-bold text-cyan-100">
-                  Monthly plans
-                </span>
               </div>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[620px] border-separate border-spacing-0 text-sm">
@@ -340,7 +318,7 @@ export default function PremiumSubscriptionHub() {
                         <td className="border-b border-white/8 px-3 py-3 font-semibold">{feature}</td>
                         {[free, starter, pro, elite].map((enabled, index) => (
                           <td key={`${feature}-${index}`} className="border-b border-white/8 px-3 py-3">
-                            {enabled ? <Check className="h-4 w-4 text-cyan-200" /> : <span className="text-slate-600">—</span>}
+                            {enabled ? <Check className="h-4 w-4 text-cyan-200" /> : <span className="text-slate-600">-</span>}
                           </td>
                         ))}
                       </tr>
@@ -372,12 +350,6 @@ export default function PremiumSubscriptionHub() {
                 </h2>
                 <p className="mt-3 text-sm leading-6 text-slate-300">
                   Arena Points, badges, perks, and rewards are virtual engagement elements only. They have no cash value, no financial return, and cannot be redeemed for money.
-                </p>
-              </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-300 backdrop-blur-xl">
-                <div className="font-black text-white">Status</div>
-                <p className="mt-2">
-                  {loading ? "Checking subscription..." : subscribed ? `Active tier: ${tier?.name ?? "Premium"}${subscriptionEnd ? ` until ${subscriptionEnd}` : ""}` : "No active paid tier yet."}
                 </p>
               </div>
             </div>

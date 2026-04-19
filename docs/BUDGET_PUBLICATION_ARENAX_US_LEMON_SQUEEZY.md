@@ -110,7 +110,7 @@ Des frais additionnels peuvent s'appliquer pour :
 | Pro | 149 dollars / mois | 8.70 dollars | 140.30 dollars |
 | Elite | 299 dollars / mois | 16.95 dollars | 282.05 dollars |
 
-Lemon Squeezy est plus cher que Stripe en traitement carte brut, mais pour une petite equipe il peut valoir le cout parce qu'il reduit la complexite operationnelle.
+Lemon Squeezy coute plus cher qu'un processeur carte brut, mais pour une petite equipe il peut valoir le cout parce qu'il reduit la complexite operationnelle.
 
 ## Pricing SaaS Recommande
 

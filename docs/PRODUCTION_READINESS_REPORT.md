@@ -32,7 +32,7 @@ node_modules\.bin\next.cmd build
 
 - moved the replay renderer to a proper App Router page entry
 - made replay rendering compatible with production prerender rules
-- made Stripe webhook initialization build-safe by delaying client construction until request time
+- moved subscription checkout toward a Lemon Squeezy hosted billing flow
 - marked server-authenticated API routes as explicitly dynamic where required by Next.js
 - removed the last build-time blockers discovered during static generation
 
@@ -62,7 +62,7 @@ The warnings removed were mostly:
 - route generation
 - middleware loading
 - core routing and replay entrypoints
-- Stripe webhook module loading
+- hosted billing route loading
 
 ### Yellow
 

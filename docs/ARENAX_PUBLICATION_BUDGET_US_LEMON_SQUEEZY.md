@@ -110,7 +110,7 @@ Additional fees may apply for:
 | Pro | $149 / month | $8.70 | $140.30 |
 | Elite | $299 / month | $16.95 | $282.05 |
 
-Lemon Squeezy is more expensive than raw Stripe card processing, but for a small team it can be worth it because it reduces operational complexity.
+Lemon Squeezy is more expensive than raw card processing, but for a small team it can be worth it because it reduces operational complexity.
 
 ## Recommended SaaS Pricing
 

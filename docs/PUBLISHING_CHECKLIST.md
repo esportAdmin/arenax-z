@@ -65,12 +65,19 @@ Required:
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 If subscriptions are enabled:
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- `NEXT_PUBLIC_STRIPE_PRICE_STARTER`
-- `NEXT_PUBLIC_STRIPE_PRICE_PRO`
-- `NEXT_PUBLIC_STRIPE_PRICE_ELITE`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
+- `NEXT_PUBLIC_BILLING_PROVIDER=lemonsqueezy`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_STARTER_MONTHLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_STARTER_YEARLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_PRO_MONTHLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_PRO_YEARLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ELITE_MONTHLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ELITE_YEARLY`
+- `NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_STARTER`
+- `NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_PRO`
+- `NEXT_PUBLIC_LEMONSQUEEZY_PRODUCT_ELITE`
+- `LEMONSQUEEZY_API_KEY`
+- `LEMONSQUEEZY_STORE_ID`
+- `LEMONSQUEEZY_TEST_MODE`
 
 Recommended hardening:
 - do not expose local QA credentials in production
@@ -114,7 +121,8 @@ Database checks:
 
 Functions and API checks:
 - `check-subscription`
-- `stripe-webhook`
+- `api/billing/checkout`
+- Lemon Squeezy webhook/status sync before public paid launch
 - any queue/matchmaking endpoints used by the visible product
 
 ## 4. Discord and Twitch OAuth
@@ -137,13 +145,16 @@ Must test both providers in:
 - preview
 - production
 
-## 5. Stripe and Billing
+## 5. Lemon Squeezy and Billing
 
 If billing is part of launch:
 
-- live Stripe keys are configured
-- live prices exist and match the IDs in environment variables
-- webhook endpoint is configured against production
+- live Lemon Squeezy API key is configured server-side only
+- live store ID is configured
+- live product and monthly/yearly variant IDs match the public plan cards
+- yearly variants are priced at 10 months of monthly pricing to support the "2 months free" offer
+- hosted checkout opens from `/subscription`
+- webhook or status sync is configured before selling paid plans publicly
 - at least one real test of:
   - checkout open
   - successful payment

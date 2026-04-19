@@ -152,7 +152,7 @@ export function useSubscription(options: UseSubscriptionOptions = {}) {
   }, [enabled, poll, isLocalQa, user, checkSubscription]);
 
   const createCheckout = useCallback(
-    async (priceId: string) => {
+    async (variantId: string, planId?: string) => {
       if (!user) throw new Error("User must be logged in");
 
       setCheckoutLoading(true);
@@ -162,21 +162,25 @@ export function useSubscription(options: UseSubscriptionOptions = {}) {
 
         if (!token) throw new Error("Session expired");
 
-        const { data, error } = await supabase.functions.invoke(
-          "create-checkout",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: { priceId },
+        const response = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({ planId, variantId }),
+        });
 
-        if (error) throw error;
+        const data = (await response.json()) as {
+          error?: string;
+          url?: string;
+        };
 
-        if (data?.url) {
-          window.open(data.url, "_blank");
+        if (!response.ok || !data.url) {
+          throw new Error(data.error ?? "Unable to start Lemon Squeezy checkout");
         }
+
+        window.location.assign(data.url);
       } catch (error) {
         console.error("[createCheckout]", error);
         throw error;
@@ -193,26 +197,11 @@ export function useSubscription(options: UseSubscriptionOptions = {}) {
     setPortalLoading(true);
 
     try {
-      const token = await getAccessToken();
-
-      if (!token) throw new Error("Session expired");
-
-      const { data, error } = await supabase.functions.invoke(
-        "customer-portal",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+      throw new Error(
+        "Lemon Squeezy subscription management is handled from hosted customer emails until the customer portal route is configured.",
       );
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
     } catch (error) {
-      console.error("[customerPortal]", error);
+      console.error("[lemonCustomerPortal]", error);
       throw error;
     } finally {
       setPortalLoading(false);

@@ -7,7 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
  * PremiumDashboard
  *
  * Pixel-style dashboard layout (3 panels) matching the provided reference screenshot.
- * Pure UI (no data fetching). Wire Supabase/Stripe hooks later if needed.
+ * Pure UI (no data fetching). Wire Supabase/billing hooks later if needed.
  *
  * @example
  * import PremiumDashboard from "@/components/dashboard/PremiumDashboard";

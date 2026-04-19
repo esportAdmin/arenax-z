@@ -294,7 +294,7 @@ Tranche 1 outcome:
 - `/profile` has received a product-language cleanup: the live activity panel is now `LiveCallHistoryPanel`, the old `PredictionHistory` export remains as compatibility only, and the streak empty state now points users toward live calls.
 - `/clubs/[slug]` has been moved out of a 777-line legacy monolith into a dedicated RallyGuild club-detail experience with a premium command hero, launch sequence, activation cockpit, rivalry warm-up state, live ritual panel, member activation panel, and trust strip.
 - `/store` has received a compliance/product-language pass: the reward item card is extracted, the page is under 400 LOC, USD-equivalent display is removed from the UI, and the visible copy now frames rewards as virtual community perks instead of financial prizes.
-- `/subscription` has received a US/Lemon Squeezy positioning pass: visible prices are now USD community tiers, the page no longer mentions Stripe in user-facing copy, and subscription benefits are framed around retention, live rituals, member activation, and community perks.
+- `/subscription` has received a US/Lemon Squeezy positioning pass: visible prices are now USD community tiers, the page no longer references the legacy payment processor in user-facing copy, and subscription benefits are framed around retention, live rituals, member activation, and community perks.
 - Secondary visible pages received a launch-readiness pass:
   - `/analytics` is now framed around retention intelligence, community signals, ritual completion, and member touchpoints instead of prediction/revenue language.
   - `/analytics/predictions`, `/analytics/data`, `/analytics/teams`, and `/analytics/reports` redirect away from legacy high-risk content until those screens are rebuilt properly.

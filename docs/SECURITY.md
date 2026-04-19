@@ -291,11 +291,10 @@ serve(async (req) => {
 # supabase/config.toml
 
 # ✅ Fonctions protégées par JWT (par défaut)
-[functions.create-checkout]
-verify_jwt = true
+# app/api/billing/checkout valide le token Supabase avant d'appeler Lemon Squeezy.
 
 # ⚠️ Fonctions publiques (webhooks uniquement)
-[functions.stripe-webhook]
+[functions.lemon-squeezy-webhook]
 verify_jwt = false  # Valide sa propre signature
 ```
 
@@ -335,31 +334,31 @@ function checkRateLimit(userId: string, limit = 100, windowMs = 60000): boolean 
 | ------------------------------- | ---------- | ------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | ✅ Client  | URL publique Supabase     |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ Client  | Clé anon publique         |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ✅ Client  | Clé Stripe publique       |
-| `STRIPE_SECRET_KEY`             | ❌ Serveur | Edge Functions uniquement |
-| `STRIPE_WEBHOOK_SECRET`         | ❌ Serveur | Webhooks uniquement       |
+| `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_*` | ✅ Client  | IDs publics des variants checkout |
+| `LEMONSQUEEZY_API_KEY`          | ❌ Serveur | Création de checkout uniquement |
+| `LEMONSQUEEZY_STORE_ID`         | ❌ Serveur | Store Lemon Squeezy              |
 | `PANDASCORE_API_KEY`            | ❌ Serveur | Edge Functions uniquement |
 
 ### Règles strictes
 
 ```bash
-# ✅ CORRECT : Configurer les secrets via CLI
-supabase secrets set STRIPE_SECRET_KEY=sk_live_...
+# ✅ CORRECT : Configurer les secrets côté serveur
+LEMONSQUEEZY_API_KEY=...
 
 # ❌ INTERDIT : Secrets dans le code
-const stripeKey = "sk_live_xxx"; // JAMAIS !
+const lemonKey = "live_xxx"; // JAMAIS !
 
 # ❌ INTERDIT : Secrets avec préfixe VITE_
-VITE_STRIPE_SECRET_KEY=sk_live_... # Exposé au client !
+VITE_LEMONSQUEEZY_API_KEY=... # Exposé au client !
 ```
 
 ### Accès aux secrets dans Edge Functions
 
 ```typescript
 // ✅ CORRECT : Accès sécurisé
-const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-if (!stripeKey) {
-  throw new Error('STRIPE_SECRET_KEY not configured');
+const lemonKey = Deno.env.get('LEMONSQUEEZY_API_KEY');
+if (!lemonKey) {
+  throw new Error('LEMONSQUEEZY_API_KEY not configured');
 }
 ```
 
@@ -367,43 +366,16 @@ if (!stripeKey) {
 
 ## Sécurité des paiements
 
-### Webhooks Stripe
+### Webhooks Lemon Squeezy
 
 ```typescript
-// supabase/functions/stripe-webhook/index.ts
+// app/api/billing/checkout/route.ts
 
-import Stripe from 'https://esm.sh/stripe@14.21.0';
+const lemonKey = process.env.LEMONSQUEEZY_API_KEY;
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
-  apiVersion: '2023-10-16',
-});
+if (!lemonKey) throw new Error('LEMONSQUEEZY_API_KEY not configured');
 
-serve(async (req) => {
-  const signature = req.headers.get('stripe-signature');
-  const body = await req.text();
-
-  // ✅ Vérifier la signature du webhook
-  let event: Stripe.Event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature!,
-      Deno.env.get('STRIPE_WEBHOOK_SECRET')!
-    );
-  } catch (err) {
-    console.error('Webhook signature verification failed');
-    return new Response('Invalid signature', { status: 400 });
-  }
-
-  // Traiter l'événement vérifié
-  switch (event.type) {
-    case 'checkout.session.completed':
-      // Logique de traitement...
-      break;
-  }
-
-  return new Response(JSON.stringify({ received: true }));
-});
+// The API key stays server-side. Client code only receives hosted checkout URLs.
 ```
 
 ### Bonnes pratiques paiements
@@ -462,7 +434,7 @@ Si vous découvrez une vulnérabilité de sécurité :
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Supabase Security](https://supabase.com/docs/guides/auth/row-level-security)
-- [Stripe Security Best Practices](https://stripe.com/docs/security/guide)
+- [Lemon Squeezy API](https://docs.lemonsqueezy.com/api)
 - [Deno Security](https://deno.land/manual/basics/permissions)
 
 ---
