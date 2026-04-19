@@ -61,12 +61,12 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-5 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
             <AppLink href="/" className="mb-4 flex items-center gap-3">
-              <div className="relative h-10 w-[196px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/45 shadow-[0_0_20px_rgba(77,243,255,0.1)]">
+              <div className="relative h-11 w-[228px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/45 shadow-[0_0_20px_rgba(77,243,255,0.1)] sm:h-12 sm:w-[244px]">
                 <Image
                   src="/brand/rallyguild-navbar.svg"
                   alt="RallyGuild by ArenaX"
                   fill
-                  sizes="196px"
+                  sizes="(max-width: 640px) 228px, 244px"
                   className="object-contain p-0.5"
                 />
               </div>

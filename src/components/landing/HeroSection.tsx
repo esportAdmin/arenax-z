@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -92,6 +93,29 @@ export default function HeroSection() {
               <div className="eyebrow-badge">
                 <Sparkles className="h-4 w-4 text-primary" />
                 New player quick-start
+              </div>
+
+              <div className="rounded-[1.8rem] border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(8,17,31,0.92),rgba(12,26,44,0.78))] p-4 shadow-[0_0_42px_rgba(77,243,255,0.08)] backdrop-blur-xl sm:p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="relative h-16 w-[250px] sm:h-20 sm:w-[320px] md:h-24 md:w-[420px]">
+                    <Image
+                      src="/brand/rallyguild-lockup.svg"
+                      alt="RallyGuild by ArenaX"
+                      fill
+                      sizes="(max-width: 768px) 320px, 420px"
+                      className="object-contain object-left"
+                      priority
+                    />
+                  </div>
+                  <div className="max-w-sm rounded-[1.3rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-6 text-slate-300">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/80">
+                      Product identity
+                    </div>
+                    <div className="mt-1 font-semibold text-white">
+                      RallyGuild is the command center. ArenaX is the master platform.
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-5">

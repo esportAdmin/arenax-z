@@ -138,12 +138,12 @@ export function Navbar() {
       <div className="container-arena">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <AppLink href="/" className="flex items-center gap-3 group">
-            <div className="relative h-10 w-[196px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/50 shadow-[0_0_24px_rgba(77,243,255,0.12)] transition-transform duration-300 group-hover:scale-[1.01]">
+            <div className="relative h-11 w-[228px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/50 shadow-[0_0_24px_rgba(77,243,255,0.12)] transition-transform duration-300 group-hover:scale-[1.01] sm:h-12 sm:w-[244px]">
               <Image
                 src="/brand/rallyguild-navbar.svg"
                 alt="RallyGuild by ArenaX"
                 fill
-                sizes="196px"
+                sizes="(max-width: 640px) 228px, 244px"
                 className="object-contain p-0.5"
                 priority
               />
