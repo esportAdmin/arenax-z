@@ -25,7 +25,7 @@ export function LeaderboardHero() {
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-slate-300">
             Rise through the ranks. Prove your dominance. Claim your place
-            among the elite communities of ArenaX-Z.
+            among the elite communities of ArenaX.
           </p>
         </div>
 

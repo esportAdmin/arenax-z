@@ -84,7 +84,7 @@ export function ProfileBadges({ userBadges }: ProfileBadgesProps) {
 
   const handleShareBadge = (badge: UserBadge) => {
     navigator.clipboard.writeText(
-      `I unlocked the "${badge.badge.name}" badge on RallyGuild by ArenaX-Z.`,
+      `I unlocked the "${badge.badge.name}" badge on RallyGuild by ArenaX.`,
     );
     toast({
       title: "Badge copied",

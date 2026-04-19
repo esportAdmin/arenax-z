@@ -14,7 +14,7 @@ export default function LeaderboardHeader() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <p className="max-w-3xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
-          This is where ArenaX-Z turns activity into status. Players return when
+          This is where ArenaX turns activity into status. Players return when
           the ladder moves, the top seat looks vulnerable, and every session can
           change how they are seen.
         </p>

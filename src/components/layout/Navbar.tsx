@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -137,17 +138,16 @@ export function Navbar() {
       <div className="container-arena">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <AppLink href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-lg shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-              RG
+            <div className="relative h-10 w-[196px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/50 shadow-[0_0_24px_rgba(77,243,255,0.12)] transition-transform duration-300 group-hover:scale-[1.01]">
+              <Image
+                src="/brand/rallyguild-navbar.svg"
+                alt="RallyGuild by ArenaX"
+                fill
+                sizes="196px"
+                className="object-contain p-0.5"
+                priority
+              />
             </div>
-            <span className="hidden sm:flex flex-col leading-none">
-              <span className="font-display text-xl font-bold tracking-tight text-white">
-                RallyGuild
-              </span>
-              <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/80">
-                by ArenaX-Z
-              </span>
-            </span>
           </AppLink>
 
           <div className="hidden lg:flex items-center gap-1">

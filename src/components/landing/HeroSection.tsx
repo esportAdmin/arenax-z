@@ -106,7 +106,7 @@ export default function HeroSection() {
                 </div>
 
                 <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                  RallyGuild by ArenaX-Z gives new players a clear first loop:
+                  RallyGuild by ArenaX gives new players a clear first loop:
                   join a club, make your first live call, and come back before
                   reset to protect status, streak, and territory momentum.
                 </p>

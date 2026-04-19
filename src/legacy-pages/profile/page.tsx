@@ -77,7 +77,7 @@ export default function Profile() {
                 Reconnect to reopen your profile
               </h1>
               <p className="mt-4 text-sm leading-6 text-slate-400">
-                Your ArenaX-Z profile depends on your active Discord or Twitch
+                Your ArenaX profile depends on your active Discord or Twitch
                 session. Re-authenticate to restore your progression, streak,
                 and prestige data.
               </p>

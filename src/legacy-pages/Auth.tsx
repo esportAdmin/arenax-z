@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -171,13 +172,17 @@ const Auth = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <AppLink href="/" className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center font-bold text-white">
-            AX
+        <AppLink href="/" className="mb-8 block">
+          <div className="relative h-14 w-[240px] overflow-hidden rounded-2xl border border-primary/15 bg-slate-950/50 shadow-[0_0_24px_rgba(77,243,255,0.12)]">
+            <Image
+              src="/brand/rallyguild-navbar.svg"
+              alt="RallyGuild by ArenaX"
+              fill
+              sizes="240px"
+              className="object-contain p-1"
+              priority
+            />
           </div>
-          <span className="font-bold text-2xl">
-            Arena<span className="text-primary">X</span>
-          </span>
         </AppLink>
 
         <h1 className="text-3xl font-bold mb-2">

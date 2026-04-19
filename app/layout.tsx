@@ -1,11 +1,23 @@
 import "./globals.css";
+import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { TierPromotionListener } from "@/components/system/TierPromotionListener";
 
-export const metadata = {
-  title: "RallyGuild by ArenaX-Z",
+export const metadata: Metadata = {
+  title: {
+    default: "RallyGuild by ArenaX",
+    template: "%s | RallyGuild by ArenaX",
+  },
   description:
     "A retention platform for Discord and Twitch-led gaming communities.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

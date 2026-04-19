@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -33,19 +34,15 @@ export default function Navigation() {
     <nav className="pointer-events-auto absolute left-0 top-0 z-[90] isolate w-full px-4 py-4 sm:px-5 md:px-8 md:py-5">
       <div className="relative z-[1] mx-auto flex max-w-7xl items-center justify-between rounded-[1.4rem] border border-white/10 bg-slate-950/60 px-3 py-3 backdrop-blur-2xl sm:px-4 md:rounded-[1.6rem] md:px-5">
         <Link href="/" className="flex items-center gap-3">
-          <div className="hero-sheen relative flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/18 via-sky-500/18 to-transparent">
-            <span className="text-sm font-black tracking-[0.22em] text-white">
-              RG
-            </span>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-primary/80">
-              by ArenaX-Z
-            </span>
-            <span className="font-display text-lg font-bold tracking-[0.16em] text-white">
-              RallyGuild
-            </span>
+          <div className="relative h-11 w-[168px] overflow-hidden rounded-2xl border border-primary/20 bg-slate-950/45 shadow-[0_0_18px_rgba(77,243,255,0.1)]">
+            <Image
+              src="/brand/rallyguild-navbar.svg"
+              alt="RallyGuild by ArenaX"
+              fill
+              sizes="168px"
+              className="object-contain p-0.5"
+              priority
+            />
           </div>
         </Link>
 

@@ -37,7 +37,7 @@ export default function PlayPage() {
               Reconnect to launch a rally session
             </h1>
             <p className="mt-4 text-sm leading-6 text-slate-400">
-              ArenaX-Z keeps this surface tied to your active session so your
+              ArenaX keeps this surface tied to your active session so your
               club identity, live calls, and command context stay trustworthy.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">

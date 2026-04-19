@@ -1,0 +1,18 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="axStroke" x1="46" y1="36" x2="202" y2="214" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4DF3FF"/>
+      <stop offset="0.56" stop-color="#59D4FF"/>
+      <stop offset="1" stop-color="#8E68FF"/>
+    </linearGradient>
+    <radialGradient id="axGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(128 128) rotate(90) scale(122)">
+      <stop stop-color="#12243B"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#axGlow)"/>
+  <path d="M129 22L194.818 60V192L129 230L63.1827 192V60L129 22Z" stroke="url(#axStroke)" stroke-width="11" stroke-linejoin="round"/>
+  <path d="M74 174L123.5 74H136L184 174H160L149.5 152H108L97 174H74ZM118.5 130H140.5L129.5 102.5L118.5 130Z" stroke="url(#axStroke)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M145 82L183 82.5L153.5 126.5L187 174H149.5L132.5 149L145.5 131L145 82Z" stroke="url(#axStroke)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M169 82L118 174" stroke="url(#axStroke)" stroke-width="9.5" stroke-linecap="round"/>
+</svg>

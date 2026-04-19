@@ -460,7 +460,7 @@ function LoginPageContent() {
                   <div>
                     <h4 className="mb-1 font-bold">Built for momentum</h4>
                     <p className="text-sm text-gray-400">
-                      Join more than 50,000 competitive fans already building their edge on RallyGuild by ArenaX-Z.
+                      Join more than 50,000 competitive fans already building their edge on RallyGuild by ArenaX.
                     </p>
                   </div>
                 </div>

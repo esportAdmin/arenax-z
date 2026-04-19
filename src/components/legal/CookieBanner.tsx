@@ -48,7 +48,7 @@ export function CookieBanner() {
 
           <div className="flex-1 space-y-1">
             <p className="font-medium text-white">
-              We use cookies to keep ArenaX-Z smooth
+              We use cookies to keep ArenaX smooth
             </p>
             <p className="text-sm text-muted-foreground">
               Cookies help us improve performance, understand traffic, and keep

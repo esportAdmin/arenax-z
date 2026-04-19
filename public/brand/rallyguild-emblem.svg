@@ -1,0 +1,31 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">RallyGuild emblem</title>
+  <desc id="desc">Hexagonal RG emblem with cyan and violet gradients for the RallyGuild product brand.</desc>
+  <defs>
+    <linearGradient id="rgStroke" x1="44" y1="44" x2="206" y2="212" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4DF3FF"/>
+      <stop offset="0.55" stop-color="#56CFFF"/>
+      <stop offset="1" stop-color="#9E68FF"/>
+    </linearGradient>
+    <radialGradient id="rgGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(128 128) rotate(90) scale(120)">
+      <stop stop-color="#10324D"/>
+      <stop offset="1" stop-color="#08111F"/>
+    </radialGradient>
+    <filter id="outerGlow" x="0" y="0" width="256" height="256" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="url(#rgGlow)"/>
+  <g filter="url(#outerGlow)">
+    <path d="M128 24L193.817 62V138L128 232L62.1834 194V118L128 24Z" stroke="url(#rgStroke)" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M128 48L174.765 75V133L128 199L81.2346 172V114L128 48Z" stroke="url(#rgStroke)" stroke-opacity="0.62" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M91 173V82H133.5C148.136 82 160 93.8635 160 108.5C160 120.597 151.897 130.801 140.837 133.991L168 173H142.5L116.5 136.5H113V173H91Z" stroke="url(#rgStroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M173 97H144.5V82H173C183.493 82 192 90.5066 192 101V154C192 164.493 183.493 173 173 173H136.5V150.5H169.5V140H149C140.163 140 133 132.837 133 124V113C133 104.163 140.163 97 149 97H173Z" stroke="url(#rgStroke)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="128" cy="128" r="9" fill="#4DF3FF"/>
+    <circle cx="128" cy="128" r="18" stroke="#8E76FF" stroke-opacity="0.7" stroke-width="4"/>
+  </g>
+</svg>
