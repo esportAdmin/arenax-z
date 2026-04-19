@@ -21,21 +21,21 @@ function TournamentCard({ tournament }: TournamentCardProps) {
         return (
           <Badge className="bg-destructive/20 text-destructive border-destructive/30 gap-1">
             <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-            En cours
+            Ongoing
           </Badge>
         );
       case 'upcoming':
         return (
           <Badge className="bg-warning/20 text-warning border-warning/30 gap-1">
             <Clock className="w-3 h-3" />
-            À venir
+            Upcoming
           </Badge>
         );
       case 'finished':
         return (
           <Badge variant="outline" className="border-muted-foreground/30 text-muted-foreground gap-1">
             <CheckCircle2 className="w-3 h-3" />
-            Terminé
+            Finished
           </Badge>
         );
     }
@@ -93,7 +93,7 @@ function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="bg-[#0a0a0f] rounded-lg p-2">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <Users className="w-3 h-3" />
-              <span className="text-xs">Équipes</span>
+              <span className="text-xs">Teams</span>
             </div>
             <p className="text-sm font-semibold text-foreground">{tournament.teams || 'N/A'}</p>
           </div>
@@ -109,7 +109,7 @@ function TournamentCard({ tournament }: TournamentCardProps) {
           <div className="bg-[#0a0a0f] rounded-lg p-2">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <Globe className="w-3 h-3" />
-              <span className="text-xs">Région</span>
+              <span className="text-xs">Region</span>
             </div>
             <p className="text-sm font-semibold text-foreground">{tournament.region}</p>
           </div>
@@ -119,7 +119,7 @@ function TournamentCard({ tournament }: TournamentCardProps) {
         <div className="flex items-center justify-between pt-3 border-t border-white/5">
           <Badge variant="outline" className="text-xs">{tournament.game}</Badge>
           <Button size="sm" variant={tournament.status === 'finished' ? "outline" : "default"} className="h-8">
-            {tournament.status === 'finished' ? "Voir résultats" : "Voir matches"}
+            {tournament.status === 'finished' ? "View results" : "View matches"}
           </Button>
         </div>
       </div>
@@ -143,10 +143,10 @@ export default function AnalyticsTournaments() {
   });
 
   const filterButtons: { key: FilterType; label: string; icon: React.ReactNode }[] = [
-    { key: 'all', label: 'Tous', icon: <Trophy className="w-4 h-4" /> },
-    { key: 'ongoing', label: 'En cours', icon: <Zap className="w-4 h-4" /> },
-    { key: 'upcoming', label: 'À venir', icon: <Clock className="w-4 h-4" /> },
-    { key: 'finished', label: 'Terminés', icon: <CheckCircle2 className="w-4 h-4" /> },
+    { key: 'all', label: 'All', icon: <Trophy className="w-4 h-4" /> },
+    { key: 'ongoing', label: 'Ongoing', icon: <Zap className="w-4 h-4" /> },
+    { key: 'upcoming', label: 'Upcoming', icon: <Clock className="w-4 h-4" /> },
+    { key: 'finished', label: 'Finished', icon: <CheckCircle2 className="w-4 h-4" /> },
   ];
 
   const stats = {
@@ -171,7 +171,7 @@ export default function AnalyticsTournaments() {
                 </div>
                 <div>
                   <p className="text-2xl font-display font-bold text-foreground">{stats.total}</p>
-                  <p className="text-xs text-muted-foreground">Total Tournois</p>
+                  <p className="text-xs text-muted-foreground">Total Tournaments</p>
                 </div>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function AnalyticsTournaments() {
                 </div>
                 <div>
                   <p className="text-2xl font-display font-bold text-foreground">{stats.ongoing}</p>
-                  <p className="text-xs text-muted-foreground">En Cours</p>
+                  <p className="text-xs text-muted-foreground">Ongoing</p>
                 </div>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function AnalyticsTournaments() {
                 </div>
                 <div>
                   <p className="text-2xl font-display font-bold text-foreground">{stats.upcoming}</p>
-                  <p className="text-xs text-muted-foreground">À Venir</p>
+                  <p className="text-xs text-muted-foreground">Upcoming</p>
                 </div>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function AnalyticsTournaments() {
                 </div>
                 <div>
                   <p className="text-2xl font-display font-bold text-foreground">{stats.finished}</p>
-                  <p className="text-xs text-muted-foreground">Terminés</p>
+                  <p className="text-xs text-muted-foreground">Finished</p>
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@ export default function AnalyticsTournaments() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher un tournoi..."
+                  placeholder="Search for a tournament..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9 w-[300px] bg-[#12121a] border-white/10"
@@ -254,24 +254,24 @@ export default function AnalyticsTournaments() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-              <p className="text-muted-foreground">Chargement des tournois...</p>
+              <p className="text-muted-foreground">Loading tournaments...</p>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-20">
               <AlertCircle className="w-10 h-10 text-destructive mb-4" />
-              <p className="text-foreground font-semibold mb-2">Erreur de chargement</p>
+              <p className="text-foreground font-semibold mb-2">Loading error</p>
               <p className="text-muted-foreground text-sm mb-4">{error}</p>
               <Button onClick={() => refetch()} variant="outline">
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Réessayer
+                Retry
               </Button>
             </div>
           ) : filteredTournaments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Trophy className="w-10 h-10 text-muted-foreground mb-4" />
-              <p className="text-foreground font-semibold mb-2">Aucun tournoi trouvé</p>
+              <p className="text-foreground font-semibold mb-2">No tournaments found</p>
               <p className="text-muted-foreground text-sm">
-                {searchQuery ? "Essayez une autre recherche" : "Aucun tournoi disponible pour ce filtre"}
+                {searchQuery ? "Try a different search" : "No tournaments available for this filter"}
               </p>
             </div>
           ) : (

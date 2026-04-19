@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const CHALLENGE_COMPLETED_KEY = "arena_daily_challenge_completed";
@@ -8,15 +8,7 @@ export const useDailyChallenge = () => {
   const [hasCompletedToday, setHasCompletedToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      checkChallengeStatus();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const checkChallengeStatus = () => {
+  const checkChallengeStatus = useCallback(() => {
     const stored = localStorage.getItem(CHALLENGE_COMPLETED_KEY);
     if (stored) {
       const { date, userId } = JSON.parse(stored);
@@ -31,7 +23,15 @@ export const useDailyChallenge = () => {
       setHasCompletedToday(false);
     }
     setIsLoading(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      checkChallengeStatus();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, checkChallengeStatus]);
 
   const markChallengeComplete = () => {
     const today = new Date().toDateString();

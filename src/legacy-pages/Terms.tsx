@@ -40,7 +40,7 @@ const Terms = () => {
                       FanArena Pro is an entertainment platform that allows users to:
                     </p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-                      <li>Make predictions on esports events</li>
+                      <li>Make live calls on esports events</li>
                       <li>Earn and exchange Arena Points (virtual currency with no monetary value)</li>
                       <li>Participate in leaderboards and challenges</li>
                       <li>Join clubs and interact with other fans</li>

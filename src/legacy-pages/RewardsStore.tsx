@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Navbar } from "@/components/layout/Navbar";
+import { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CheckCircle2,
+  Clock,
+  Coins,
+  Gamepad2,
+  Gift,
+  Package,
+  Sparkles,
+} from "lucide-react";
+
 import { Footer } from "@/components/layout/Footer";
-import { useAuth } from "@/contexts/AuthContext";
-import { useArenaBalance } from "@/hooks/useArenaBalance";
+import { Navbar } from "@/components/layout/Navbar";
+import { RewardsStorePrizeCard } from "@/components/rewards/RewardsStorePrizeCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { AppLink } from "@/components/AppLink";
 import {
   Dialog,
   DialogContent,
@@ -18,165 +25,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Gift,
-  Coins,
-  ShoppingCart,
-  Package,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  Gamepad2,
-} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useArenaBalance } from "@/hooks/useArenaBalance";
 import { supabase } from "@/integrations/supabase/client";
 import { logger } from "@/lib/logger";
-
-interface Prize {
-  id: number;
-  sku: string;
-  name: string;
-  description: string | null;
-  image_url: string | null;
-  price_arena: number;
-  usd_value: number | null;
-  stock: number;
-  category: string | null;
-  active: boolean;
-}
-
-function PrizeCard({
-  prize,
-  onRedeem,
-  userBalance,
-  isAuthenticated,
-  isRedeeming,
-}: {
-  prize: Prize;
-  onRedeem: (prize: Prize) => void;
-  userBalance: number;
-  isAuthenticated: boolean;
-  isRedeeming: boolean;
-}) {
-  const canAfford = userBalance >= prize.price_arena;
-  const isOutOfStock = prize.stock === 0;
-  const isUnlimited = prize.stock === -1;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="glass-card overflow-hidden group"
-    >
-      {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
-        {prize.image_url ? (
-          <img
-            src={prize.image_url}
-            alt={prize.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Gift className="w-16 h-16 text-muted-foreground/30" />
-          </div>
-        )}
-
-        {prize.category && (
-          <Badge className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm">
-            {prize.category}
-          </Badge>
-        )}
-
-        {isOutOfStock ? (
-          <Badge variant="destructive" className="absolute top-3 right-3">
-            Épuisé
-          </Badge>
-        ) : !isUnlimited && prize.stock && prize.stock <= 5 ? (
-          <Badge
-            variant="secondary"
-            className="absolute top-3 right-3 bg-accent/80"
-          >
-            {prize.stock} restants
-          </Badge>
-        ) : null}
-      </div>
-
-      <div className="p-4 space-y-3">
-        <h3 className="font-display font-bold text-lg line-clamp-1">
-          {prize.name}
-        </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
-          {prize.description || "Aucune description"}
-        </p>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Coins className="w-5 h-5 text-accent" />
-            <span className="font-display font-bold text-xl text-accent">
-              {prize.price_arena.toLocaleString()}
-            </span>
-            <span className="text-sm text-muted-foreground">AP</span>
-          </div>
-          {prize.usd_value && (
-            <span className="text-sm text-muted-foreground">
-              ~{prize.usd_value}€
-            </span>
-          )}
-        </div>
-
-        {isAuthenticated ? (
-          <Button
-            className="w-full gap-2"
-            variant={canAfford && !isOutOfStock ? "hero" : "outline"}
-            disabled={!canAfford || isOutOfStock || isRedeeming}
-            onClick={() => onRedeem(prize)}
-          >
-            {isRedeeming ? (
-              <>
-                <Clock className="w-4 h-4 animate-spin" />
-                Échange en cours...
-              </>
-            ) : isOutOfStock ? (
-              <>
-                <AlertCircle className="w-4 h-4" />
-                Épuisé
-              </>
-            ) : !canAfford ? (
-              <>
-                <AlertCircle className="w-4 h-4" />
-                Solde insuffisant
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-4 h-4" />
-                Échanger
-              </>
-            )}
-          </Button>
-        ) : (
-          <AppLink href="/auth" className="block">
-            <Button variant="outline" className="w-full">
-              Connectez-vous pour échanger
-            </Button>
-          </AppLink>
-        )}
-      </div>
-    </motion.div>
-  );
-}
+import type { RewardsStoreItem } from "@/types/rewardsStore";
 
 const RewardsStore = () => {
   const { user } = useAuth();
   const { balance: userBalance, redeemPrize } = useArenaBalance();
 
-  const [prizes, setPrizes] = useState<Prize[]>([]);
+  const [prizes, setPrizes] = useState<RewardsStoreItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [redeeming, setRedeeming] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [confirmDialog, setConfirmDialog] = useState<Prize | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<RewardsStoreItem | null>(
+    null,
+  );
 
   const fetchPrizes = useCallback(async () => {
     setLoading(true);
@@ -189,7 +54,7 @@ const RewardsStore = () => {
     if (error) {
       logger.error("Error fetching prizes:", error);
     } else {
-      setPrizes((data || []) as Prize[]);
+      setPrizes((data || []) as RewardsStoreItem[]);
     }
     setLoading(false);
   }, []);
@@ -198,7 +63,7 @@ const RewardsStore = () => {
     fetchPrizes();
   }, [fetchPrizes]);
 
-  const handleRedeem = (prize: Prize) => {
+  const handleRedeem = (prize: RewardsStoreItem) => {
     setConfirmDialog(prize);
   };
 
@@ -228,37 +93,40 @@ const RewardsStore = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="pt-20 lg:pt-24 pb-12">
+      <main className="pb-12 pt-20 lg:pt-24">
         <div className="container-arena">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-accent/20 border border-accent/30">
-                    <Gift className="w-6 h-6 text-accent" />
+                <div className="mb-2 flex items-center gap-3">
+                  <div className="rounded-lg border border-accent/30 bg-accent/20 p-2">
+                    <Gift className="h-6 w-6 text-accent" />
                   </div>
-                  <h1 className="font-display font-bold text-3xl md:text-4xl">
+                  <h1 className="font-display text-3xl font-bold md:text-4xl">
                     <span className="text-foreground">Rewards </span>
-                    <span className="gradient-text-accent">Store</span>
+                    <span className="gradient-text-accent">Perks</span>
                   </h1>
                 </div>
                 <p className="text-muted-foreground">
-                  Échangez vos Arena Points contre des récompenses exclusives
+                  Claim status perks, community access, and cosmetic rewards
+                  with virtual Arena Points.
                 </p>
               </div>
 
               {user && (
-                <div className="glass-card px-6 py-4 flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-accent/20">
-                    <Coins className="w-6 h-6 text-accent" />
+                <div className="glass-card flex items-center gap-4 px-6 py-4">
+                  <div className="rounded-xl bg-accent/20 p-3">
+                    <Coins className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Votre solde</p>
-                    <p className="font-display font-bold text-2xl text-accent">
+                    <p className="text-xs text-muted-foreground">
+                      Your balance
+                    </p>
+                    <p className="font-display text-2xl font-bold text-accent">
                       {userBalance.toLocaleString()} AP
                     </p>
                   </div>
@@ -275,15 +143,17 @@ const RewardsStore = () => {
           >
             <Tabs
               value={selectedCategory || "all"}
-              onValueChange={(v) => setSelectedCategory(v === "all" ? null : v)}
+              onValueChange={(value) =>
+                setSelectedCategory(value === "all" ? null : value)
+              }
             >
               <TabsList className="h-auto flex-wrap gap-2 bg-transparent p-0">
                 <TabsTrigger
                   value="all"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Tous
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  All
                 </TabsTrigger>
                 {categories.map((category) => (
                   <TabsTrigger
@@ -292,13 +162,13 @@ const RewardsStore = () => {
                     className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     {category === "CS2 Skins" && (
-                      <Gamepad2 className="w-4 h-4 mr-2" />
+                      <Gamepad2 className="mr-2 h-4 w-4" />
                     )}
                     {category === "Gift Cards" && (
-                      <Gift className="w-4 h-4 mr-2" />
+                      <Gift className="mr-2 h-4 w-4" />
                     )}
                     {category === "Merch" && (
-                      <Package className="w-4 h-4 mr-2" />
+                      <Package className="mr-2 h-4 w-4" />
                     )}
                     {category}
                   </TabsTrigger>
@@ -308,14 +178,14 @@ const RewardsStore = () => {
           </motion.div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="glass-card h-80 animate-pulse">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="glass-card h-80 animate-pulse">
                   <div className="h-48 bg-muted/50" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-5 bg-muted/50 rounded w-3/4" />
-                    <div className="h-4 bg-muted/50 rounded w-full" />
-                    <div className="h-10 bg-muted/50 rounded" />
+                  <div className="space-y-3 p-4">
+                    <div className="h-5 w-3/4 rounded bg-muted/50" />
+                    <div className="h-4 w-full rounded bg-muted/50" />
+                    <div className="h-10 rounded bg-muted/50" />
                   </div>
                 </div>
               ))}
@@ -323,13 +193,13 @@ const RewardsStore = () => {
           ) : filteredPrizes.length > 0 ? (
             <motion.div
               layout
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
               <AnimatePresence mode="popLayout">
                 {filteredPrizes.map((prize) => (
-                  <PrizeCard
+                  <RewardsStorePrizeCard
                     key={prize.id}
-                    prize={prize}
+                    item={prize}
                     onRedeem={handleRedeem}
                     userBalance={userBalance}
                     isAuthenticated={!!user}
@@ -339,13 +209,13 @@ const RewardsStore = () => {
               </AnimatePresence>
             </motion.div>
           ) : (
-            <div className="text-center py-12">
-              <Gift className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-              <h3 className="font-display font-bold text-xl mb-2">
-                Aucun prix disponible
+            <div className="py-12 text-center">
+              <Gift className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
+              <h3 className="mb-2 font-display text-xl font-bold">
+                No rewards available
               </h3>
               <p className="text-muted-foreground">
-                Revenez bientôt pour découvrir de nouvelles récompenses !
+                Check back soon for new rewards!
               </p>
             </div>
           )}
@@ -360,25 +230,25 @@ const RewardsStore = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmer l&apos;échange</DialogTitle>
+            <DialogTitle>Confirm redemption</DialogTitle>
             <DialogDescription>
-              Voulez-vous échanger{" "}
+              Do you want to redeem{" "}
               <strong>{confirmDialog?.price_arena.toLocaleString()} AP</strong>{" "}
-              contre :
+              for:
             </DialogDescription>
           </DialogHeader>
 
           {confirmDialog && (
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/30">
+            <div className="flex items-center gap-4 rounded-lg bg-muted/30 p-4">
               {confirmDialog.image_url ? (
                 <img
                   src={confirmDialog.image_url}
                   alt={confirmDialog.name}
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className="h-16 w-16 rounded-lg object-cover"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
-                  <Gift className="w-8 h-8 text-muted-foreground" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-muted">
+                  <Gift className="h-8 w-8 text-muted-foreground" />
                 </div>
               )}
               <div>
@@ -390,10 +260,10 @@ const RewardsStore = () => {
             </div>
           )}
 
-          <div className="p-3 rounded-lg bg-accent/10 border border-accent/30">
+          <div className="rounded-lg border border-accent/30 bg-accent/10 p-3">
             <p className="text-sm">
-              <strong>Solde après échange :</strong>{" "}
-              <span className="text-accent font-bold">
+              <strong>Balance after redemption:</strong>{" "}
+              <span className="font-bold text-accent">
                 {(
                   userBalance - (confirmDialog?.price_arena || 0)
                 ).toLocaleString()}{" "}
@@ -404,7 +274,7 @@ const RewardsStore = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDialog(null)}>
-              Annuler
+              Cancel
             </Button>
             <Button
               onClick={confirmRedeem}
@@ -413,13 +283,13 @@ const RewardsStore = () => {
             >
               {redeeming ? (
                 <>
-                  <Clock className="w-4 h-4 animate-spin" />
-                  Échange en cours...
+                  <Clock className="h-4 w-4 animate-spin" />
+                  Redeeming...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  Confirmer l&apos;échange
+                  <CheckCircle2 className="h-4 w-4" />
+                  Confirm redemption
                 </>
               )}
             </Button>

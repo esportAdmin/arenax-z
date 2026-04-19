@@ -48,8 +48,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 #### Monétisation
 
 - **Arena Store** : 12 prix échangeables contre des Arena Points
-- **Abonnements Stripe** : Plans Free, Pro, Premium
-- **Webhook Stripe** : Renouvellement automatique des AP
+- **Abonnements Lemon Squeezy** : Plans communautaires Free, Starter, Pro, Elite
+- **Webhook Lemon Squeezy** : Renouvellement automatique des abonnements communautaires
 
 #### Administration
 
@@ -59,7 +59,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 #### Technique
 
-- **6 Edge Functions** : check-subscription, create-checkout, customer-portal, stripe-webhook, pandascore-matches, send-support-status
+- **Edge Functions + API billing** : check-subscription, app/api/billing/checkout, lemon-squeezy-webhook, pandascore-matches, send-support-status
 - **35+ tables** avec RLS policies
 - **20+ fonctions PostgreSQL**
 - **Données de seed complètes** : Badges, clubs, utilisateurs démo
@@ -178,14 +178,14 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### ✨ Ajouté
 
-- Intégration Stripe pour abonnements
+- Intégration Lemon Squeezy pour abonnements
 - Edge functions pour paiements
-- Portail client Stripe
+- Gestion client Lemon Squeezy
 - Webhook pour renouvellements
 
 ### 🔒 Sécurité
 
-- Validation des webhooks Stripe
+- Validation des webhooks Lemon Squeezy
 - Gestion sécurisée des secrets
 
 ---

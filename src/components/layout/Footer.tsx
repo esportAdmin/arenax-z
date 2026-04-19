@@ -1,23 +1,25 @@
 import { forwardRef } from "react";
-import { Twitter, MessageCircle, Github, Linkedin } from "lucide-react";
+import Image from "next/image";
+import { Github, Linkedin, MessageCircle, Twitter } from "lucide-react";
 import { AppLink } from "@/components/AppLink";
 
 const footerLinks = {
   product: [
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Predictions", href: "/predictions" },
-    { name: "Staking", href: "/staking" },
-    { name: "Leaderboard", href: "/leaderboard" },
+    { name: "Clubs", href: "/clubs" },
+    { name: "Live Calls", href: "/live-calls" },
+    { name: "War Room", href: "/wars" },
+    { name: "Rewards", href: "/rewards" },
   ],
   company: [
-    { name: "About", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Press Kit", href: "/press" },
-    { name: "Contact", href: "/contact" },
+    { name: "Pricing", href: "/subscription" },
+    { name: "Concierge Guide", href: "/docs" },
+    { name: "Support", href: "/contact" },
+    { name: "Leaderboard", href: "/leaderboard" },
   ],
   resources: [
-    { name: "Documentation", href: "/docs" },
-    { name: "FAQ", href: "/faq" },
+    { name: "Concierge Guide", href: "/docs" },
+    { name: "Subscription", href: "/subscription" },
     { name: "Contact & Support", href: "/contact" },
   ],
   legal: [
@@ -37,22 +39,42 @@ const socialLinks = [
 export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   return (
     <footer ref={ref} className="border-t border-border/50 bg-card/30">
-      <div className="container-arena py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
-          <div className="col-span-2 md:col-span-1">
-            <AppLink href="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-lg">
-                AX
+      <div className="container-arena py-10 lg:py-16">
+        <div className="mb-8 rounded-[1.75rem] border border-white/10 bg-white/[0.03] px-4 py-4 sm:px-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                Launch-ready signal
               </div>
-              <span className="font-display font-bold text-xl">
-                <span className="text-foreground">ArenaX</span>
-                <span className="gradient-text-primary">-Z</span>
-              </span>
+              <div className="mt-1 text-base font-semibold text-white">
+                RallyGuild is built around return pressure, prestige, and visible progression.
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <div className="metal-chip">Daily mission cadence</div>
+              <div className="metal-chip">Live club rivalry</div>
+              <div className="metal-chip">Premium reward loops</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-5 lg:gap-12">
+          <div className="col-span-2 md:col-span-1">
+            <AppLink href="/" className="mb-4 flex items-center gap-3">
+              <div className="relative h-11 w-[228px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/45 shadow-[0_0_20px_rgba(77,243,255,0.1)] sm:h-12 sm:w-[244px]">
+                <Image
+                  src="/brand/rallyguild-navbar.svg"
+                  alt="RallyGuild by ArenaX"
+                  fill
+                  sizes="(max-width: 640px) 228px, 244px"
+                  className="object-contain p-0.5"
+                />
+              </div>
             </AppLink>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Turn your passion into performance. Join the community of expert
-              fans.
+            <p className="mb-6 text-sm text-muted-foreground">
+              Where serious gaming communities build status, run live rituals,
+              and turn member attention into visible momentum.
             </p>
 
             <div className="flex gap-3">
@@ -62,16 +84,16 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
                 >
-                  <social.icon className="w-4 h-4" />
+                  <social.icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">
+            <h4 className="mb-4 text-sm font-display font-bold uppercase tracking-wider">
               Product
             </h4>
             <ul className="space-y-2">
@@ -79,7 +101,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                 <li key={link.name}>
                   <AppLink
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.name}
                   </AppLink>
@@ -89,7 +111,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">
+            <h4 className="mb-4 text-sm font-display font-bold uppercase tracking-wider">
               Company
             </h4>
             <ul className="space-y-2">
@@ -97,7 +119,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                 <li key={link.name}>
                   <AppLink
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.name}
                   </AppLink>
@@ -107,7 +129,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">
+            <h4 className="mb-4 text-sm font-display font-bold uppercase tracking-wider">
               Resources
             </h4>
             <ul className="space-y-2">
@@ -115,7 +137,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                 <li key={link.name}>
                   <AppLink
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.name}
                   </AppLink>
@@ -125,7 +147,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">
+            <h4 className="mb-4 text-sm font-display font-bold uppercase tracking-wider">
               Legal
             </h4>
             <ul className="space-y-2">
@@ -133,7 +155,7 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
                 <li key={link.name}>
                   <AppLink
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.name}
                   </AppLink>
@@ -143,20 +165,20 @@ export const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border/50">
-          <p className="text-xs text-muted-foreground/60 text-center mb-6 max-w-3xl mx-auto">
+        <div className="mt-10 border-t border-border/50 pt-8">
+          <p className="mx-auto mb-6 max-w-3xl text-center text-xs text-muted-foreground/60">
             Arena Points are virtual gaming units with no monetary value.
-            ArenaX-Z is an entertainment and gamification platform. No real
-            financial gains can be obtained.
+            RallyGuild by ArenaX is an entertainment and competitive engagement platform.
+            No cash value or financial return is offered through platform play.
           </p>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <p className="text-sm text-muted-foreground">
-              © 2026 ArenaX-Z. All rights reserved.
+              Copyright 2026 RallyGuild by ArenaX. All rights reserved.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-              <span>Platform Active</span>
+              <span className="h-2 w-2 animate-pulse rounded-full bg-success" />
+              <span>Live Platform Status</span>
             </div>
           </div>
         </div>

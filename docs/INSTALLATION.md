@@ -81,13 +81,12 @@ Créez un fichier `.env.local` à la racine du projet :
 
 ```env
 # Supabase Configuration
-VITE_SUPABASE_URL=https://votre-project-id.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-VITE_SUPABASE_PROJECT_ID=votre-project-id
+NEXT_PUBLIC_SUPABASE_URL=https://votre-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # Pour le développement local avec Supabase CLI
-# VITE_SUPABASE_URL=http://localhost:54321
-# VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+# NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ---
@@ -131,10 +130,9 @@ Le projet contient les edge functions suivantes dans `supabase/functions/` :
 
 | Fonction              | Description                               |
 | --------------------- | ----------------------------------------- |
-| `check-subscription`  | Vérifier le statut d'abonnement Stripe    |
-| `create-checkout`     | Créer une session de paiement Stripe      |
-| `customer-portal`     | Portail de gestion d'abonnement           |
-| `stripe-webhook`      | Webhook pour renouvellements automatiques |
+| `check-subscription`  | Vérifier le statut d'abonnement           |
+| `api/billing/checkout`| Créer une session Lemon Squeezy           |
+| `lemon-squeezy-webhook` | Webhook pour renouvellements automatiques |
 | `pandascore-matches`  | API pour récupérer les matchs esport      |
 | `send-support-status` | Envoi d'emails de support                 |
 
@@ -146,9 +144,6 @@ supabase functions deploy
 
 # Déployer une fonction spécifique
 supabase functions deploy check-subscription
-supabase functions deploy create-checkout
-supabase functions deploy customer-portal
-supabase functions deploy stripe-webhook
 supabase functions deploy pandascore-matches
 supabase functions deploy send-support-status
 ```
@@ -156,9 +151,9 @@ supabase functions deploy send-support-status
 ### Configurer les Secrets
 
 ```bash
-# Secrets Stripe (obligatoires pour les paiements)
-supabase secrets set STRIPE_SECRET_KEY=sk_live_...
-supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
+# Secrets Lemon Squeezy (obligatoires pour les paiements)
+LEMONSQUEEZY_API_KEY=...
+LEMONSQUEEZY_STORE_ID=...
 
 # Secret PandaScore (optionnel, pour les matchs esport live)
 supabase secrets set PANDASCORE_API_KEY=...
@@ -183,7 +178,7 @@ Dans le dashboard Supabase :
 
 1. Allez dans **Authentication > Providers**
 2. Sous **Email**, activez **Confirm email** ou désactivez pour le dev local
-3. Configurez l'URL de redirection : `http://localhost:5173`
+3. Configurez l'URL de redirection : `http://localhost:3000`
 
 Ou via CLI :
 
@@ -199,33 +194,32 @@ enable_confirmations = false  # Désactiver pour le dev local
 
 ---
 
-## 💳 Configuration Stripe
+## Configuration Lemon Squeezy
 
-### 1. Créer un compte Stripe
+### 1. Créer un compte Lemon Squeezy
 
-1. Inscrivez-vous sur [stripe.com](https://stripe.com)
-2. Activez le mode **Test** pour le développement
+1. Créez le store RallyGuild dans Lemon Squeezy
+2. Activez le mode test pour la preview si nécessaire
 
-### 2. Récupérer les clés API
+### 2. Créer les produits et variants
 
-Dans le dashboard Stripe :
+Créez les plans communautaires :
 
-- **Publishable key** : `pk_test_...` (peut être dans le code)
-- **Secret key** : `sk_test_...` (uniquement dans les secrets Supabase)
+- Starter monthly et yearly
+- Pro monthly et yearly
+- Elite monthly et yearly
 
-### 3. Configurer le Webhook
+Prix annuel recommandé :
 
-1. Dans Stripe, allez dans **Developers > Webhooks**
-2. Créez un endpoint : `https://votre-project-id.supabase.co/functions/v1/stripe-webhook`
-3. Sélectionnez l'événement : `invoice.payment_succeeded`
-4. Récupérez le **Signing secret** : `whsec_...`
+- yearly = 10 x monthly
+- cela équivaut à 2 mois offerts
 
-### 4. Créer les Produits/Prix
+### 3. Configurer les variables
 
-Créez vos produits dans Stripe et mettez à jour les IDs dans :
+Mettez à jour les IDs dans :
 
 - `src/lib/subscriptionTiers.ts`
-- `supabase/functions/stripe-webhook/index.ts`
+- Vercel Environment Variables
 
 ---
 
@@ -237,7 +231,7 @@ Créez vos produits dans Stripe et mettez à jour les IDs dans :
 # Démarrer le serveur de développement
 npm run dev
 
-# Le site sera accessible sur http://localhost:5173
+# Le site sera accessible sur http://localhost:3000
 ```
 
 ### Build de Production
@@ -282,11 +276,9 @@ esport-arena/
 │   ├── config.toml              # Configuration Supabase
 │   └── functions/               # Edge functions
 │       ├── check-subscription/
-│       ├── create-checkout/
-│       ├── customer-portal/
 │       ├── pandascore-matches/
 │       ├── send-support-status/
-│       └── stripe-webhook/
+│       └── lemon-squeezy-webhook/
 ├── .env.example                 # Template des variables d'environnement
 ├── package.json
 ├── tailwind.config.ts
@@ -322,7 +314,7 @@ const corsHeaders = {
 
 ### Erreur "Invalid JWT"
 
-- Vérifiez que `VITE_SUPABASE_PUBLISHABLE_KEY` est correct
+- Vérifiez que `NEXT_PUBLIC_SUPABASE_ANON_KEY` est correct
 - Assurez-vous que l'utilisateur est bien authentifié
 
 ### Erreur de connexion à la base de données
@@ -351,7 +343,7 @@ supabase functions deploy nom-de-la-fonction --no-verify-jwt
 ## 📚 Ressources
 
 - [Documentation Supabase](https://supabase.com/docs)
-- [Documentation Stripe](https://stripe.com/docs)
+- [Documentation Lemon Squeezy](https://docs.lemonsqueezy.com)
 - [Documentation React](https://react.dev)
 - [Documentation Tailwind CSS](https://tailwindcss.com/docs)
 - [Documentation shadcn/ui](https://ui.shadcn.com)

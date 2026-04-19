@@ -1,23 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Cookie, X } from "lucide-react";
 import { AppLink } from "@/components/AppLink";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 const COOKIE_CONSENT_KEY = "esport_arena_cookie_consent";
 
 export function CookieBanner() {
+  const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (user) {
+      setIsVisible(false);
+      return;
+    }
+
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
-      const timer = setTimeout(() => setIsVisible(true), 1000);
-      return () => clearTimeout(timer);
+      const timer = window.setTimeout(() => setIsVisible(true), 1000);
+      return () => window.clearTimeout(timer);
     }
-  }, []);
+  }, [user]);
 
   const handleAccept = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, "accepted");
@@ -33,47 +40,48 @@ export function CookieBanner() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-4">
-      <Card className="max-w-4xl mx-auto p-4 bg-background/95 backdrop-blur-sm border shadow-lg">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <Card className="mx-auto max-w-4xl border shadow-lg bg-background/95 p-4 backdrop-blur-sm">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3 text-primary">
             <Cookie className="h-8 w-8 flex-shrink-0" />
           </div>
 
           <div className="flex-1 space-y-1">
-            <p className="font-medium">🍪 Nous utilisons des cookies</p>
+            <p className="font-medium text-white">
+              We use cookies to keep ArenaX smooth
+            </p>
             <p className="text-sm text-muted-foreground">
-              Nous utilisons des cookies pour améliorer votre expérience,
-              analyser le trafic et personnaliser le contenu. En continuant,
-              vous acceptez notre{" "}
+              Cookies help us improve performance, understand traffic, and keep
+              the product trustworthy. By continuing, you agree to our{" "}
               <AppLink href="/privacy" className="underline hover:text-primary">
-                politique de confidentialité
+                privacy policy
               </AppLink>
               .
             </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+          <div className="flex w-full flex-shrink-0 items-center gap-2 sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={handleDecline}
               className="flex-1 sm:flex-none"
             >
-              Refuser
+              Essential only
             </Button>
             <Button
               size="sm"
               onClick={handleAccept}
               className="flex-1 sm:flex-none"
             >
-              Accepter
+              Accept all
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleDecline}
               className="hidden sm:flex"
-              aria-label="Fermer"
+              aria-label="Dismiss"
             >
               <X className="h-4 w-4" />
             </Button>

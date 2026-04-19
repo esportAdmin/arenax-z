@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, TrendingUp, Zap, Users } from "lucide-react";
+import {
+  Clock,
+  Flame,
+  Radio,
+  Shield,
+  Users,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TeamLogo } from "@/components/ui/team-logo";
 
 interface Team {
   name: string;
   logo: string;
-  odds: number;
+  signalScore: number;
 }
 
 interface Match {
@@ -25,21 +33,26 @@ interface Match {
 
 interface MatchCardProps {
   match: Match;
-  onPlacePrediction: (matchId: string, selectedTeam: string, stakeAmount: number, odds: number) => Promise<boolean>;
+  onSubmitLiveCall: (
+    matchId: string,
+    selectedTeam: string,
+    activityCommitment: number,
+    signalWeight: number,
+  ) => Promise<boolean>;
   isPlacing: boolean;
   userBalance: number;
   isAuthenticated: boolean;
 }
 
-export const MatchCard = ({ 
-  match, 
-  onPlacePrediction, 
-  isPlacing, 
+export const MatchCard = ({
+  match,
+  onSubmitLiveCall,
+  isPlacing,
   userBalance,
-  isAuthenticated 
+  isAuthenticated,
 }: MatchCardProps) => {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [activityCommitment, setActivityCommitment] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleTeamSelect = (teamName: string) => {
@@ -52,194 +65,197 @@ export const MatchCard = ({
     }
   };
 
-  const handlePlacePrediction = async () => {
-    if (!selectedTeam || !stakeAmount) return;
-    
-    const odds = selectedTeam === match.teamA.name ? match.teamA.odds : match.teamB.odds;
-    const success = await onPlacePrediction(match.id, selectedTeam, parseInt(stakeAmount), odds);
-    
+  const handleSubmitLiveCall = async () => {
+    if (!selectedTeam || !activityCommitment) return;
+
+    const signalWeight =
+      selectedTeam === match.teamA.name
+        ? match.teamA.signalScore / 100
+        : match.teamB.signalScore / 100;
+    const success = await onSubmitLiveCall(
+      match.id,
+      selectedTeam,
+      parseInt(activityCommitment, 10),
+      signalWeight,
+    );
+
     if (success) {
       setSelectedTeam(null);
-      setStakeAmount("");
+      setActivityCommitment("");
       setIsExpanded(false);
     }
   };
 
-  const getSelectedOdds = () => {
+  const getSelectedSignalWeight = () => {
     if (!selectedTeam) return 0;
-    return selectedTeam === match.teamA.name ? match.teamA.odds : match.teamB.odds;
+    return selectedTeam === match.teamA.name
+      ? match.teamA.signalScore / 100
+      : match.teamB.signalScore / 100;
   };
 
-  const potentialWin = stakeAmount ? Math.floor(parseFloat(stakeAmount) * getSelectedOdds()) : 0;
+  const projectedImpact = activityCommitment
+    ? Math.floor(parseFloat(activityCommitment) * getSelectedSignalWeight())
+    : 0;
+  const quickAmounts = [50, 100, 250, 500].filter((amount) => amount <= userBalance);
 
   return (
     <motion.div
       layout
-      className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
-        isExpanded 
-          ? "border-primary/50 bg-gradient-to-br from-primary/5 via-card to-card shadow-lg shadow-primary/10" 
-          : "border-border/50 bg-card/80 hover:border-border"
+      className={`relative overflow-hidden rounded-[28px] border transition-all duration-300 ${
+        isExpanded
+          ? "border-cyan-400/30 bg-[linear-gradient(180deg,rgba(18,28,58,0.95),rgba(7,12,28,0.95))] shadow-[0_0_40px_rgba(34,211,238,0.08)]"
+          : "border-white/10 bg-[linear-gradient(180deg,rgba(11,18,38,0.92),rgba(7,11,24,0.92))]"
       }`}
     >
-      {/* Live indicator glow */}
-      {match.isLive && (
-        <div className="absolute inset-0 bg-gradient-to-r from-destructive/10 via-transparent to-transparent pointer-events-none" />
-      )}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,245,255,0.08),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,182,72,0.08),transparent_32%)]" />
+      {match.isLive ? (
+        <div className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-red-500 via-orange-400 to-red-500" />
+      ) : null}
 
-      <div className="relative p-4 lg:p-6">
-        {/* Match Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
+      <div className="relative p-5 lg:p-6">
+        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
             {match.isLive ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-destructive/20 border border-destructive/30">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
-                </span>
-                <span className="text-destructive text-xs font-bold uppercase tracking-wider">En Direct</span>
+              <div className="metal-chip border-red-500/30 bg-red-500/10 text-red-200">
+                <Radio className="h-3.5 w-3.5" />
+                Live pressure
               </div>
             ) : (
-              <span className="px-3 py-1.5 rounded-full bg-muted/50 text-muted-foreground text-xs font-medium border border-border/50">
-                {match.date}
-              </span>
+              <div className="metal-chip">{match.date}</div>
             )}
-            <span className="text-sm text-muted-foreground font-medium">{match.tournament}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/30 px-2 py-1 rounded-full">
-              <Users className="w-3 h-3" />
-              <span>{match.totalLocked.toLocaleString()} AP</span>
+
+            <div className="metal-chip">
+              <Shield className="h-3.5 w-3.5" />
+              {match.tournament}
             </div>
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+            <div className="metal-chip">
+              <Users className="h-3.5 w-3.5" />
+              {match.totalLocked.toLocaleString("en-US")} locked
+            </div>
+            <div className="metal-chip">
+              <Clock className="h-3.5 w-3.5" />
               {match.time}
             </div>
           </div>
         </div>
 
-        {/* Teams Grid */}
-        <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
-          {/* Team A */}
+        <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
           <button
             onClick={() => handleTeamSelect(match.teamA.name)}
-            className={`group relative p-5 rounded-xl border-2 transition-all duration-200 ${
+            className={`group relative rounded-[24px] border p-5 text-left transition-all duration-200 ${
               selectedTeam === match.teamA.name
-                ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
-                : "border-border/50 hover:border-primary/40 hover:bg-muted/30"
+                ? "border-cyan-400/50 bg-cyan-400/10 shadow-[0_0_30px_rgba(34,211,238,0.15)]"
+                : "border-white/10 bg-white/[0.03] hover:border-cyan-400/30 hover:bg-white/[0.05]"
             }`}
           >
-            <div className="flex flex-col items-center gap-3">
-              <div className="text-4xl transform group-hover:scale-110 transition-transform">{match.teamA.logo}</div>
-              <div className="font-display font-bold text-lg">{match.teamA.name}</div>
-              <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${
-                selectedTeam === match.teamA.name
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-accent/20 text-accent"
-              }`}>
-                <Zap className="w-3 h-3" />
-                {match.teamA.odds}x
+            <div className="flex items-center gap-4">
+              <TeamLogo
+                name={match.teamA.name}
+                logo={match.teamA.logo}
+                size={64}
+                shape="lg"
+                fit="contain"
+                className="rounded-2xl border border-white/10 bg-white/5 p-1.5 transition-transform group-hover:scale-105"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xl font-black text-white">
+                  {match.teamA.name}
+                </div>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-sm font-bold text-cyan-300">
+                  <Zap className="h-3.5 w-3.5" />
+                  {match.teamA.signalScore} signal
+                </div>
               </div>
             </div>
-            {selectedTeam === match.teamA.name && (
-              <motion.div
-                layoutId={`selected-${match.id}`}
-                className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </motion.div>
-            )}
           </button>
 
-          {/* VS Section */}
-          <div className="flex flex-col items-center justify-center px-4">
+          <div className="flex flex-col items-center justify-center px-2 text-center">
             {match.isLive && match.mapScore ? (
-              <div className="text-center">
-                <div className="font-display font-black text-3xl mb-1">
-                  <span className="text-foreground">{match.mapScore.teamA}</span>
-                  <span className="text-muted-foreground mx-2">:</span>
-                  <span className="text-foreground">{match.mapScore.teamB}</span>
+              <div>
+                <div className="text-3xl font-black text-white">
+                  {match.mapScore.teamA}
+                  <span className="mx-2 text-slate-500">:</span>
+                  {match.mapScore.teamB}
                 </div>
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Maps</span>
+                <div className="mt-1 text-xs uppercase tracking-[0.24em] text-slate-500">
+                  Live maps
+                </div>
               </div>
             ) : (
-              <div className="font-display font-black text-2xl text-muted-foreground/50">VS</div>
+              <div className="text-2xl font-black text-slate-500">VS</div>
             )}
-            <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
-              <TrendingUp className="w-3 h-3" />
-              <span>Hot Match</span>
+
+            <div className="mt-3 inline-flex items-center gap-1 text-xs text-amber-300/80">
+              <Flame className="h-3.5 w-3.5" />
+              High-attention match
             </div>
           </div>
 
-          {/* Team B */}
           <button
             onClick={() => handleTeamSelect(match.teamB.name)}
-            className={`group relative p-5 rounded-xl border-2 transition-all duration-200 ${
+            className={`group relative rounded-[24px] border p-5 text-left transition-all duration-200 ${
               selectedTeam === match.teamB.name
-                ? "border-primary bg-primary/10 shadow-lg shadow-primary/20"
-                : "border-border/50 hover:border-primary/40 hover:bg-muted/30"
+                ? "border-fuchsia-400/50 bg-fuchsia-400/10 shadow-[0_0_30px_rgba(217,70,239,0.15)]"
+                : "border-white/10 bg-white/[0.03] hover:border-fuchsia-400/30 hover:bg-white/[0.05]"
             }`}
           >
-            <div className="flex flex-col items-center gap-3">
-              <div className="text-4xl transform group-hover:scale-110 transition-transform">{match.teamB.logo}</div>
-              <div className="font-display font-bold text-lg">{match.teamB.name}</div>
-              <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${
-                selectedTeam === match.teamB.name
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-accent/20 text-accent"
-              }`}>
-                <Zap className="w-3 h-3" />
-                {match.teamB.odds}x
+            <div className="flex items-center gap-4">
+              <TeamLogo
+                name={match.teamB.name}
+                logo={match.teamB.logo}
+                size={64}
+                shape="lg"
+                fit="contain"
+                className="rounded-2xl border border-white/10 bg-white/5 p-1.5 transition-transform group-hover:scale-105"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-xl font-black text-white">
+                  {match.teamB.name}
+                </div>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-fuchsia-400/20 bg-fuchsia-400/10 px-3 py-1 text-sm font-bold text-fuchsia-300">
+                  <Zap className="h-3.5 w-3.5" />
+                  {match.teamB.signalScore} signal
+                </div>
               </div>
             </div>
-            {selectedTeam === match.teamB.name && (
-              <motion.div
-                layoutId={`selected-${match.id}`}
-                className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </motion.div>
-            )}
           </button>
         </div>
 
-        {/* Stake Input Panel */}
-        {isExpanded && selectedTeam && (
+        {isExpanded && selectedTeam ? (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-6 pt-6 border-t border-border/50"
+            className="mt-6 border-t border-white/8 pt-6"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Mise (Arena Points)
+            <div className="grid gap-4 lg:grid-cols-[1fr_0.8fr_0.9fr]">
+              <div className="surface-panel border-white/10 bg-white/[0.03] p-4">
+                <label className="mb-2 block text-sm font-medium text-slate-300">
+                  Activity commit
                 </label>
                 <div className="relative">
                   <Input
                     type="number"
-                    placeholder="Min. 50"
-                    value={stakeAmount}
-                    onChange={(e) => setStakeAmount(e.target.value)}
-                    className="bg-muted/50 border-border/50 pr-16 font-mono text-lg h-12"
+                    placeholder="Minimum 50"
+                    value={activityCommitment}
+                    onChange={(event) => setActivityCommitment(event.target.value)}
+                    className="h-12 border-white/10 bg-black/20 pr-16 font-mono text-lg"
                     min={50}
                     max={userBalance}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                    AP
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">
+                    ARENA
                   </div>
                 </div>
-                <div className="flex gap-2 mt-2">
-                  {[50, 100, 250, 500].map((amount) => (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {quickAmounts.map((amount) => (
                     <button
                       key={amount}
-                      onClick={() => setStakeAmount(amount.toString())}
-                      disabled={amount > userBalance}
-                      className="px-2 py-1 text-xs rounded bg-muted/50 hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => setActivityCommitment(amount.toString())}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300 transition-colors hover:border-cyan-400/30 hover:text-white"
                     >
                       {amount}
                     </button>
@@ -247,58 +263,65 @@ export const MatchCard = ({
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Gains Potentiels
-                </label>
-                <div className="h-12 px-4 rounded-lg bg-gradient-to-r from-accent/20 to-accent/10 border border-accent/30 flex items-center justify-between">
-                  <span className="font-display font-bold text-xl text-accent">
-                    +{potentialWin.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-accent/70">AP</span>
+              <div className="surface-panel border-emerald-400/20 bg-emerald-400/10 p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-emerald-200/70">
+                  Projected impact
+                </div>
+                <div className="mt-3 text-3xl font-black text-white">
+                  +{projectedImpact.toLocaleString("en-US")}
+                </div>
+                <div className="mt-1 text-sm text-slate-300">
+                  Based on current signal strength and activity weight
                 </div>
               </div>
 
-              <div>
+              <div className="surface-panel border-white/10 bg-white/[0.03] p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Command
+                </div>
+                <div className="mt-2 text-lg font-bold text-white">
+                  Call {selectedTeam}
+                </div>
+                <p className="mt-2 text-sm text-slate-400">
+                  Commit only if the read is strong. Fast, clear, and deliberate.
+                </p>
+
                 {isAuthenticated ? (
-                  <Button 
-                    onClick={handlePlacePrediction}
-                    disabled={isPlacing || !stakeAmount || parseInt(stakeAmount) < 50}
-                    className="w-full h-12 font-bold text-base"
-                    variant="hero"
+                  <Button
+                    onClick={handleSubmitLiveCall}
+                    disabled={
+                      isPlacing ||
+                      !activityCommitment ||
+                      parseInt(activityCommitment, 10) < 50
+                    }
+                    className="mt-4 w-full"
                   >
-                    {isPlacing ? (
-                      <span className="flex items-center gap-2">
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Validation...
-                      </span>
-                    ) : (
-                      "Valider le Pronostic"
-                    )}
+                    {isPlacing ? "Submitting..." : "Confirm live call"}
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     variant="secondary"
-                    className="w-full h-12"
-                    onClick={() => window.location.href = '/auth'}
+                    className="mt-4 w-full"
+                    onClick={() => {
+                      window.location.href = "/auth";
+                    }}
                   >
-                    Connectez-vous pour parier
+                    Sign in to join the action
                   </Button>
                 )}
               </div>
             </div>
 
-            {isAuthenticated && (
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Votre solde:</span>
-                <span className="font-bold text-foreground">{userBalance.toLocaleString()} Arena Points</span>
+            {isAuthenticated ? (
+              <div className="mt-4 flex items-center justify-between text-sm text-slate-400">
+                <span>Your available activity balance</span>
+                <span className="font-bold text-white">
+                  {userBalance.toLocaleString("en-US")} ARENA
+                </span>
               </div>
-            )}
+            ) : null}
           </motion.div>
-        )}
+        ) : null}
       </div>
     </motion.div>
   );

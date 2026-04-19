@@ -1,327 +1,193 @@
-// src/hooks/useClubDetail.ts
-import { useState, useEffect, useCallback } from "react";
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { Club, ClubMember } from "./useClubs";
 
-export interface ClubActivity {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface Club {
   id: string;
-  club_id: string;
-  user_id: string | null;
-  activity_type: string;
-  title: string;
-  description: string | null;
-  xp_amount: number;
-  created_at: string;
-  profile?: {
-    display_name: string | null;
-    avatar_url: string | null;
-  } | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  total_xp?: number;
+  total_predictions: number;
+  total_wins: number;
+  [key: string]: unknown;
 }
 
-export interface JoinRequest {
+export interface ClubMember {
   id: string;
   club_id: string;
   user_id: string;
+  role: "owner" | "admin" | "member";
+  xp_contributed: number;
+  predictions_count: number;
+  wins_count: number;
+  joined_at: string;
+  [key: string]: unknown;
+}
+
+export interface ActiveWar {
+  id: string;
+  challenger_id: string;
+  defender_id: string;
+  challenger_xp: number;
+  defender_xp: number;
   status: string;
-  message: string | null;
   created_at: string;
-  profile?: {
-    display_name: string | null;
-    username: string | null;
-    avatar_url: string | null;
-    current_level: number;
-  } | null;
+  [key: string]: unknown;
 }
 
-/**
- * Normalize "public_leaderboard" row to the shape expected by UI types.
- *
- * @example
- * normalizePublicProfile({ current_level: null }).current_level; // 0
- */
-function normalizePublicProfile<T extends { current_level: number | null }>(
-  p: T,
-) {
-  return { ...p, current_level: p.current_level ?? 0 };
+interface UseClubDetailReturn {
+  club: Club | null;
+  members: ClubMember[];
+  myMembership: ClubMember | null;
+  activeWar: ActiveWar | null;
+  loading: boolean;
+  isAdmin: boolean;
+  refresh: () => Promise<void>;
 }
 
-/**
- * Ensure xp_amount is always a number (DB can return null).
- *
- * @example
- * normalizeActivity({ xp_amount: null }).xp_amount; // 0
- */
-function normalizeActivity<T extends { xp_amount: number | null }>(a: T) {
-  return { ...a, xp_amount: a.xp_amount ?? 0 };
-}
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function useClubDetail(slug: string | undefined) {
-  const { user } = useAuth();
-  const { toast } = useToast();
+export function useClubDetail(slug: string): UseClubDetailReturn {
+  // ✅ On récupère aussi `loading` de l'auth pour attendre la session
+  const { user, loading: authLoading } = useAuth();
+
+  // Primitif stable — évite les re-renders infinis liés à la référence objet
+  const userId = user?.id ?? null;
+
   const [club, setClub] = useState<Club | null>(null);
   const [members, setMembers] = useState<ClubMember[]>([]);
-  const [activities, setActivities] = useState<ClubActivity[]>([]);
-  const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
   const [myMembership, setMyMembership] = useState<ClubMember | null>(null);
+  const [activeWar, setActiveWar] = useState<ActiveWar | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchClub = useCallback(async () => {
-    if (!slug) return;
+  // Guard contre les setState sur un composant démonté
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const refresh = useCallback(async () => {
+    // ✅ FIX RACE CONDITION : on attend que l'auth soit résolue
+    //    avant de lancer les requêtes — sinon le JWT n'est pas
+    //    encore injecté dans le client Supabase et membership = null
+    if (authLoading) return;
+
+    // Guard slug
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
 
     try {
+      // ── 1. Club ──────────────────────────────────────────────────────────
+
       const { data: clubData, error: clubError } = await supabase
         .from("clubs")
         .select("*")
         .eq("slug", slug)
         .maybeSingle();
 
-      if (clubError) throw clubError;
-
-      if (!clubData) {
-        setClub(null);
-        setMembers([]);
-        setActivities([]);
-        setJoinRequests([]);
-        setMyMembership(null);
+      if (clubError) {
+        console.error("[useClubDetail] Club fetch error:", clubError.message);
+        if (isMountedRef.current) {
+          setClub(null);
+          setMembers([]);
+          setMyMembership(null);
+          setActiveWar(null);
+        }
         return;
       }
 
-      setClub(clubData);
-
-      const { data: membersData } = await supabase
-        .from("club_members")
-        .select("*")
-        .eq("club_id", clubData.id)
-        .order("xp_contributed", { ascending: false });
-
-      if (membersData && membersData.length > 0) {
-        const userIds = membersData.map((m) => m.user_id);
-
-        const { data: profilesData } = await supabase
-          .from("public_leaderboard")
-          .select("user_id, display_name, username, avatar_url, current_level")
-          .in("user_id", userIds);
-
-        const safeProfiles =
-          profilesData?.map((p) => normalizePublicProfile(p)) ?? [];
-
-        const membersWithProfiles = membersData.map((member) => ({
-          ...member,
-          profile:
-            safeProfiles.find((p) => p.user_id === member.user_id) || null,
-        }));
-
-        setMembers(membersWithProfiles as ClubMember[]);
-
-        if (user) {
-          const myMember = membersWithProfiles.find(
-            (m) => m.user_id === user.id,
-          );
-          setMyMembership((myMember as ClubMember) || null);
-        } else {
+      if (!clubData) {
+        if (isMountedRef.current) {
+          setClub(null);
+          setMembers([]);
           setMyMembership(null);
+          setActiveWar(null);
         }
-      } else {
-        setMembers([]);
-        setMyMembership(null);
+        return;
       }
 
-      // Fetch activities (only if member)
-      if (user) {
-        const { data: activitiesData } = await supabase
-          .from("club_activities")
+      const clubId = clubData.id;
+
+      // ── 2. Requêtes parallèles ───────────────────────────────────────────
+
+      const [membersResult, membershipResult, warResult] = await Promise.all([
+        supabase.from("club_members").select("*").eq("club_id", clubId),
+
+        userId
+          ? supabase
+              .from("club_members")
+              .select("*")
+              .eq("club_id", clubId)
+              .eq("user_id", userId)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
+
+        supabase
+          .from("club_wars")
           .select("*")
-          .eq("club_id", clubData.id)
-          .order("created_at", { ascending: false })
-          .limit(20);
+          .or(`challenger_id.eq.${clubId},defender_id.eq.${clubId}`)
+          .eq("status", "active")
+          .maybeSingle(),
+      ]);
 
-        if (activitiesData && activitiesData.length > 0) {
-          const normalized = activitiesData.map((a) =>
-            normalizeActivity(a as any),
-          );
-
-          const activityUserIds = normalized
-            .map((a) => a.user_id)
-            .filter((v): v is string => typeof v === "string" && v.length > 0);
-
-          if (activityUserIds.length > 0) {
-            const { data: activityProfiles } = await supabase
-              .from("public_leaderboard")
-              .select("user_id, display_name, avatar_url")
-              .in("user_id", activityUserIds);
-
-            const activitiesWithProfiles: ClubActivity[] = normalized.map(
-              (activity: any) => ({
-                ...activity,
-                profile:
-                  activityProfiles?.find(
-                    (p) => p.user_id === activity.user_id,
-                  ) || null,
-              }),
-            );
-
-            setActivities(activitiesWithProfiles);
-          } else {
-            setActivities(normalized as any);
-          }
-        } else {
-          setActivities([]);
-        }
-      } else {
-        setActivities([]);
+      if (process.env.NODE_ENV === "development") {
+        console.log("[useClubDetail] AUTH LOADING:", authLoading);
+        console.log("[useClubDetail] USER:", userId);
+        console.log("[useClubDetail] MY MEMBERSHIP:", membershipResult.data);
+        console.log(
+          "[useClubDetail] MEMBERSHIP ERROR:",
+          membershipResult.error,
+        );
+        console.log(
+          "[useClubDetail] IS ADMIN:",
+          membershipResult.data?.role === "owner" ||
+            membershipResult.data?.role === "admin",
+        );
       }
 
-      // Fetch join requests (only for admins)
-      if (user) {
-        const membership = membersData?.find((m) => m.user_id === user.id);
-        if (membership && ["owner", "admin"].includes(membership.role)) {
-          const { data: requestsData } = await supabase
-            .from("club_join_requests")
-            .select("*")
-            .eq("club_id", clubData.id)
-            .eq("status", "pending")
-            .order("created_at", { ascending: false });
-
-          if (requestsData && requestsData.length > 0) {
-            const requestUserIds = requestsData.map((r) => r.user_id);
-
-            const { data: requestProfiles } = await supabase
-              .from("public_leaderboard")
-              .select(
-                "user_id, display_name, username, avatar_url, current_level",
-              )
-              .in("user_id", requestUserIds);
-
-            const safeProfiles =
-              requestProfiles?.map((p) => normalizePublicProfile(p)) ?? [];
-
-            const requestsWithProfiles: JoinRequest[] = requestsData.map(
-              (request: any) => ({
-                ...request,
-                profile:
-                  safeProfiles.find((p) => p.user_id === request.user_id) ||
-                  null,
-              }),
-            );
-
-            setJoinRequests(requestsWithProfiles);
-          } else {
-            setJoinRequests([]);
-          }
-        } else {
-          setJoinRequests([]);
-        }
-      } else {
-        setJoinRequests([]);
+      if (membershipResult.error) {
+        console.error(
+          "[useClubDetail] Membership error:",
+          membershipResult.error.message,
+        );
       }
-    } catch (error) {
-      console.error("Error fetching club detail:", error);
+
+      // ── 3. Mise à jour atomique ──────────────────────────────────────────
+
+      if (isMountedRef.current) {
+        setClub(clubData as Club);
+        setMembers((membersResult.data as ClubMember[]) ?? []);
+        setMyMembership((membershipResult.data as ClubMember | null) ?? null);
+        setActiveWar((warResult.data as ActiveWar | null) ?? null);
+      }
+    } catch (err) {
+      console.error("[useClubDetail] Unexpected error:", err);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
-  }, [slug, user]);
+    // ✅ authLoading dans les deps : re-déclenche quand la session est prête
+  }, [slug, userId, authLoading]);
 
   useEffect(() => {
-    void fetchClub();
-  }, [fetchClub]);
-
-  const approveRequest = async (requestId: string) => {
-    try {
-      const { data, error } = await supabase.rpc("approve_join_request", {
-        p_request_id: requestId,
-      });
-
-      if (error) throw error;
-
-      const result = data as { success: boolean; error?: string };
-      if (result.success) {
-        toast({
-          title: "Demande approuvée",
-          description: "Le membre a été ajouté au club",
-        });
-        void fetchClub();
-        return { success: true };
-      }
-      throw new Error(result.error);
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-      return { success: false };
-    }
-  };
-
-  const rejectRequest = async (requestId: string) => {
-    try {
-      const { data, error } = await supabase.rpc("reject_join_request", {
-        p_request_id: requestId,
-      });
-
-      if (error) throw error;
-
-      const result = data as { success: boolean; error?: string };
-      if (result.success) {
-        toast({ title: "Demande refusée" });
-        setJoinRequests((prev) => prev.filter((r) => r.id !== requestId));
-        return { success: true };
-      }
-      throw new Error(result.error);
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-      return { success: false };
-    }
-  };
-
-  const updateMemberRole = async (memberId: string, newRole: string) => {
-    try {
-      const { data, error } = await supabase.rpc("update_member_role", {
-        p_member_id: memberId,
-        p_new_role: newRole,
-      });
-
-      if (error) throw error;
-
-      const result = data as { success: boolean; error?: string };
-      if (result.success) {
-        toast({ title: "Rôle mis à jour" });
-        void fetchClub();
-        return { success: true };
-      }
-      throw new Error(result.error);
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-      return { success: false };
-    }
-  };
+    refresh();
+  }, [refresh]);
 
   const isAdmin =
-    !!myMembership && ["owner", "admin"].includes(myMembership.role);
-  const isOwner = myMembership?.role === "owner";
+    myMembership?.role === "owner" || myMembership?.role === "admin";
 
-  return {
-    club,
-    members,
-    activities,
-    joinRequests,
-    myMembership,
-    loading,
-    isAdmin,
-    isOwner,
-    approveRequest,
-    rejectRequest,
-    updateMemberRole,
-    refresh: fetchClub,
-  };
+  return { club, members, myMembership, activeWar, loading, isAdmin, refresh };
 }

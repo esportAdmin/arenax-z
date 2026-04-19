@@ -16,7 +16,7 @@ import {
   Legend,
 } from "recharts";
 import { format, subDays, startOfDay, eachDayOfInterval } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 interface UserProfile {
   id: string;
@@ -60,8 +60,8 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
       }).length;
 
       return {
-        date: format(day, "dd/MM", { locale: fr }),
-        inscriptions: count,
+        date: format(day, "MM/dd", { locale: enUS }),
+        signups: count,
       };
     });
   }, [users]);
@@ -81,9 +81,9 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
       });
 
       return {
-        date: format(day, "dd/MM", { locale: fr }),
-        échanges: dayRedemptions.length,
-        valeur: dayRedemptions.reduce((sum, r) => sum + r.price_paid, 0),
+        date: format(day, "MM/dd", { locale: enUS }),
+        redemptions: dayRedemptions.length,
+        value: dayRedemptions.reduce((sum, r) => sum + r.price_paid, 0),
       };
     });
   }, [redemptions]);
@@ -105,7 +105,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
       levels[levelGroup] = (levels[levelGroup] || 0) + 1;
     });
 
-    return Object.entries(levels).map(([name, value]) => ({ name: `Niv. ${name}`, value }));
+    return Object.entries(levels).map(([name, value]) => ({ name: `Lvl ${name}`, value }));
   }, [users]);
 
   // Redemption status distribution
@@ -114,13 +114,13 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
     redemptions.forEach((r) => {
       const label =
         r.status === "pending"
-          ? "En attente"
+          ? "Pending"
           : r.status === "processing"
-            ? "En cours"
+            ? "Processing"
             : r.status === "completed"
-              ? "Complété"
+              ? "Completed"
               : r.status === "cancelled"
-                ? "Annulé"
+                ? "Cancelled"
                 : r.status;
       statuses[label] = (statuses[label] || 0) + 1;
     });
@@ -145,13 +145,13 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
   const summaryStats = useMemo(() => {
     const totalAP = users.reduce((sum, u) => sum + (u.arena_balance || 0), 0);
     const avgAP = users.length > 0 ? Math.round(totalAP / users.length) : 0;
-    const totalPredictions = users.reduce((sum, u) => sum + u.total_predictions, 0);
+    const totalLiveCalls = users.reduce((sum, u) => sum + u.total_predictions, 0);
     const totalWins = users.reduce((sum, u) => sum + u.total_wins, 0);
-    const avgWinRate = totalPredictions > 0 ? Math.round((totalWins / totalPredictions) * 100) : 0;
+    const avgWinRate = totalLiveCalls > 0 ? Math.round((totalWins / totalLiveCalls) * 100) : 0;
     const avgLevel =
       users.length > 0 ? (users.reduce((sum, u) => sum + u.current_level, 0) / users.length).toFixed(1) : 0;
 
-    return { totalAP, avgAP, totalPredictions, totalWins, avgWinRate, avgLevel };
+    return { totalAP, avgAP, totalLiveCalls, totalWins, avgWinRate, avgLevel };
   }, [users]);
 
   return (
@@ -160,25 +160,25 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">AP Moyen / Utilisateur</p>
+            <p className="text-sm text-muted-foreground">Average AP / User</p>
             <p className="text-2xl font-bold text-yellow-500">{summaryStats.avgAP.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">Niveau Moyen</p>
+            <p className="text-sm text-muted-foreground">Average Level</p>
             <p className="text-2xl font-bold text-primary">{summaryStats.avgLevel}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">Total Prédictions</p>
-            <p className="text-2xl font-bold">{summaryStats.totalPredictions.toLocaleString()}</p>
+            <p className="text-sm text-muted-foreground">Total Live Calls</p>
+            <p className="text-2xl font-bold">{summaryStats.totalLiveCalls.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">Taux de Victoire</p>
+            <p className="text-sm text-muted-foreground">Win Rate</p>
             <p className="text-2xl font-bold text-green-500">{summaryStats.avgWinRate}%</p>
           </CardContent>
         </Card>
@@ -189,7 +189,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
         {/* User Registrations Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Inscriptions (30 jours)</CardTitle>
+            <CardTitle className="text-lg">Signups (30 days)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -207,7 +207,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
                   />
                   <Area
                     type="monotone"
-                    dataKey="inscriptions"
+                    dataKey="signups"
                     stroke="hsl(var(--primary))"
                     fill="hsl(var(--primary))"
                     fillOpacity={0.3}
@@ -221,7 +221,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
         {/* Redemptions Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Échanges (30 jours)</CardTitle>
+            <CardTitle className="text-lg">Redemptions (30 days)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -237,7 +237,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
                       borderRadius: "8px",
                     }}
                   />
-                  <Bar dataKey="échanges" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="redemptions" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -250,7 +250,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
         {/* Level Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Distribution des Niveaux</CardTitle>
+            <CardTitle className="text-lg">Level Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-48">
@@ -286,7 +286,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
         {/* Redemption Status */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Statut des Échanges</CardTitle>
+            <CardTitle className="text-lg">Redemption Status</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-48">
@@ -322,7 +322,7 @@ export function AdminAnalytics({ users, redemptions }: AdminAnalyticsProps) {
         {/* Top Prizes */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Top Prix Échangés</CardTitle>
+            <CardTitle className="text-lg">Top Redeemed Rewards</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-48">

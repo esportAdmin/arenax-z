@@ -16,7 +16,7 @@ import {
   Legend,
 } from "recharts";
 import { format, subDays, startOfDay, eachDayOfInterval } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Activity, TrendingUp, Users, Zap } from "lucide-react";
 
 interface AuditLog {
@@ -108,8 +108,8 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
     });
 
     return days.map((day) => ({
-      date: format(day, "EEE", { locale: fr }),
-      fullDate: format(day, "dd/MM", { locale: fr }),
+      date: format(day, "EEE", { locale: enUS }),
+      fullDate: format(day, "MM/dd", { locale: enUS }),
       actions: dayCounts[format(day, "yyyy-MM-dd")],
     }));
   }, [logs]);
@@ -155,7 +155,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
                 <Zap className="h-5 w-5 text-green-500" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Aujourd'hui</p>
+                <p className="text-xs text-muted-foreground">Today</p>
                 <p className="text-xl font-bold">{summaryStats.today}</p>
               </div>
             </div>
@@ -168,7 +168,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
                 <Users className="h-5 w-5 text-blue-500" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Admins actifs</p>
+                <p className="text-xs text-muted-foreground">Active admins</p>
                 <p className="text-xl font-bold">{summaryStats.uniqueAdmins}</p>
               </div>
             </div>
@@ -181,7 +181,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
                 <TrendingUp className="h-5 w-5 text-orange-500" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Moy/jour</p>
+                <p className="text-xs text-muted-foreground">Avg/day</p>
                 <p className="text-xl font-bold">{summaryStats.avgPerDay}</p>
               </div>
             </div>
@@ -194,7 +194,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
         {/* Activity Over Time */}
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Activité sur 7 jours</CardTitle>
+            <CardTitle className="text-base">Activity over 7 days</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
@@ -245,7 +245,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
         {/* Actions by Type */}
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Répartition par type</CardTitle>
+            <CardTitle className="text-base">Breakdown by type</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
@@ -295,7 +295,7 @@ export function AuditLogStats({ logs }: AuditLogStatsProps) {
       {/* Top Admins */}
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Admins les plus actifs</CardTitle>
+          <CardTitle className="text-base">Most active admins</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[180px]">

@@ -85,7 +85,7 @@ export function LeaderboardPreview() {
 
             <p className="text-muted-foreground text-lg mb-8">
               Compete against fans worldwide. Your Arena Score combines
-              prediction accuracy, locking activity, and daily quest completion.
+              live-call consistency, club activity, and daily quest completion.
               Top performers earn exclusive rewards and recognition.
             </p>
 
@@ -137,7 +137,7 @@ export function LeaderboardPreview() {
                     {fan.rank}
                   </div>
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
-                    {fan.avatar}
+                    {fan.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold">{fan.name}</div>

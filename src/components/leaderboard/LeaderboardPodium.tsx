@@ -45,7 +45,7 @@ export function LeaderboardPodium({ entries }: LeaderboardPodiumProps) {
           </div>
           <div className="text-xs text-muted-foreground mb-2">Arena Score</div>
           <div className="flex justify-center">
-            <BadgeDisplay badges={second.badges} maxDisplay={3} size="sm" />
+            <BadgeDisplay badges={second.badges ?? []} maxDisplay={3} size="sm" />
           </div>
         </div>
       )}
@@ -99,7 +99,7 @@ export function LeaderboardPodium({ entries }: LeaderboardPodiumProps) {
         <div className="text-xs text-muted-foreground mb-2">Arena Score</div>
 
         <div className="flex justify-center">
-          <BadgeDisplay badges={first.badges} maxDisplay={4} size="md" />
+          <BadgeDisplay badges={first.badges ?? []} maxDisplay={4} size="md" />
         </div>
       </motion.div>
 
@@ -126,7 +126,7 @@ export function LeaderboardPodium({ entries }: LeaderboardPodiumProps) {
           </div>
           <div className="text-xs text-muted-foreground mb-2">Arena Score</div>
           <div className="flex justify-center">
-            <BadgeDisplay badges={third.badges} maxDisplay={3} size="sm" />
+            <BadgeDisplay badges={third.badges ?? []} maxDisplay={3} size="sm" />
           </div>
         </div>
       )}

@@ -20,10 +20,10 @@ const MUTE_DURATIONS = [
   { value: '5', label: '5 minutes' },
   { value: '15', label: '15 minutes' },
   { value: '30', label: '30 minutes' },
-  { value: '60', label: '1 heure' },
-  { value: '360', label: '6 heures' },
-  { value: '1440', label: '24 heures' },
-  { value: 'custom', label: 'Personnalisé' },
+  { value: '60', label: '1 hour' },
+  { value: '360', label: '6 hours' },
+  { value: '1440', label: '24 hours' },
+  { value: 'custom', label: 'Custom' },
 ];
 
 export const MuteUserDialog = ({ 
@@ -81,7 +81,7 @@ export const MuteUserDialog = ({
             <div className="flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
               <p className="text-sm text-destructive">
-                {userName} ne pourra plus envoyer de messages dans le chat du club pendant la durée du mute.
+                {userName} will no longer be able to send messages in club chat for the duration of the mute.
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export const MuteUserDialog = ({
           <div>
             <Label className="flex items-center gap-2 mb-3">
               <Clock className="h-4 w-4" />
-              Durée du mute
+              Mute duration
             </Label>
             <RadioGroup
               value={selectedDuration}
@@ -115,7 +115,7 @@ export const MuteUserDialog = ({
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
-                    placeholder="Durée"
+                    placeholder="Duration"
                     value={customDuration}
                     onChange={(e) => setCustomDuration(e.target.value)}
                     min="1"
@@ -128,10 +128,10 @@ export const MuteUserDialog = ({
           </div>
 
           <div>
-            <Label htmlFor="reason">Raison (optionnel)</Label>
+            <Label htmlFor="reason">Reason (optional)</Label>
             <Input
               id="reason"
-              placeholder="Ex: Spam, comportement inapproprié..."
+              placeholder="Example: spam, inappropriate behavior..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="mt-1"
@@ -144,7 +144,7 @@ export const MuteUserDialog = ({
               onClick={() => setOpen(false)}
               className="flex-1"
             >
-              Annuler
+              Cancel
             </Button>
             <Button
               variant="destructive"
@@ -152,7 +152,7 @@ export const MuteUserDialog = ({
               disabled={loading || (selectedDuration === 'custom' && (!customDuration || parseInt(customDuration) <= 0))}
               className="flex-1"
             >
-              {loading ? 'Mute en cours...' : 'Confirmer le mute'}
+              {loading ? 'Muting...' : 'Confirm mute'}
             </Button>
           </div>
         </div>

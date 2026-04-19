@@ -1,7 +1,5 @@
-"use client";
-
-import Predictions from "@/legacy-pages/Predictions";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <Predictions />;
+  redirect("/live-calls");
 }

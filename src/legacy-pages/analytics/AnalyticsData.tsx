@@ -1,19 +1,14 @@
-import { useState } from "react";
 import { AnalyticsSidebar } from "@/components/analytics/AnalyticsSidebar";
 import { AnalyticsTopbar } from "@/components/analytics/AnalyticsTopbar";
 import {
   BarChart3,
   TrendingUp,
-  TrendingDown,
   Target,
   DollarSign,
   Users,
   Trophy,
-  Calendar,
   Download,
   Share2,
-  RefreshCw,
-  ArrowUpRight,
   Sparkles,
   AlertTriangle,
   Zap,
@@ -31,9 +26,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   Area,
   AreaChart,
   Tooltip as RechartsTooltip,
@@ -137,10 +129,6 @@ const clubComparison = {
 };
 
 export default function AnalyticsData() {
-  const [dateRange, setDateRange] = useState("Last 7 days");
-  const [dataType, setDataType] = useState("Clubs");
-  const [metricType, setMetricType] = useState("Win rate");
-
   return (
     <div className="flex h-screen bg-[#0a0a0f] overflow-hidden">
       <AnalyticsSidebar />
@@ -715,7 +703,7 @@ export default function AnalyticsData() {
                 <div className="flex items-start gap-2 text-sm">
                   <TrendingUp className="w-4 h-4 text-success mt-0.5" />
                   <p className="text-muted-foreground">
-                    High odds on Team C, potential ROI 3.5x
+                        High signal movement on Team C, worth a closer review
                   </p>
                 </div>
               </div>

@@ -26,12 +26,12 @@ export const AdminMatchResolver = () => {
 
   const handleResolve = async () => {
     if (!matchId.trim()) {
-      toast.error("Le Match ID est requis");
+      toast.error("Match ID is required");
       return;
     }
 
     if (!winningTeam.trim()) {
-      toast.error("Le nom de l'équipe gagnante est requis");
+      toast.error("Winning team name is required");
       return;
     }
 
@@ -45,7 +45,7 @@ export const AdminMatchResolver = () => {
       });
 
       if (error) {
-        toast.error(`Erreur: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
         setLastResult({ success: false, error: error.message });
         return;
       }
@@ -53,19 +53,19 @@ export const AdminMatchResolver = () => {
       const result = data as unknown as ResolveResult;
 
       if (!result.success) {
-        toast.error(result.error || "Erreur inconnue");
+        toast.error(result.error || "Unknown error");
         setLastResult(result);
         return;
       }
 
-      toast.success(`Match résolu ! ${result.won_count} gagnants, ${result.lost_count} perdants`);
+      toast.success(`Match resolved! ${result.won_count} winners, ${result.lost_count} losers`);
       setLastResult(result);
 
       // Reset form
       setMatchId("");
       setWinningTeam("");
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Erreur inconnue";
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
       toast.error(errorMessage);
       setLastResult({ success: false, error: errorMessage });
     } finally {
@@ -78,10 +78,10 @@ export const AdminMatchResolver = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          Résolution des Matchs
+          Match Resolution
         </CardTitle>
         <CardDescription>
-          Résolvez manuellement un match et distribuez les récompenses (XP, Points, Streaks)
+          Resolve a match manually and distribute rewards (XP, Points, Streaks)
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -95,11 +95,11 @@ export const AdminMatchResolver = () => {
               placeholder="Ex: match_12345 ou CSGO_2024_final"
               disabled={loading}
             />
-            <p className="text-xs text-muted-foreground">L'identifiant unique du match à résoudre</p>
+            <p className="text-xs text-muted-foreground">The unique match identifier to resolve</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="winningTeam">Équipe Gagnante</Label>
+            <Label htmlFor="winningTeam">Winning Team</Label>
             <Input
               id="winningTeam"
               value={winningTeam}
@@ -108,7 +108,7 @@ export const AdminMatchResolver = () => {
               disabled={loading}
             />
             <p className="text-xs text-muted-foreground">
-              Le nom exact de l'équipe gagnante (doit correspondre aux prédictions)
+              The exact winning team name, matching the prediction records
             </p>
           </div>
         </div>
@@ -117,12 +117,12 @@ export const AdminMatchResolver = () => {
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Résolution en cours...
+              Resolving...
             </>
           ) : (
             <>
               <Trophy className="h-4 w-4 mr-2" />
-              Résoudre et Payer
+              Resolve and distribute rewards
             </>
           )}
         </Button>
@@ -134,13 +134,13 @@ export const AdminMatchResolver = () => {
               {lastResult.success ? (
                 <div className="space-y-1">
                   <p>
-                    <strong>Match résolu avec succès !</strong>
+                    <strong>Match resolved successfully!</strong>
                   </p>
                   <p>Match ID: {lastResult.match_id}</p>
-                  <p>Équipe gagnante: {lastResult.winning_team}</p>
-                  <p>Prédictions traitées: {lastResult.resolved_count}</p>
-                  <p className="text-green-600">✓ Gagnants: {lastResult.won_count}</p>
-                  <p className="text-red-600">✗ Perdants: {lastResult.lost_count}</p>
+                  <p>Winning team: {lastResult.winning_team}</p>
+              <p>Live calls processed: {lastResult.resolved_count}</p>
+                  <p className="text-green-600">Winners: {lastResult.won_count}</p>
+                  <p className="text-red-600">Losses recorded: {lastResult.lost_count}</p>
                 </div>
               ) : (
                 <p>{lastResult.error}</p>
@@ -150,13 +150,13 @@ export const AdminMatchResolver = () => {
         )}
 
         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-          <p className="font-medium mb-1">Actions effectuées :</p>
+          <p className="font-medium mb-1">Actions performed:</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Mise à jour du statut des prédictions (won/lost)</li>
-            <li>Crédit des gains aux gagnants (arena_balance)</li>
-            <li>Attribution de 50 XP aux gagnants</li>
-            <li>Mise à jour des streaks (incrémenté ou remis à 0)</li>
-            <li>Enregistrement dans le ledger</li>
+            <li>Prediction status updated (won/lost)</li>
+            <li>Winnings credited to successful players (arena_balance)</li>
+            <li>50 XP awarded to winners</li>
+            <li>Streaks updated (incremented or reset to 0)</li>
+            <li>Ledger entry recorded</li>
           </ul>
         </div>
       </CardContent>

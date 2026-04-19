@@ -1,11 +1,9 @@
-// src/components/ui/game-logo.tsx
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
 export interface GameLogo {
   id: string;
   name: string;
-  logoUrl: string;
+  shortLabel: string;
   slug: string;
 }
 
@@ -13,25 +11,25 @@ export const GAME_LOGOS: Record<string, GameLogo> = {
   lol: {
     id: "1",
     name: "League of Legends",
-    logoUrl: "https://cdn.pandascore.co/images/league-of-legends.png",
+    shortLabel: "LoL",
     slug: "league-of-legends",
   },
   dota2: {
     id: "3",
     name: "Dota 2",
-    logoUrl: "https://cdn.pandascore.co/images/dota-2.png",
+    shortLabel: "D2",
     slug: "dota-2",
   },
   cs2: {
     id: "4",
     name: "CS2",
-    logoUrl: "https://cdn.pandascore.co/images/cs-go.png",
+    shortLabel: "CS2",
     slug: "cs-go",
   },
   valorant: {
     id: "23",
     name: "Valorant",
-    logoUrl: "https://cdn.pandascore.co/images/valorant.png",
+    shortLabel: "V",
     slug: "valorant",
   },
 };
@@ -85,13 +83,16 @@ export function GameIcon({
   if (!logo) return null;
 
   return (
-    <Image
-      src={logo.logoUrl}
-      alt={`${logo.name} logo`}
-      width={size}
-      height={size}
-      className={className ?? "h-auto w-auto"}
-    />
+    <span
+      aria-label={`${logo.name} icon`}
+      className={
+        className ??
+        "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/8 text-[10px] font-bold leading-none text-white"
+      }
+      style={{ width: size, height: size, minWidth: size }}
+    >
+      {logo.shortLabel}
+    </span>
   );
 }
 

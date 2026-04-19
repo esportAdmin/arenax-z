@@ -1,0 +1,18 @@
+<svg width="392" height="80" viewBox="0 0 392 80" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">RallyGuild navbar logo</title>
+  <desc id="desc">Compact RallyGuild by ArenaX logo for navigation bars and product headers.</desc>
+  <defs>
+    <linearGradient id="navStroke" x1="10" y1="8" x2="60" y2="68" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4DF3FF"/>
+      <stop offset="0.55" stop-color="#56CFFF"/>
+      <stop offset="1" stop-color="#9E68FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="392" height="80" rx="18" fill="#0A1323"/>
+  <path d="M36 12L54.1865 22.5V43.5L36 69.5L17.8135 59V38L36 12Z" stroke="url(#navStroke)" stroke-width="3.6" stroke-linejoin="round"/>
+  <path d="M36 20L48.1244 27V42L36 58L23.8756 51V36L36 20Z" stroke="url(#navStroke)" stroke-opacity="0.62" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M25.5 51V29H37.5C41.6421 29 45 32.3579 45 36.5C45 40.0792 42.4922 43.1727 39.0153 43.9121L46.5 51H39.5L32.5 44.5H32V51H25.5Z" stroke="url(#navStroke)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M47 32H39V29H47C49.7614 29 52 31.2386 52 34V46C52 48.7614 49.7614 51 47 51H36.5V46.5H45.5V43.5H40C37.5147 43.5 35.5 41.4853 35.5 39V36.5C35.5 34.0147 37.5147 32 40 32H47Z" stroke="url(#navStroke)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="67" y="38" fill="#F8FBFF" font-size="24" font-weight="800" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="0.8">RALLYGUILD</text>
+  <text x="68" y="58" fill="#A8BCD8" font-size="12" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="0.2">by ArenaX</text>
+</svg>

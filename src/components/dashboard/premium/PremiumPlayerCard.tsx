@@ -1,4 +1,4 @@
-import { Award, Crown, TrendingUp, Check } from "lucide-react";
+import { Award, Check, Crown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import {
   PremiumAvatarRing,
@@ -16,25 +16,13 @@ type PlayerSummary = {
   name: string;
   tierLabel: string;
   totalScore: number;
-  accuracy: number;
+  signalRate: number;
   challenges: number;
   levelLabel: string;
   levelProgress: number;
   badges: Array<{ label: string; icon: "crown" | "award" }>;
 };
 
-/**
- * PremiumPlayerCard
- *
- * Left panel — player summary card.
- *
- * @example
- * import PremiumPlayerCard from "@/components/dashboard/premium/PremiumPlayerCard";
- *
- * export default function Page() {
- *   return <PremiumPlayerCard />;
- * }
- */
 export default function PremiumPlayerCard() {
   const data: PlayerSummary = {
     rankGlobal: 42,
@@ -42,13 +30,13 @@ export default function PremiumPlayerCard() {
     name: "EsportsPro123",
     tierLabel: "Professional",
     totalScore: 8450,
-    accuracy: 72,
+    signalRate: 72,
     challenges: 128,
-    levelLabel: "Niveau 2",
+    levelLabel: "Level 2",
     levelProgress: 25,
     badges: [
       { label: "Top 100", icon: "crown" },
-      { label: "Consistant", icon: "award" },
+      { label: "Consistent", icon: "award" },
     ],
   };
 
@@ -57,23 +45,24 @@ export default function PremiumPlayerCard() {
       <div className="relative h-full px-8 pt-8 pb-7">
         <PremiumRibbonBadge />
 
-        {/* Rank */}
         <div className="flex items-end gap-2 font-display">
           <div className="text-[44px] font-black tracking-tight text-white">
             #{data.rankGlobal}
           </div>
           <div className="pb-[10px] text-2xl font-bold text-white/35">
-            / {data.population.toLocaleString("fr-FR")}
+            / {data.population.toLocaleString("en-US")}
           </div>
         </div>
 
-        {/* Avatar + name */}
         <div className="mt-6 text-center">
           <Link
             href="/profile"
-            className="group inline-flex flex-col items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-2xl"
+            className="group inline-flex flex-col items-center justify-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           >
-            <PremiumAvatarRing initials="EP" className="transition-transform group-hover:scale-[1.02]" />
+            <PremiumAvatarRing
+              initials="EP"
+              className="transition-transform group-hover:scale-[1.02]"
+            />
             <div className="mt-6 text-3xl font-display font-bold text-white underline-offset-4 group-hover:underline">
               {data.name}
             </div>
@@ -83,35 +72,36 @@ export default function PremiumPlayerCard() {
           </div>
         </div>
 
-        {/* Metrics */}
         <div className="mt-7 grid grid-cols-3 gap-4">
           <PremiumMetricTile
             label="Total Score:"
-            value={data.totalScore.toLocaleString("fr-FR")}
+            value={data.totalScore.toLocaleString("en-US")}
             icon={<TrendingUp className="h-5 w-5" />}
             href="/leaderboard"
           />
           <PremiumRingProgress
-            label="Précision"
-            value={data.accuracy}
+            label="Signal Rate"
+            value={data.signalRate}
             color="#7ED8A5"
-            href="/predictions"
+            href="/live-calls"
           />
           <PremiumMetricTile
-            label="Défis:"
-            value={data.challenges.toLocaleString("fr-FR")}
+            label="Challenges:"
+            value={data.challenges.toLocaleString("en-US")}
             icon={<Check className="h-5 w-5" />}
             href="/rewards"
           />
         </div>
 
-        {/* Level */}
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4">
           <div className="flex items-center justify-between">
             <div className="text-lg font-semibold text-white/85">
               {data.levelLabel}
             </div>
-            <div className="text-lg font-semibold" style={{ color: premiumColors.blue }}>
+            <div
+              className="text-lg font-semibold"
+              style={{ color: premiumColors.blue }}
+            >
               {data.levelProgress}%
             </div>
           </div>
@@ -126,20 +116,19 @@ export default function PremiumPlayerCard() {
           </div>
         </div>
 
-        {/* Badges */}
         <div className="mt-6 flex items-center justify-center gap-4">
-          {data.badges.map((b) => (
+          {data.badges.map((badge) => (
             <Link
-              key={b.label}
-              href={b.icon === "crown" ? "/leaderboard" : "/profile"}
+              key={badge.label}
+              href={badge.icon === "crown" ? "/leaderboard" : "/profile"}
               className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-5 py-2 text-sm font-semibold text-white/80 transition-colors hover:border-white/20 hover:bg-white/[0.10] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
             >
-              {b.icon === "crown" ? (
+              {badge.icon === "crown" ? (
                 <Crown className="h-4 w-4" color={premiumColors.gold} />
               ) : (
                 <Award className="h-4 w-4" color={premiumColors.gold} />
               )}
-              {b.label}
+              {badge.label}
             </Link>
           ))}
         </div>

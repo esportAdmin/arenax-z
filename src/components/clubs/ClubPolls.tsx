@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart3, Plus, X, Check, Users, Lock, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { BarChart3, Plus, X, Check, Users, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { useClubPolls, Poll } from '@/hooks/useClubPolls';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 
 interface ClubPollsProps {
   clubId: string;
@@ -46,16 +46,16 @@ const PollCard = ({
           <div className="flex items-center gap-2 mb-2">
             <BarChart3 className="h-4 w-4 text-primary" />
             <span className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(poll.created_at), { addSuffix: true, locale: fr })}
+              {formatDistanceToNow(new Date(poll.created_at), { addSuffix: true, locale: enUS })}
             </span>
             {poll.is_anonymous && (
               <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Lock className="h-3 w-3" /> Anonyme
+                <Lock className="h-3 w-3" /> Anonymous
               </span>
             )}
             {poll.is_closed && (
               <span className="text-xs text-destructive flex items-center gap-1">
-                <Lock className="h-3 w-3" /> Fermé
+                <Lock className="h-3 w-3" /> Closed
               </span>
             )}
           </div>
@@ -124,7 +124,7 @@ const PollCard = ({
                 <span>{poll.total_votes} vote{poll.total_votes !== 1 ? 's' : ''}</span>
               </div>
               {poll.is_multiple_choice && (
-                <span>Choix multiples</span>
+                <span>Multiple choice</span>
               )}
               {canClose && (
                 <Button
@@ -133,7 +133,7 @@ const PollCard = ({
                   className="h-6 text-xs text-destructive hover:text-destructive"
                   onClick={() => onClose(poll.id)}
                 >
-                  Fermer le sondage
+                  Close poll
                 </Button>
               )}
             </div>
@@ -201,14 +201,14 @@ const CreatePollDialog = ({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Plus className="h-4 w-4" />
-          Créer un sondage
+          Create poll
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
-            Nouveau sondage
+            New poll
           </DialogTitle>
         </DialogHeader>
 
@@ -217,7 +217,7 @@ const CreatePollDialog = ({
             <Label htmlFor="question">Question</Label>
             <Input
               id="question"
-              placeholder="Posez votre question..."
+              placeholder="Ask your question..."
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               className="mt-1"
@@ -255,7 +255,7 @@ const CreatePollDialog = ({
                 className="mt-2 gap-1"
               >
                 <Plus className="h-3 w-3" />
-                Ajouter une option
+                Add an option
               </Button>
             )}
           </div>
@@ -263,7 +263,7 @@ const CreatePollDialog = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label htmlFor="multiple" className="text-sm">
-                Choix multiples
+                Multiple choice
               </Label>
               <Switch
                 id="multiple"
@@ -273,7 +273,7 @@ const CreatePollDialog = ({
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="anonymous" className="text-sm">
-                Votes anonymes
+                Anonymous votes
               </Label>
               <Switch
                 id="anonymous"
@@ -288,7 +288,7 @@ const CreatePollDialog = ({
             disabled={creating || !question.trim() || options.filter(o => o.trim()).length < 2}
             className="w-full"
           >
-            {creating ? 'Création...' : 'Créer le sondage'}
+            {creating ? 'Creating...' : 'Create poll'}
           </Button>
         </div>
       </DialogContent>
@@ -317,7 +317,7 @@ export const ClubPolls = ({ clubId, isAdmin = false }: ClubPollsProps) => {
           className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
         >
           <BarChart3 className="h-4 w-4 text-primary" />
-          Sondages
+          Polls
           {activePolls.length > 0 && (
             <span className="text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
               {activePolls.length}
@@ -338,7 +338,7 @@ export const ClubPolls = ({ clubId, isAdmin = false }: ClubPollsProps) => {
           >
             {activePolls.length === 0 ? (
               <div className="text-center text-muted-foreground py-4 text-xs">
-                Aucun sondage actif
+                No active polls
               </div>
             ) : (
               <div className="space-y-2 mt-2 max-h-[150px] overflow-y-auto">

@@ -1,28 +1,28 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Coins, Lock, TrendingUp, ArrowRight, Shield } from "lucide-react";
+import { Coins, Flame, TrendingUp, ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLink } from "@/components/AppLink";
 
-const lockingTiers = [
+const rewardTiers = [
   {
     name: "Flexible",
-    bonus: "8%",
-    lockPeriod: "No Lock",
-    minLock: "100 ARENA",
+    bonus: "+8%",
+    cadence: "Open",
+    minimumActivity: "100 ARENA activity",
   },
   {
     name: "Standard",
-    bonus: "15%",
-    lockPeriod: "30 Days",
-    minLock: "500 ARENA",
+    bonus: "+15%",
+    cadence: "30-day streak",
+    minimumActivity: "500 ARENA activity",
   },
   {
     name: "Premium",
-    bonus: "25%",
-    lockPeriod: "90 Days",
-    minLock: "2,500 ARENA",
+    bonus: "+25%",
+    cadence: "90-day prestige",
+    minimumActivity: "2,500 ARENA activity",
   },
 ];
 
@@ -34,7 +34,7 @@ export function StakingPreview() {
 
       <div className="container-arena relative">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left - Staking Tiers */}
+          {/* Left - Reward tiers */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -43,7 +43,7 @@ export function StakingPreview() {
             className="order-2 lg:order-1"
           >
             <div className="space-y-4">
-              {lockingTiers.map((tier, index) => (
+              {rewardTiers.map((tier, index) => (
                 <motion.div
                   key={tier.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -58,7 +58,7 @@ export function StakingPreview() {
                         {index === 0 ? (
                           <Coins className="w-6 h-6 text-secondary" />
                         ) : index === 1 ? (
-                          <Lock className="w-6 h-6 text-secondary" />
+                          <Flame className="w-6 h-6 text-secondary" />
                         ) : (
                           <Shield className="w-6 h-6 text-secondary" />
                         )}
@@ -68,7 +68,7 @@ export function StakingPreview() {
                           {tier.name}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {tier.lockPeriod} • Min: {tier.minLock}
+                          {tier.cadence} - Min: {tier.minimumActivity}
                         </div>
                       </div>
                     </div>
@@ -96,18 +96,18 @@ export function StakingPreview() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-6">
               <Coins className="w-4 h-4" />
-              Rewards Locking
+              Reward Progression
             </div>
 
             <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
-              <span className="text-foreground">Earn While You </span>
-              <span className="gradient-text-secondary">Hold</span>
+              <span className="text-foreground">Turn Activity Into </span>
+              <span className="gradient-text-secondary">Prestige</span>
             </h2>
 
             <p className="text-muted-foreground text-lg mb-6">
-              Lock your ARENA credits and earn passive rewards. Choose flexible
-              or locked tiers to maximize your bonus. ARENA credits have no cash
-              value but unlock exclusive prizes.
+              Build streaks, complete live-call rituals, and unlock non-cash
+              progression perks. ARENA credits have no monetary value and are
+              used only for platform activity and community status.
             </p>
 
             {/* Stats */}
@@ -117,7 +117,7 @@ export function StakingPreview() {
                   250M
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  ARENA Locked
+                  ARENA Activity
                 </div>
               </div>
               <div className="glass-card p-4">
@@ -125,22 +125,22 @@ export function StakingPreview() {
                   4,280
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Active Lockers
+                  Active Members
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-4">
               <Button asChild variant="web3" size="lg" className="gap-2">
-                <AppLink href="/staking">
-                  Start Locking
+                <AppLink href="/rewards">
+                  Open Rewards
                   <ArrowRight className="w-5 h-5" />
                 </AppLink>
               </Button>
 
               <Button variant="glass" size="lg" className="gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Calculate Rewards
+                View Progression
               </Button>
             </div>
           </motion.div>

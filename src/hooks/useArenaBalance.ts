@@ -1,30 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * HOOK REACT SÉCURISÉ - ARENA BALANCE
- * ================================================================
- * Hook personnalisé pour gérer l'ARENA balance de manière sécurisée
- * Utilise uniquement les fonctions RPC serveur-side
- * ================================================================
- */
+"use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { logger } from "@/lib/logger";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
-// ================================================================
-// TYPES
-// ================================================================
-
-interface ArenaBalanceData {
-  success: boolean;
-  balance?: number;
-  streak?: number;
-  score?: number;
-  last_transaction?: string;
-  error?: string;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { isLocalQaUser } from "@/lib/dev-auth";
 
 interface ArenaTransactionResult {
   success: boolean;
@@ -33,243 +13,197 @@ interface ArenaTransactionResult {
   error?: string;
 }
 
-interface PrizeRedemptionResult {
-  success: boolean;
-  new_balance?: number;
-  prize_name?: string;
-  redemption_id?: string;
-  error?: string;
+interface UseArenaBalanceOptions {
+  enabled?: boolean;
 }
 
-export interface UseArenaBalanceReturn {
-  balance: number;
-  streak: number;
-  score: number;
-  loading: boolean;
-  error: string | null;
-  refreshBalance: () => Promise<void>;
-  completeDailyChallenge: (xpReward?: number) => Promise<boolean>;
-  redeemPrize: (prizeId: number) => Promise<boolean>;
-  addArena: (amount: number, source: string, description?: string) => Promise<boolean>;
-  spendArena: (amount: number, source: string, description?: string) => Promise<boolean>;
-}
-
-export function useArenaBalance(): UseArenaBalanceReturn {
+export function useArenaBalance(options: UseArenaBalanceOptions = {}) {
+  const { enabled = true } = options;
   const { user } = useAuth();
-  const [balance, setBalance] = useState<number>(0);
-  const [streak, setStreak] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [balance, setBalance] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isLocalQa = isLocalQaUser(user);
+
+  const getSession = useCallback(async () => {
+    const { data, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !data.session) return null;
+    return data.session;
+  }, []);
+
+  const safeRpc = useCallback(
+    async <T,>(fn: string, params?: unknown): Promise<T | null> => {
+      if (!enabled) {
+        return null;
+      }
+
+      const session = await getSession();
+      const sessionIsLocalQa = isLocalQa || isLocalQaUser(session?.user);
+
+      if (sessionIsLocalQa) {
+        return null;
+      }
+
+      if (!session) {
+        return null;
+      }
+
+      const { data, error: rpcError } = await (supabase.rpc as any)(fn, params);
+
+      if (rpcError) {
+        return null;
+      }
+
+      return data as T;
+    },
+    [enabled, getSession, isLocalQa],
+  );
 
   const refreshBalance = useCallback(async () => {
-    if (!user) {
-      setBalance(0);
-      setStreak(0);
-      setScore(0);
-      setLoading(false);
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);
-      logger.debug("Fetching ARENA balance...");
 
-      const { data, error: rpcError } = await (supabase.rpc as any)("get_arena_balance");
+      if (!enabled) {
+        setBalance(0);
+        setStreak(0);
+        setScore(0);
+        return;
+      }
 
-      if (rpcError) throw new Error(rpcError.message);
-      const result = data as ArenaBalanceData;
-      if (!result.success) throw new Error(result.error || "Failed to fetch balance");
+      const session = await getSession();
+      const sessionIsLocalQa = isLocalQa || isLocalQaUser(session?.user);
 
-      setBalance(result.balance || 0);
-      setStreak(result.streak || 0);
-      setScore(result.score || 0);
-      logger.debug("Balance refreshed", {
-        balance: result.balance,
-        streak: result.streak,
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setError(errorMessage);
-      logger.error("Error refreshing balance", err);
+      if (sessionIsLocalQa) {
+        setBalance(3275);
+        setStreak(6);
+        setScore(12450);
+        return;
+      }
+
+      if (!session) {
+        setBalance(0);
+        setStreak(0);
+        setScore(0);
+        return;
+      }
+
+      const { data, error: profileError } = await supabase
+        .from("profiles")
+        .select("arena_balance, active_streak, arena_score")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (profileError || !data) {
+        setBalance(0);
+        setStreak(0);
+        setScore(0);
+        return;
+      }
+
+      setBalance(Number(data.arena_balance ?? 0));
+      setStreak(Number(data.active_streak ?? 0));
+      setScore(Number(data.arena_score ?? 0));
+    } catch (caughtError) {
+      const message =
+        caughtError instanceof Error ? caughtError.message : "Unknown error";
+      setError(message);
+      setBalance(0);
+      setStreak(0);
+      setScore(0);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [enabled, getSession, isLocalQa]);
 
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false);
+      setError(null);
+      setBalance(0);
+      setStreak(0);
+      setScore(0);
+      return;
+    }
+
     refreshBalance();
-  }, [refreshBalance]);
+  }, [enabled, refreshBalance]);
 
   const completeDailyChallenge = useCallback(
-    async (xpReward: number = 50): Promise<boolean> => {
-      if (!user) {
-        toast.error("Erreur", { description: "Vous devez être connecté" });
-        return false;
-      }
+    async (xp = 50) => {
+      const result = await safeRpc<ArenaTransactionResult>(
+        "complete_daily_challenge_reward",
+        { p_xp_reward: xp },
+      );
 
-      try {
-        logger.debug("Completing daily challenge...", { xpReward });
-        const { data, error: rpcError } = await (supabase.rpc as any)("complete_daily_challenge_reward", {
-          p_xp_reward: xpReward,
-        });
+      if (!result?.success) return false;
 
-        if (rpcError) throw new Error(rpcError.message);
-        const result = data as ArenaTransactionResult;
-        if (!result.success) throw new Error(result.error || "Failed to complete challenge");
-
-        setBalance(result.new_balance || 0);
-        setStreak(result.new_streak || 0);
-
-        toast.success("🎉 Défi complété !", {
-          description: `+${xpReward} ARENA ajoutés à votre solde`,
-        });
-
-        logger.info("Daily challenge completed", {
-          xpReward,
-          new_balance: result.new_balance,
-          new_streak: result.new_streak,
-        });
-
-        return true;
-      } catch (err) {
-        logger.error("Error completing daily challenge", err);
-        toast.error("Erreur", {
-          description: "Impossible de compléter le défi",
-        });
-        return false;
-      }
+      setBalance(result.new_balance ?? 0);
+      setStreak(result.new_streak ?? 0);
+      toast.success(`+${xp} ARENA`);
+      return true;
     },
-    [user],
+    [safeRpc],
   );
 
   const redeemPrize = useCallback(
-    async (prizeId: number): Promise<boolean> => {
-      if (!user) {
-        toast.error("Erreur", { description: "Vous devez être connecté" });
-        return false;
-      }
+    async (prizeId: number) => {
+      const result = await safeRpc<{
+        success?: boolean;
+        new_balance?: number;
+        prize_name?: string;
+      }>("redeem_prize_secure", {
+        p_prize_id: prizeId,
+      });
 
-      try {
-        logger.debug("Redeeming prize...", { prizeId });
-        const { data, error: rpcError } = await (supabase.rpc as any)("redeem_prize_secure", {
-          p_prize_id: prizeId,
-        });
+      if (!result?.success) return false;
 
-        if (rpcError) throw new Error(rpcError.message);
-        const result = data as PrizeRedemptionResult;
-
-        if (!result.success) {
-          if (result.error?.includes("Insufficient balance")) {
-            toast.error("Solde insuffisant", {
-              description: "Vous n'avez pas assez d'ARENA pour ce prix",
-            });
-          } else if (result.error?.includes("out of stock")) {
-            toast.error("Stock épuisé", {
-              description: "Ce prix n'est plus disponible",
-            });
-          } else {
-            toast.error("Erreur", {
-              description: result.error || "Impossible de racheter le prix",
-            });
-          }
-          return false;
-        }
-
-        setBalance(result.new_balance || 0);
-        toast.success("🎁 Prix racheté !", {
-          description: `${result.prize_name} ajouté à votre compte`,
-        });
-
-        logger.info("Prize redeemed", {
-          prizeId,
-          prize_name: result.prize_name,
-          new_balance: result.new_balance,
-        });
-
-        return true;
-      } catch (err) {
-        logger.error("Error redeeming prize", err);
-        toast.error("Erreur", {
-          description: "Une erreur inattendue est survenue",
-        });
-        return false;
-      }
+      setBalance(result.new_balance ?? 0);
+      toast.success(`Reward redeemed: ${result.prize_name}`);
+      return true;
     },
-    [user],
+    [safeRpc],
   );
 
   const addArena = useCallback(
-    async (amount: number, source: string, description?: string): Promise<boolean> => {
-      if (!user) {
-        toast.error("Erreur", { description: "Vous devez être connecté" });
-        return false;
-      }
+    async (amount: number, source: string) => {
+      const result = await safeRpc<ArenaTransactionResult>("add_arena_secure", {
+        p_amount: amount,
+        p_source: source,
+        p_description: null,
+        p_reference_id: null,
+      });
 
-      try {
-        logger.debug("Adding ARENA...", { amount, source });
-        const { data, error: rpcError } = await (supabase.rpc as any)("add_arena_secure", {
-          p_amount: amount,
-          p_source: source,
-          p_description: description || null,
-          p_reference_id: null,
-        });
+      if (!result?.success) return false;
 
-        if (rpcError) throw new Error(rpcError.message);
-        const result = data as ArenaTransactionResult;
-        if (!result.success) throw new Error(result.error || "Failed to add ARENA");
-
-        setBalance(result.new_balance || 0);
-        logger.info("ARENA added", { amount, new_balance: result.new_balance });
-        return true;
-      } catch (err) {
-        logger.error("Error adding ARENA", err);
-        return false;
-      }
+      setBalance(result.new_balance ?? 0);
+      return true;
     },
-    [user],
+    [safeRpc],
   );
 
   const spendArena = useCallback(
-    async (amount: number, source: string, description?: string): Promise<boolean> => {
-      if (!user) {
-        toast.error("Erreur", { description: "Vous devez être connecté" });
-        return false;
-      }
-
+    async (amount: number, source: string) => {
       if (amount > balance) {
-        toast.error("Solde insuffisant", {
-          description: `Vous avez ${balance} ARENA, ${amount} requis`,
-        });
+        toast.error("Insufficient balance");
         return false;
       }
 
-      try {
-        logger.debug("Spending ARENA...", { amount, source });
-        const { data, error: rpcError } = await (supabase.rpc as any)("spend_arena_secure", {
-          p_amount: amount,
-          p_source: source,
-          p_description: description || null,
-          p_reference_id: null,
-        });
+      const result = await safeRpc<ArenaTransactionResult>("spend_arena_secure", {
+        p_amount: amount,
+        p_source: source,
+        p_description: null,
+        p_reference_id: null,
+      });
 
-        if (rpcError) throw new Error(rpcError.message);
-        const result = data as ArenaTransactionResult;
-        if (!result.success) throw new Error(result.error || "Failed to spend ARENA");
+      if (!result?.success) return false;
 
-        setBalance(result.new_balance || 0);
-        logger.info("ARENA spent", { amount, new_balance: result.new_balance });
-        return true;
-      } catch (err) {
-        logger.error("Error spending ARENA", err);
-        toast.error("Erreur", {
-          description: "Impossible de dépenser les ARENA",
-        });
-        return false;
-      }
+      setBalance(result.new_balance ?? 0);
+      return true;
     },
-    [user, balance],
+    [balance, safeRpc],
   );
 
   return {
@@ -286,8 +220,8 @@ export function useArenaBalance(): UseArenaBalanceReturn {
   };
 }
 
-export function useArenaBalanceDisplay() {
-  const { balance, loading, refreshBalance } = useArenaBalance();
+export function useArenaBalanceDisplay(options: UseArenaBalanceOptions = {}) {
+  const { balance, loading, refreshBalance } = useArenaBalance(options);
 
   return {
     balance,

@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface Badge {
+export interface Badge {
   id: string;
   name: string;
   description: string;

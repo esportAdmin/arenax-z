@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -7,22 +7,18 @@ export function useOnboarding() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      checkOnboardingStatus();
-    } else {
+  const checkOnboardingStatus = useCallback(async () => {
+    if (!user) {
+      setShowOnboarding(false);
       setLoading(false);
+      return;
     }
-  }, [user]);
-
-  const checkOnboardingStatus = async () => {
-    if (!user) return;
 
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('onboarding_completed')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
       if (error) {
@@ -31,16 +27,21 @@ export function useOnboarding() {
         return;
       }
 
-      // Show onboarding if not completed
-      if (data && !data.onboarding_completed) {
-        setShowOnboarding(true);
-      }
+      setShowOnboarding(!data || !data.onboarding_completed);
     } catch (err) {
       console.error('Error checking onboarding:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      void checkOnboardingStatus();
+    } else {
+      setLoading(false);
+    }
+  }, [user, checkOnboardingStatus]);
 
   const completeOnboarding = async () => {
     if (!user) return;
@@ -52,7 +53,7 @@ export function useOnboarding() {
           onboarding_completed: true,
           onboarding_completed_at: new Date().toISOString()
         })
-        .eq('user_id', user.id);
+        .eq('id', user.id);
 
       setShowOnboarding(false);
     } catch (err) {

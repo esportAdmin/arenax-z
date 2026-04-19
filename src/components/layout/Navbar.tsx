@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,7 +19,7 @@ import {
   Zap,
   Calendar,
   LogOut,
-  Gamepad2,
+  Swords,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -39,12 +40,12 @@ import { differenceInDays, parseISO } from "date-fns";
 
 const navLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Games", href: "/games", icon: Gamepad2 },
-  { name: "Predictions", href: "/predictions", icon: TrendingUp },
+  { name: "War Room", href: "/wars", icon: Swords },
+  { name: "Live Calls", href: "/live-calls", icon: TrendingUp },
   { name: "Clubs", href: "/clubs", icon: Users },
   { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
+  { name: "Rewards", href: "/rewards", icon: Crown },
   { name: "Store", href: "/store", icon: ShoppingBag },
-  { name: "Staking", href: "/staking", icon: Coins },
   { name: "Subscription", href: "/subscription", icon: CreditCard },
 ];
 
@@ -78,6 +79,12 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { pathname, navigate } = useAppNav();
+  const shouldShowLiveStatus =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/play") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/rewards") ||
+    pathname.startsWith("/subscription");
 
   const { user, signOut } = useAuth();
   const {
@@ -85,8 +92,13 @@ export function Navbar() {
     tier,
     subscriptionEnd,
     loading: subLoading,
-  } = useSubscription();
-  const { formatted, loading: balanceLoading } = useArenaBalanceDisplay();
+  } = useSubscription({
+    enabled: Boolean(user) && shouldShowLiveStatus,
+    poll: pathname.startsWith("/subscription"),
+  });
+  const { formatted, loading: balanceLoading } = useArenaBalanceDisplay({
+    enabled: Boolean(user) && shouldShowLiveStatus,
+  });
 
   const daysRemaining = subscriptionEnd
     ? differenceInDays(parseISO(subscriptionEnd), new Date())
@@ -126,13 +138,16 @@ export function Navbar() {
       <div className="container-arena">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <AppLink href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-lg shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-              AX
+            <div className="relative h-11 w-[228px] overflow-hidden rounded-xl border border-primary/15 bg-slate-950/50 shadow-[0_0_24px_rgba(77,243,255,0.12)] transition-transform duration-300 group-hover:scale-[1.01] sm:h-12 sm:w-[244px]">
+              <Image
+                src="/brand/rallyguild-navbar.svg"
+                alt="RallyGuild by ArenaX"
+                fill
+                sizes="(max-width: 640px) 228px, 244px"
+                className="object-contain p-0.5"
+                priority
+              />
             </div>
-            <span className="font-display font-bold text-xl hidden sm:block tracking-tight">
-              <span className="text-white">Arena</span>
-              <span className="gradient-text-primary">X</span>
-            </span>
           </AppLink>
 
           <div className="hidden lg:flex items-center gap-1">
@@ -159,7 +174,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <NotificationCenter />
 
-            {user && (
+            {user && shouldShowLiveStatus && (
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 glass-card">
                 <Coins className="w-4 h-4 text-accent" />
                 {balanceLoading ? (
@@ -175,7 +190,7 @@ export function Navbar() {
               </div>
             )}
 
-            {user && !subLoading && (
+            {user && shouldShowLiveStatus && !subLoading && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

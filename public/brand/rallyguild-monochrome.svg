@@ -1,0 +1,12 @@
+<svg width="928" height="220" viewBox="0 0 928 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">RallyGuild monochrome lockup</title>
+  <desc id="desc">Monochrome RallyGuild by ArenaX lockup for light-on-dark usage.</desc>
+  <rect width="928" height="220" rx="28" fill="#0B1220"/>
+  <path d="M107 22L165.89 56V124L107 208L48.1103 174V106L107 22Z" stroke="#F5F7FB" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M107 44L148.569 68V120L107 178L65.4308 154V102L107 44Z" stroke="#F5F7FB" stroke-opacity="0.72" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M74 154V74H111.5C124.479 74 135 84.5213 135 97.5C135 108.523 127.404 117.999 117.129 120.42L141 154H119L96.5 124H95V154H74Z" stroke="#F5F7FB" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M145 88H120V74H145C154.389 74 162 81.6112 162 91V137C162 146.389 154.389 154 145 154H113.5V133.5H141V124H124.5C116.492 124 110 117.508 110 109.5V101.5C110 93.4919 116.492 87 124.5 87H145V88Z" stroke="#F5F7FB" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="107" cy="115" r="7" fill="#F5F7FB"/>
+  <text x="230" y="112" fill="#F5F7FB" font-size="84" font-weight="800" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1.4">RALLYGUILD</text>
+  <text x="232" y="160" fill="#D4D9E1" font-size="40" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif">by ArenaX</text>
+</svg>

@@ -48,7 +48,7 @@ export const playNotificationSound = (type: 'message' | 'mention' = 'message') =
       oscillator.start(ctx.currentTime);
       oscillator.stop(ctx.currentTime + 0.2);
     }
-  } catch (error) {
+  } catch {
     console.log('Audio not supported or blocked');
   }
 };
@@ -77,7 +77,7 @@ export const playClickSound = () => {
     
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.1);
-  } catch (error) {
+  } catch {
     console.log('Audio not supported');
   }
 };
@@ -126,7 +126,7 @@ export const playSuccessSound = () => {
     gain3.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
     osc3.start(ctx.currentTime + 0.2);
     osc3.stop(ctx.currentTime + 0.4);
-  } catch (error) {
+  } catch {
     console.log('Audio not supported');
   }
 };

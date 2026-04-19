@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
@@ -47,7 +46,7 @@ const categories = [
 const faqItems = [
   {
     question: 'How do I earn Arena Points?',
-    answer: 'You can earn Arena Points through correct predictions, daily challenges, leveling up, and participating in club activities.',
+    answer: 'You can earn Arena Points through accurate live calls, daily challenges, leveling up, and participating in club activities.',
   },
   {
     question: 'Can I withdraw Arena Points for real money?',
@@ -300,7 +299,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-display font-bold mb-1">Response Time</h3>
-                      <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                         We typically respond within 24 hours. For urgent issues, please include "URGENT" in your subject.
                       </p>
                     </div>

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type TeamLogoProps = {
   name: string;
-  /** Either an image URL/path (https://..., /images/...) OR a fallback emoji. */
+  /** Either an image URL/path (https://..., /images/...) OR a short fallback label. */
   logo: string;
   size?: number;
   shape?: "full" | "lg";
@@ -12,16 +12,10 @@ type TeamLogoProps = {
   className?: string;
 };
 
-/**
- * isImageLogo
- *
- * @example
- * isImageLogo("https://cdn.pandascore.co/images/team/image/1.png")
- */
 function isImageLogo(value: string) {
   const v = (value ?? "").trim();
   if (!v) return false;
-  // absolute URLs, protocol-relative URLs, data URLs, or local absolute paths
+
   return (
     /^https?:\/\//i.test(v) ||
     /^\/\//.test(v) ||
@@ -30,12 +24,17 @@ function isImageLogo(value: string) {
   );
 }
 
-/**
- * TeamLogo
- *
- * @example
- * <TeamLogo name="Team A" logo="https://cdn.pandascore.co/images/team/image/1.png" />
- */
+function getInitials(name: string) {
+  return (
+    name
+      ?.split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "RG"
+  );
+}
+
 export function TeamLogo({
   name,
   logo,
@@ -46,6 +45,7 @@ export function TeamLogo({
 }: TeamLogoProps) {
   const px = `${size}px`;
   const radius = shape === "lg" ? "rounded-lg" : "rounded-full";
+  const fallback = logo && !isImageLogo(logo) && logo.length <= 4 ? logo : getInitials(name);
 
   return (
     <div
@@ -66,8 +66,11 @@ export function TeamLogo({
           referrerPolicy="no-referrer"
         />
       ) : (
-        <span className="text-2xl" aria-label={`${name} emblem`}>
-          {logo || "🎮"}
+        <span
+          className="max-w-full truncate px-1 text-center font-display text-sm font-black tracking-wide text-cyan-100"
+          aria-label={`${name} emblem`}
+        >
+          {fallback}
         </span>
       )}
     </div>

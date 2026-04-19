@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -61,7 +60,6 @@ export function AdminSupportInquiries() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedInquiry, setSelectedInquiry] = useState<SupportInquiry | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [adminNotes, setAdminNotes] = useState("");
 
   const fetchInquiries = async () => {
     setLoading(true);
@@ -161,7 +159,6 @@ export function AdminSupportInquiries() {
 
   const openDetail = (inquiry: SupportInquiry) => {
     setSelectedInquiry(inquiry);
-    setAdminNotes("");
     setDetailDialogOpen(true);
   };
 

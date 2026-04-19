@@ -419,6 +419,17 @@ export const useClubChat = (clubId: string | null) => {
     [processReactions],
   );
 
+  const stopTyping = useCallback(async () => {
+    if (!typingChannelRef.current) return;
+
+    await typingChannelRef.current.untrack();
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+  }, []);
+
   const startTyping = useCallback(async () => {
     if (!typingChannelRef.current || !user) return;
 
@@ -435,18 +446,7 @@ export const useClubChat = (clubId: string | null) => {
     typingTimeoutRef.current = setTimeout(() => {
       void stopTyping();
     }, 3000);
-  }, [user, profiles]);
-
-  const stopTyping = useCallback(async () => {
-    if (!typingChannelRef.current) return;
-
-    await typingChannelRef.current.untrack();
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = null;
-    }
-  }, []);
+  }, [user, profiles, stopTyping]);
 
   useEffect(() => {
     if (!clubId || !user) return;

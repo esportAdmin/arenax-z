@@ -21,10 +21,10 @@ const navItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/analytics" },
   { icon: Gamepad2, label: "Matches", href: "/analytics/matches" },
   { icon: Trophy, label: "Tournaments", href: "/analytics/tournaments" },
-  { icon: Users, label: "Teams & Players", href: "/analytics/teams" },
-  { icon: BarChart3, label: "Analytics", href: "/analytics/data" },
-  { icon: Brain, label: "Predictions / AI", href: "/analytics/predictions" },
-  { icon: FileText, label: "Reports", href: "/analytics/reports" },
+  { icon: Users, label: "Clubs", href: "/clubs" },
+  { icon: BarChart3, label: "Signals", href: "/analytics" },
+  { icon: Brain, label: "Live Calls", href: "/live-calls" },
+  { icon: FileText, label: "Reports", href: "/analytics" },
   { icon: Settings, label: "Settings", href: "/analytics/settings" },
 ];
 

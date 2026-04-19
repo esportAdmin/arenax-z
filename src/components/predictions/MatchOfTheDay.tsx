@@ -1,94 +1,116 @@
-// src/components/predictions/MatchOfTheDay.tsx
 import { motion } from "framer-motion";
-import { Calendar, Trophy, Users } from "lucide-react";
+import { Calendar, Flame, LockKeyhole, Trophy, Users } from "lucide-react";
 
-import { TeamLogo } from "@/components/ui/team-logo";
+import { CountdownPill } from "@/components/engagement/CountdownPill";
 import { GameIcon } from "@/components/ui/game-logo";
+import { TeamLogo } from "@/components/ui/team-logo";
 import type { Match } from "@/hooks/useMatches";
+import { getHoursFromNow } from "@/lib/countdown";
 
 interface MatchOfTheDayProps {
   match: Match;
 }
 
-/**
- * MatchOfTheDay
- *
- * @example
- * <MatchOfTheDay match={m} />
- */
 export function MatchOfTheDay({ match }: MatchOfTheDayProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur-sm"
+      className="section-shell relative overflow-hidden"
     >
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-transparent to-purple-500/20" />
-      <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
-      <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,245,255,0.14),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(217,70,239,0.12),transparent_32%)]" />
 
-      <div className="relative">
-        <div className="mb-6 flex items-center gap-2">
-          <Trophy className="h-6 w-6 text-yellow-400" />
-          <h2 className="text-2xl font-bold text-white">Match du Jour</h2>
+      <div className="relative space-y-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="eyebrow-badge">
+              <Trophy className="h-4 w-4 text-amber-300" />
+              Match of the day
+            </div>
+            <h2 className="mt-3 text-2xl font-display font-bold text-white">
+              The one board users should not miss
+            </h2>
+          </div>
+          <CountdownPill label="Lock" target={getHoursFromNow(2)} tone="rose" />
         </div>
 
-        <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-3">
-          {/* Team A */}
-          <div className="text-center">
-            <motion.div whileHover={{ scale: 1.05 }} className="mx-auto mb-4">
+        <div className="grid gap-5 text-center">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div>
               <TeamLogo
                 name={match.teamA.name}
                 logo={match.teamA.logo}
-                size={96}
-                className="mx-auto bg-white/10 ring-2 ring-cyan-500/30"
+                size={88}
+                className="mx-auto bg-white/10 ring-2 ring-cyan-500/20"
               />
-            </motion.div>
-            <h3 className="mb-2 text-xl font-bold text-white">
-              {match.teamA.name}
-            </h3>
-            <div className="font-semibold text-cyan-400">
-              {match.teamA.odds.toFixed(2)}
-            </div>
-          </div>
-
-          {/* VS */}
-          <div className="text-center">
-            <div className="mb-4 text-4xl font-bold text-white">VS</div>
-            <div className="space-y-2 text-white/70">
-              <div className="flex items-center justify-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {match.date} {match.time}
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <Users className="h-4 w-4" />
-                {match.totalLocked.toLocaleString()} locked
-              </div>
-              <div className="text-sm">{match.tournament}</div>
-
-              <div className="flex items-center justify-center gap-2 text-xs opacity-80">
-                <GameIcon game={match.game} size={14} className="opacity-90" />
-                <span>{match.game}</span>
+              <h3 className="mt-3 text-lg font-black text-white">
+                {match.teamA.name}
+              </h3>
+              <div className="mt-1 text-sm font-bold text-cyan-300">
+                {match.teamA.signalScore} signal
               </div>
             </div>
-          </div>
 
-          {/* Team B */}
-          <div className="text-center">
-            <motion.div whileHover={{ scale: 1.05 }} className="mx-auto mb-4">
+            <div>
+              <div className="text-3xl font-black text-white">VS</div>
+              <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-xs text-amber-200">
+                <Flame className="h-3 w-3" />
+                Most watched
+              </div>
+            </div>
+
+            <div>
               <TeamLogo
                 name={match.teamB.name}
                 logo={match.teamB.logo}
-                size={96}
-                className="mx-auto bg-white/10 ring-2 ring-purple-500/30"
+                size={88}
+                className="mx-auto bg-white/10 ring-2 ring-fuchsia-500/20"
               />
-            </motion.div>
-            <h3 className="mb-2 text-xl font-bold text-white">
-              {match.teamB.name}
-            </h3>
-            <div className="font-semibold text-purple-400">
-              {match.teamB.odds.toFixed(2)}
+              <h3 className="mt-3 text-lg font-black text-white">
+                {match.teamB.name}
+              </h3>
+              <div className="mt-1 text-sm font-bold text-fuchsia-300">
+                {match.teamB.signalScore} signal
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="surface-panel p-3">
+              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+                <Calendar className="h-3.5 w-3.5" />
+                Schedule
+              </div>
+              <div className="mt-2 text-sm font-semibold text-white">
+                {match.date} {match.time}
+              </div>
+            </div>
+
+            <div className="surface-panel p-3">
+              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+                <Users className="h-3.5 w-3.5" />
+                Community pulse
+              </div>
+              <div className="mt-2 text-sm font-semibold text-white">
+                {match.totalLocked.toLocaleString("en-US")} locked
+              </div>
+            </div>
+
+            <div className="surface-panel p-3">
+              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+                <GameIcon game={match.game} size={14} className="opacity-90" />
+                Game
+              </div>
+              <div className="mt-2 text-sm font-semibold text-white">
+                {match.game}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-white">
+              <LockKeyhole className="h-4 w-4 text-slate-200" />
+              Premium featured slip unlocks after your next live-win streak
             </div>
           </div>
         </div>

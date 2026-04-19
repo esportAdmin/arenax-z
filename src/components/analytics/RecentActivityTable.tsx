@@ -16,7 +16,7 @@ const activities: Activity[] = [
   },
   {
     date: "Oct 28, 09:15 AM",
-    activity: "Prediction Updated: Match ID 12345",
+    activity: "Live Signal Updated: Community Pulse 12345",
     status: "pending",
     action: "View"
   },

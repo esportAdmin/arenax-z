@@ -1,8 +1,21 @@
 "use client";
 
-import Leaderboard from "@/legacy-pages/Leaderboard";
+import Navigation from "@/components/landing/Navigation";
+import { LeaderboardPrestige } from "@/components/rallyguild/leaderboard/LeaderboardPrestige";
 
-export default function Page() {
-  return <Leaderboard />;
+/**
+ * Renders the premium leaderboard route.
+ *
+ * Example:
+ * ```tsx
+ * <LeaderboardPage />
+ * ```
+ */
+export default function LeaderboardPage() {
+  return (
+    <>
+      <Navigation />
+      <LeaderboardPrestige />
+    </>
+  );
 }
-

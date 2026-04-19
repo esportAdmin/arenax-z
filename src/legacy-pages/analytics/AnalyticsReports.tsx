@@ -13,8 +13,6 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  AlertCircle,
-  BarChart3,
   TrendingUp,
   FileSpreadsheet,
   FilePieChart,
@@ -96,7 +94,7 @@ const scheduledReports = [
   },
   {
     id: 3,
-    name: "Daily Match Predictions",
+    name: "Daily Live Calls",
     frequency: "Daily",
     nextRun: "2024-01-19",
     recipients: 25,

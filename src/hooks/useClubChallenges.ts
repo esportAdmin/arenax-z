@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -48,7 +48,7 @@ export const useClubChallenges = (clubId?: string) => {
   const [userClubId, setUserClubId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const fetchUserClub = async () => {
+  const fetchUserClub = useCallback(async () => {
     if (!user) return;
     
     const { data } = await supabase
@@ -61,9 +61,9 @@ export const useClubChallenges = (clubId?: string) => {
       setUserClubId(data.club_id);
       setIsAdmin(['owner', 'admin'].includes(data.role));
     }
-  };
+  }, [user]);
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     const { data, error } = await supabase
       .from('club_challenge_templates')
       .select('*')
@@ -76,9 +76,9 @@ export const useClubChallenges = (clubId?: string) => {
         difficulty: t.difficulty as ChallengeTemplate['difficulty']
       })));
     }
-  };
+  }, []);
 
-  const fetchChallenges = async () => {
+  const fetchChallenges = useCallback(async () => {
     const targetClubId = clubId || userClubId;
     if (!targetClubId) {
       setLoading(false);
@@ -145,7 +145,7 @@ export const useClubChallenges = (clubId?: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [clubId, userClubId]);
 
   const startChallenge = async (templateId: string) => {
     try {
@@ -186,15 +186,15 @@ export const useClubChallenges = (clubId?: string) => {
   };
 
   useEffect(() => {
-    fetchUserClub();
-    fetchTemplates();
-  }, [user]);
+    void fetchUserClub();
+    void fetchTemplates();
+  }, [fetchUserClub, fetchTemplates]);
 
   useEffect(() => {
     if (clubId || userClubId) {
-      fetchChallenges();
+      void fetchChallenges();
     }
-  }, [clubId, userClubId]);
+  }, [clubId, userClubId, fetchChallenges]);
 
   return {
     templates,
